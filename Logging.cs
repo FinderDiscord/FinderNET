@@ -14,23 +14,27 @@ namespace FinderNET {
                 Console.WriteLine($"[{message.Severity}] {cmdException.Command.Aliases.First()} failed to execute in {cmdException.Context.Channel}.");
                 Console.WriteLine(cmdException);
                 Console.ResetColor();
-            } else {
-                if (message.Severity == LogSeverity.Critical) {
+            } 
+            switch(message.Severity) {
+                case LogSeverity.Critical:
                     Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.BackgroundColor = ConsoleColor.White;
-                } else if (message.Severity == LogSeverity.Error) {
+                    break;
+                case LogSeverity.Error:
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.BackgroundColor = ConsoleColor.White;
-                } else if (message.Severity == LogSeverity.Warning) {
+                    break;
+                case LogSeverity.Warning:
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
-                } else {
+                    break;
+                default:
                     Console.ForegroundColor = ConsoleColor.Blue;
-                }
-                Console.Write($"[{message.Severity}] ");
-                Console.ResetColor();
-                Console.WriteLine($"{message}");
+                    break;
             }
-            return Task.CompletedTask;
+            Console.Write($"[{message.Severity}] ");
+            Console.ResetColor();
+            Console.WriteLine($"{message}");
         }
+        return Task.CompletedTask;
     }
 }
