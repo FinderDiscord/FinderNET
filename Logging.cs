@@ -34,7 +34,7 @@ namespace FinderNET {
             Console.Write($"[{message.Severity}] ");
             Console.ResetColor();
             Console.WriteLine($"{message}");
+            return Task.CompletedTask;
         }
-        return Task.CompletedTask;
     }
 }
