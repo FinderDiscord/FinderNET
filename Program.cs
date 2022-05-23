@@ -9,42 +9,28 @@ using System.Threading.Tasks;
 
 namespace FinderNET {
     class Program {
-        static void Main (string[] args) {
-            IConfiguration config = new ConfigurationBuilder().AddJsonFile("config.json").Build();
-            RunAsync(config).GetAwaiter().GetResult();
+        static void Main(string[] args) {
+            RunAsync().GetAwaiter().GetResult();
         }
-        static async Task RunAsync (IConfiguration config) {
-            using ServiceProvider services = ConfigureServices(config);
+        static async Task RunAsync() {
+            using ServiceProvider services = ConfigureServices();
             DiscordSocketClient client = services.GetRequiredService<DiscordSocketClient>();
             InteractionService commands = services.GetRequiredService<InteractionService>();
+            IConfiguration config = services.GetRequiredService<IConfiguration>();
+            CommandHandler handler = services.GetRequiredService<CommandHandler>();
+            await handler.Initialize();
             client.Log += LoggingService.LogAsync;
             commands.Log += LoggingService.LogAsync;
-            client.Ready += async () => {
-                if (IsDebug()) {
-                    await commands.RegisterCommandsToGuildAsync(ulong.Parse(config["testGuild"]), true);
-                } else {
-                    await commands.RegisterCommandsGloballyAsync(true);
-                }
-            };
-            await services.GetRequiredService<SlashCommandHandler>().InitializeAsync();
             await client.LoginAsync(TokenType.Bot, config["token"]);
             await client.StartAsync();
             await Task.Delay(Timeout.Infinite);
         }
 
-        static ServiceProvider ConfigureServices (IConfiguration config) {
-            return new ServiceCollection().AddSingleton(config)
-                .AddSingleton<DiscordSocketClient>()
-                .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
-                .AddSingleton<SlashCommandHandler>()
-                .BuildServiceProvider();
-        }
-        static bool IsDebug() {
-            #if DEBUG
-                return true;
-            #else
-                return false;
-            #endif
-        }
+        static ServiceProvider ConfigureServices() => new ServiceCollection()
+            .AddSingleton<IConfiguration>(new ConfigurationBuilder().AddJsonFile("config.json").Build())
+            .AddSingleton<DiscordSocketClient>()
+            .AddSingleton<InteractionService>()
+            .AddSingleton<CommandHandler>()
+            .BuildServiceProvider();
     }
 }
