@@ -1,9 +1,6 @@
-using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using System;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace FinderNET {
