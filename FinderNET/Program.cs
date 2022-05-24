@@ -23,7 +23,7 @@ namespace FinderNET {
         }
 
         static ServiceProvider ConfigureServices() => new ServiceCollection()
-            .AddSingleton<IConfiguration>(new ConfigurationBuilder().AddJsonFile("config.json").Build())
+            .AddSingleton<IConfiguration>(new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", false, true).Build())
             .AddSingleton<DiscordSocketClient>()
             .AddSingleton<InteractionService>()
             .AddSingleton<CommandHandler>()
