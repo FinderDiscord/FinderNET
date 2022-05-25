@@ -9,7 +9,7 @@ namespace FinderNET {
         static void Main(string[] args) => RunAsync().GetAwaiter().GetResult();
         static async Task RunAsync() {
             using ServiceProvider services = ConfigureServices();
-            client = services.GetRequiredService<DiscordSocketClient>();
+            DiscordSocketClient client = services.GetRequiredService<DiscordSocketClient>();
             InteractionService commands = services.GetRequiredService<InteractionService>();
             IConfiguration config = services.GetRequiredService<IConfiguration>();
             CommandHandler handler = services.GetRequiredService<CommandHandler>();
