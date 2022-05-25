@@ -9,7 +9,7 @@ namespace FinderNET {
         static void Main(string[] args) => RunAsync().GetAwaiter().GetResult();
         static async Task RunAsync() {
             using ServiceProvider services = ConfigureServices();
-            DiscordSocketClient client = services.GetRequiredService<DiscordSocketClient>();
+            client = services.GetRequiredService<DiscordSocketClient>();
             InteractionService commands = services.GetRequiredService<InteractionService>();
             IConfiguration config = services.GetRequiredService<IConfiguration>();
             CommandHandler handler = services.GetRequiredService<CommandHandler>();
@@ -17,6 +17,7 @@ namespace FinderNET {
             client.Log += LoggingService.LogAsync;
             commands.Log += LoggingService.LogAsync;
             client.ReactionAdded += FinderNET.TicTacToeModule.OnReactionAddedEvent;
+            client.ReactionAdded += FinderNET.BlackjackModule.OnReactionAdded;
             await client.LoginAsync(TokenType.Bot, config["token"]);
             await client.StartAsync();
             await Task.Delay(Timeout.Infinite);
