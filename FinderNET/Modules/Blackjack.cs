@@ -60,12 +60,16 @@ namespace FinderNET {
             channel = await ctx.Guild.CreateTextChannelAsync("blackjack", (x) => {
                 x.Topic = "Blackjack";
                 x.PermissionOverwrites = new List<Overwrite> {
-                    new Overwrite(ctx.Guild.EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Deny)),
+                    new Overwrite(ctx.Guild.EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Deny, sendMessages: PermValue.Deny)),
                     new Overwrite(creator.Id, PermissionTarget.User, new OverwritePermissions(viewChannel: PermValue.Allow))
                 };
             });
             await channel.SendMessageAsync($"You are waiting in a lobby for players to join!");
-            await channel.SendMessageAsync($"{creator.Mention}, react :white_check_mark: to start!");
+            RestUserMessage message = await channel.SendMessageAsync($"{creator.Mention}, react :white_check_mark: to start, or :x: to cancel.");
+            await message.AddReactionAsync(new Emoji("✅"));
+            await message.AddReactionAsync(new Emoji("❌"));
+            PlayMessageID = message.Id;
+            
         }
 
         public async Task Join(IUser user) {
