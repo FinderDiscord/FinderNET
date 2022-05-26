@@ -94,11 +94,6 @@ namespace FinderNET {
                             break;
                         }
                     }
-                    for (int i = 0; i < game.board.Count; i++) {
-                        if (game.board[i] == reaction.Emote.Name) {
-                            game.board[i] = game.p1go ? game.p1Symbol : game.p2Symbol;
-                        }
-                    }
                     await game.playMessage.ModifyAsync((x) => {
                         x.Embed = new EmbedBuilder() {
                             Title = "Tic Tac Toe",
@@ -110,9 +105,7 @@ namespace FinderNET {
                     });
                     await game.playMessage.RemoveAllReactionsForEmoteAsync(reaction.Emote);
                     IUser? winner = game.CheckWin();
-                    if (winner == null) return;
-                    if (winner.Id == game.player1.Id) {
-                        await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "TicTacToe", $"{game.player1.Mention} has won the game!"));
+                    if (winner != null && winner.Id == game.player1.Id) {
                         await game.playMessage.ModifyAsync((x) => {
                             x.Embed = new EmbedBuilder() {
                                 Title = "Tic Tac Toe",
@@ -123,8 +116,7 @@ namespace FinderNET {
                         });
                         await game.playChannel.SendMessageAsync($"{game.player1.Mention} has won the game!");
                         game.win = true;
-                    } else if (winner.Id == game.player2.Id) {
-                        await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "TicTacToe", $"{game.player2.Mention} has won the game!"));
+                    } else if (winner != null && winner.Id == game.player2.Id) {
                         await game.playMessage.ModifyAsync((x) => {
                             x.Embed = new EmbedBuilder() {
                                 Title = "Tic Tac Toe",
@@ -136,10 +128,7 @@ namespace FinderNET {
                         await game.playChannel.SendMessageAsync($"{game.player1.Mention} has won the game!");
                         game.win = true;
                     } else if (game.board.All(x => x == "⭕" || x == "❌")) {
-                        await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "TicTacToe", $"The game has ended in a draw!"));
-                        await game.playMessage.ModifyAsync((x) => {
-                            game.playChannel.SendMessageAsync("The game has ended in a draw!");
-                        });
+                        await game.playChannel.SendMessageAsync("The game has ended in a draw!");
                         game.win = true;
                     }
                 }
