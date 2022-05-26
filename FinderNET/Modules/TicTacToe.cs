@@ -4,6 +4,10 @@ using Discord.WebSocket;
 using Discord.Rest;
 
 namespace FinderNET {
+    // TODO:
+    // delete channel after
+    // check win conditions
+    // check delays on line 81
     public class TicTacToeModule : InteractionModuleBase<SocketInteractionContext> {
         private static List<String> validEmotes = new List<string>() { "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "✅", "❌" };
         private static List<TicTacToe> games = new List<TicTacToe>();
