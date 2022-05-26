@@ -33,6 +33,7 @@ namespace FinderNET {
 
         public static async Task OnReactionAddedEvent(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction) {
             foreach (TicTacToe game in games) {
+                if (game.playChannel == null || game.lobbyMessage == null) return;
                 if (game.playChannel.Id != reaction.Channel.Id) return;
                 if (reaction.User.Value.IsBot) return;
                 bool valid = false;
@@ -142,19 +143,19 @@ namespace FinderNET {
 
         public class TicTacToe {
             private SocketInteractionContext ctx;
-            public RestTextChannel playChannel { get; set; }
+            public RestTextChannel? playChannel;
             public RestUserMessage? playMessage;
-            public IUser player1 { get; }
-            public IUser player2 { get; }
-            public string p1Symbol { get; }
-            public string p2Symbol { get; }
-            public bool p1Ready { get; set; }
-            public bool p2Ready { get; set; }
-            public bool win { get; set; }
-            public bool p1go { get; set; }
-            public List<String> board { get; set; }
+            public RestUserMessage? lobbyMessage;
+            public IUser player1;
+            public IUser player2;
+            public string p1Symbol;
+            public string p2Symbol;
+            public bool p1Ready;
+            public bool p2Ready;
+            public bool win;
+            public bool p1go;
+            public List<String> board;
             public bool lobby;
-            public RestUserMessage lobbyMessage { get; set; }
 
             public TicTacToe(SocketInteractionContext _ctx, IUser _player1, IUser _player2, string _p1Symbol, string _p2Symbol) {
                 ctx = _ctx;
@@ -172,6 +173,10 @@ namespace FinderNET {
                     "7️⃣", "8️⃣", "9️⃣"
                 };
                 playMessage = null;
+                playChannel = null;
+                lobbyMessage = null;
+                lobby = true;
+
                 newChannel(player1, player2);
             }
 
@@ -186,7 +191,6 @@ namespace FinderNET {
                 });
                 lobbyMessage = await playChannel.SendMessageAsync($"Both players need to react with ✅ to start the game or ❌ to cancel.");
                 await lobbyMessage.AddReactionsAsync(new Emoji[] {new Emoji("✅"), new Emoji("❌")});
-                lobby = true;
             }
             public string GenerateGrid() {
                 string grid = "⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n";
