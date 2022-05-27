@@ -31,16 +31,18 @@ namespace FinderNET {
                 if (game.lobby && game.joinChannel.Id == reaction.Channel.Id && reaction.MessageId == game.joinMessage.Id) {
                     if (reaction.Emote.Name == "✅") {
                         await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Blackjack", $"{reaction.User.Value.Username} has joined the game!"));
+                        await game.playChannel.SendMessageAsync($"{reaction.User.Value.Mention} has joined the game!");
                         game.AddPlayer(reaction.User.Value);
                         return;
                     }
                 } else if (game.lobby && game.playChannel.Id == reaction.Channel.Id && reaction.MessageId == game.lobbyMessage.Id && reaction.User.Value.Id == game.creator.Id) {
                     if (reaction.Emote.Name == "✅") {
                         await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Blackjack", $"{reaction.User.Value.Username} has started the game!"));
-                        game.StartGame();
+                        await game.playChannel.SendMessageAsync($"{reaction.User.Value.Mention} has started the game!");
                         return;
                     } else if (reaction.Emote.Name == "❌") {
                         await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Blackjack", $"{reaction.User.Value.Username} has cancelled the game!"));
+                        await game.playChannel.SendMessageAsync($"{reaction.User.Value.Mention} has cancelled the game!");
                         await game.playChannel.DeleteAsync();
                         await game.joinMessage.DeleteAsync();
                         games.Remove(game);
