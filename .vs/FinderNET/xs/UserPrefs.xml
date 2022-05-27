@@ -1,0 +1,32 @@
+﻿<Properties StartupConfiguration="{DF9348DB-5212-4F62-9463-81B21C7CCE11}|Default">
+  <MonoDevelop.Ide.ItemProperties.FinderNET PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="FinderNET/Program.cs">
+    <Files>
+      <File FileName="FinderNET/Program.cs" Line="7" Column="34" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="FinderNET" expanded="True">
+            <Node name="FinderNET" expanded="True">
+              <Node name="Modules" expanded="True" />
+              <Node name="Preconditions" expanded="True" />
+              <Node name="Program.cs" selected="True" />
+            </Node>
+            <Node name="FinderNET.Database" expanded="True">
+              <Node name="Context" expanded="True" />
+              <Node name="Migrations" expanded="True" />
+              <Node name="Models" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
