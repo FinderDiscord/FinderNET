@@ -45,7 +45,7 @@ namespace FinderNET {
         public IUserMessage? lobbyMessage;
         public IUserMessage? playMessage;
         public IUserMessage joinMessage;
-        public ISocketMessageChannel? playChannel;
+        public RestTextChannel? playChannel;
         public ISocketMessageChannel joinChannel;
         
         List<IUser> players;
