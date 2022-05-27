@@ -30,9 +30,6 @@ namespace FinderNET {
             .AddSingleton<DiscordSocketClient>()
             .AddSingleton<InteractionService>()
             .AddSingleton<CommandHandler>()
-            .AddDbContext<FinderDbContext>(options => options.UseMySql(Configuration.GetConnectionString("Default")))
-            .AddSingleton<DataAccessLayer>()
-            
             .BuildServiceProvider();
     }
 }
