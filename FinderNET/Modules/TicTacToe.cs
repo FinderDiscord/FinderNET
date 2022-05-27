@@ -33,8 +33,6 @@ namespace FinderNET {
 
         public static async Task OnReactionAddedEvent(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction) {
             foreach (TicTacToe game in games) {
-                if (game.playChannel == null || game.lobbyMessage == null) return;
-                if (game.playChannel.Id != reaction.Channel.Id) return;
                 if (reaction.User.Value.IsBot) return;
                 bool valid = false;
                 foreach (string symbol in validEmotes) {
@@ -44,10 +42,9 @@ namespace FinderNET {
                     }
                 }
                 if (!valid) return;
-                if (
-                    game.lobby
-                    && reaction.MessageId == game.lobbyMessage.Id
-                ) {
+                if (game.playChannel == null || game.lobbyMessage == null) continue;
+                if (game.playChannel.Id != reaction.Channel.Id) continue;
+                if (game.lobby && reaction.MessageId == game.lobbyMessage.Id) {
                     if (reaction.Emote.Name == "✅") {
                         game.p1Ready = game.player1.Id == reaction.UserId ? true : game.p1Ready;
                         game.p2Ready = game.player2.Id == reaction.UserId ? true : game.p2Ready;
