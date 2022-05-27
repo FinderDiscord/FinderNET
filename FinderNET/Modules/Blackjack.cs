@@ -6,14 +6,15 @@ using Discord.Rest;
 namespace FinderNET {
     public class BlackjackModule : InteractionModuleBase<SocketInteractionContext> {
         private static List<Blackjack> games = new List<Blackjack>();
-        private static List<String> validEmotes = new List<string>() { "✅", "❌" };
+        private static List<String> validEmotes = new List<string>() { "✅", "❌", "☑️"};
         [SlashCommand("blackjack", "Play Blackjack")]
         public async Task BlackjackCommand() {
             await RespondAsync("Blackjack is not implemented yet.");
             SocketInteractionContext ctx = new SocketInteractionContext(Context.Client, Context.Interaction);
-            RestUserMessage message = await ctx.Channel.SendMessageAsync($"{ctx.User.Mention} has started a game of Blackjack! React :white_check_mark: to join!");
+            RestUserMessage message = await ctx.Channel.SendMessageAsync($"{ctx.User.Mention} has started a game of Blackjack! React ✅ to join!");
             await message.AddReactionAsync(new Emoji("✅"));
             games.Add(new Blackjack(ctx, ctx.User));
+
         }
 
         public static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction) {
@@ -44,13 +45,18 @@ namespace FinderNET {
         private SocketInteractionContext ctx;
         public IUserMessage? lobbyMessage;
         public IUserMessage? playMessage;
+        public IUserMessage joinMessage;
         public ITextChannel? playChannel;
+        public ITextChannel joinChannel;
+        
         List<IUser> players;
         public bool lobby = true;
-        public Blackjack(SocketInteractionContext _ctx, IUser creator){
+        public Blackjack(SocketInteractionContext _ctx, IUser creator, ITextChannel _joinChannel, IUserMessage _joinMessage) {
             this.players = new List<IUser>();
             this.players.Add(creator);
             this.ctx = _ctx;
+            this.joinChannel = _joinChannel;
+            this.joinMessage = _joinMessage;
             newChannel(creator);
         }
 
