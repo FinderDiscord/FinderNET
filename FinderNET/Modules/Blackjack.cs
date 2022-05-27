@@ -28,11 +28,22 @@ namespace FinderNET {
                 }
                 if (!valid) return;
                 if (game.playChannel == null || game.lobbyMessage == null) continue;
-                if (game.playChannel.Id != reaction.Channel.Id) continue;
-                if (game.lobby && reaction.MessageId == game.lobbyMessage.Id) {
+                if (game.lobby && game.joinChannel.Id == reaction.Channel.Id && reaction.MessageId == game.joinMessage.Id) {
                     if (reaction.Emote.Name == "✅") {
                         await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Blackjack", $"{reaction.User.Value.Username} has joined the game!"));
                         game.AddPlayer(reaction.User.Value);
+                        return;
+                    }
+                } else if (game.lobby && game.playChannel.Id == reaction.Channel.Id && reaction.MessageId == game.lobbyMessage.Id && reaction.User.Value.Id == game.creator.Id) {
+                    if (reaction.Emote.Name == "✅") {
+                        await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Blackjack", $"{reaction.User.Value.Username} has started the game!"));
+                        game.StartGame();
+                        return;
+                    } else if (reaction.Emote.Name == "❌") {
+                        await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Blackjack", $"{reaction.User.Value.Username} has cancelled the game!"));
+                        await game.playChannel.DeleteAsync();
+                        await game.joinMessage.DeleteAsync();
+                        games.Remove(game);
                         return;
                     }
                 }
@@ -47,15 +58,15 @@ namespace FinderNET {
         public IUserMessage joinMessage;
         public RestTextChannel? playChannel;
         public ISocketMessageChannel joinChannel;
-        
-        List<IUser> players;
+        public IUser creator;
+        List<IUser> players = new List<IUser>();
         public bool lobby = true;
-        public Blackjack(SocketInteractionContext _ctx, IUser creator, ISocketMessageChannel _joinChannel, IUserMessage _joinMessage) {
-            this.players = new List<IUser>();
-            this.players.Add(creator);
-            this.ctx = _ctx;
-            this.joinChannel = _joinChannel;
-            this.joinMessage = _joinMessage;
+        public Blackjack(SocketInteractionContext _ctx, IUser _creator, ISocketMessageChannel _joinChannel, IUserMessage _joinMessage) {
+            ctx = _ctx;
+            players.Add(_creator);
+            creator = _creator;
+            joinChannel = _joinChannel;
+            joinMessage = _joinMessage;
             newChannel(creator);
         }
 
@@ -79,7 +90,7 @@ namespace FinderNET {
                     return;
                 }
             }
-            this.players.Add(user);
+            players.Add(user);
             await playChannel.AddPermissionOverwriteAsync(user, new OverwritePermissions(viewChannel: PermValue.Allow));
             await playChannel.SendMessageAsync($"{user.Mention} has joined the game!");
         }
