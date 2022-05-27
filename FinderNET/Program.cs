@@ -3,9 +3,6 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using FinderNET.Database.Context;
-using FinderNET.Database;
 
 namespace FinderNET {
     class Program {
