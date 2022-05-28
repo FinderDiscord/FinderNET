@@ -29,7 +29,7 @@ namespace FinderNET {
                 if (!valid) return;
                 if (game.playChannel == null || game.lobbyMessage == null) continue;
                 if (game.lobby && game.joinChannel.Id == reaction.Channel.Id && reaction.MessageId == game.joinMessage.Id) {
-                    if (reaction.Emote.Name == "✅") {
+                    if (reaction.Emote.Name == "✅" && reaction.UserId != game.creator.Id && !game.players.Contains(reaction.User.Value)) {
                         await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Blackjack", $"{reaction.User.Value.Username} has joined the game!"));
                         await game.playChannel.SendMessageAsync($"{reaction.User.Value.Mention} has joined the game!");
                         game.AddPlayer(reaction.User.Value);
@@ -61,7 +61,7 @@ namespace FinderNET {
         public RestTextChannel? playChannel;
         public ISocketMessageChannel joinChannel;
         public IUser creator;
-        List<IUser> players = new List<IUser>();
+        public List<IUser> players = new List<IUser>();
         public bool lobby = true;
         public Blackjack(SocketInteractionContext _ctx, IUser _creator, ISocketMessageChannel _joinChannel, IUserMessage _joinMessage) {
             ctx = _ctx;
@@ -81,7 +81,7 @@ namespace FinderNET {
                 };
             });
             await playChannel.SendMessageAsync($"You are waiting in a lobby for players to join!");
-            lobbyMessage = await playChannel.SendMessageAsync($"Both players need to react with ✅ to start the game or ❌ to cancel.");
+            lobbyMessage = await playChannel.SendMessageAsync($"{creator.Mention} react with ✅ to start the game or ❌ to cancel.");
             await lobbyMessage.AddReactionsAsync(new Emoji[] {new Emoji("✅"), new Emoji("❌")});
         }
 
@@ -94,7 +94,6 @@ namespace FinderNET {
             }
             players.Add(user);
             await playChannel.AddPermissionOverwriteAsync(user, new OverwritePermissions(viewChannel: PermValue.Allow));
-            await playChannel.SendMessageAsync($"{user.Mention} has joined the game!");
         }
     }
 }
