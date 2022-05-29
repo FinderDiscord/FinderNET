@@ -27,13 +27,13 @@ namespace FinderNET {
         }
 
         static ServiceProvider ConfigureServices() {
+            var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", false, true).Build();
             return new ServiceCollection()
-            .AddSingleton<IConfiguration>(new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", false, true).Build())
+            .AddSingleton<IConfiguration>(configuration)
             .AddSingleton<DiscordSocketClient>()
             .AddSingleton<InteractionService>()
             .AddSingleton<CommandHandler>()
-            .AddDbContextFactory<FinderDatabaseContext>(options =>
-            options.UseNpgsql("Server=localhost;Database=finder;Username=postgres;Password=password;"))
+            .AddDbContextFactory<FinderDatabaseContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default")))
             .AddSingleton<DataAccessLayer>()
             .BuildServiceProvider();
         }
