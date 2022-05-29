@@ -4,8 +4,7 @@ using Discord.WebSocket;
 using Discord.Rest;
 using FinderNET.Database;
 
-namespace FinderNET.Modules
-{
+namespace FinderNET.Modules {
     // TODO:
     // delete channel after
     // check win conditions
