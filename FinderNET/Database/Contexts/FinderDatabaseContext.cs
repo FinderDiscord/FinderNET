@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 
 
-namespace FinderNET.Database {
+namespace FinderNET.Database.Contexts {
     public class FinderDatabaseContext: DbContext {       
         public IServiceProvider services { get; }
         private readonly IConfiguration configuration;
