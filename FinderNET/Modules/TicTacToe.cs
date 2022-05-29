@@ -2,16 +2,18 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Discord.Rest;
+using FinderNET.Database;
 
-namespace FinderNET {
+namespace FinderNET.Modules {
     // TODO:
     // delete channel after
     // check win conditions
     // check delays on line 81
-    public class TicTacToeModule : InteractionModuleBase<SocketInteractionContext> {
-        private static List<String> validEmotes = new List<string>() { "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "✅", "❌" };
+    public class TicTacToeModule : ModuleBase {
+        public TicTacToeModule(DataAccessLayer dataAccessLayer) : base(dataAccessLayer) { }
+        private static List<string> validEmotes = new List<string>() { "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "✅", "❌" };
         private static List<TicTacToe> games = new List<TicTacToe>();
-        
+
         [SlashCommand("tictactoe", "Play TicTacToe")]
         public async Task TicTacToeCommand(SocketGuildUser user) {
             SocketInteractionContext ctx = new SocketInteractionContext(Context.Client, Context.Interaction);
@@ -30,11 +32,8 @@ namespace FinderNET {
             string p2Symbol = p1Symbol == "❌" ? "⭕" : "❌";
             games.Add(new TicTacToe(ctx, p1, p2, p1Symbol, p2Symbol));
         }
-
         public static async Task OnReactionAddedEvent(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction) {
             foreach (TicTacToe game in games) {
-                if (game.playChannel == null || game.lobbyMessage == null) return;
-                if (game.playChannel.Id != reaction.Channel.Id) return;
                 if (reaction.User.Value.IsBot) return;
                 bool valid = false;
                 foreach (string symbol in validEmotes) {
@@ -44,10 +43,9 @@ namespace FinderNET {
                     }
                 }
                 if (!valid) return;
-                if (
-                    game.lobby
-                    && reaction.MessageId == game.lobbyMessage.Id
-                ) {
+                if (game.playChannel == null || game.lobbyMessage == null) continue;
+                if (game.playChannel.Id != reaction.Channel.Id) continue;
+                if (game.lobby && reaction.MessageId == game.lobbyMessage.Id) {
                     if (reaction.Emote.Name == "✅") {
                         game.p1Ready = game.player1.Id == reaction.UserId ? true : game.p1Ready;
                         game.p2Ready = game.player2.Id == reaction.UserId ? true : game.p2Ready;
@@ -58,8 +56,8 @@ namespace FinderNET {
                             game.playMessage = await game.playChannel.SendMessageAsync("", false, new EmbedBuilder() {
                                 Title = "Tic Tac Toe",
                                 Color = Color.Blue,
-                                Fields = new List<EmbedFieldBuilder> {new EmbedFieldBuilder {Name = "The Playing Board", Value = "Please Wait..."}},
-                                Footer = new EmbedFooterBuilder {Text = $"FinderBot"}
+                                Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = "Please Wait..." } },
+                                Footer = new EmbedFooterBuilder { Text = $"FinderBot" }
                             }.Build());
                             List<Emoji> emojis = new List<Emoji>();
                             foreach (string item in game.board) {
@@ -70,8 +68,8 @@ namespace FinderNET {
                                 x.Embed = new EmbedBuilder() {
                                     Title = "Tic Tac Toe",
                                     Color = Color.Orange,
-                                    Fields = new List<EmbedFieldBuilder> {new EmbedFieldBuilder {Name = "The Playing Board", Value = game.GenerateGrid()}},
-                                    Footer = new EmbedFooterBuilder {Text = $"FinderBot"}
+                                    Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
+                                    Footer = new EmbedFooterBuilder { Text = $"FinderBot" }
                                 }.Build();
                                 x.Content = $"{game.player1.Mention} has been assigned the {game.p1Symbol} symbol.\n{game.player2.Mention} has been assigned the {game.p2Symbol} symbol.\n\n{game.player1.Mention}'s Turn!";
                             });
@@ -87,11 +85,7 @@ namespace FinderNET {
                     }
                 }
                 if (game.playMessage == null) return;
-                if (
-                    !game.win
-                    && game.playMessage.Id == reaction.MessageId
-                    && (game.p1go && game.player1.Id == reaction.UserId || !game.p1go && game.player2.Id == reaction.UserId)
-                ) {
+                if (!game.win && game.playMessage.Id == reaction.MessageId && (game.p1go && game.player1.Id == reaction.UserId || !game.p1go && game.player2.Id == reaction.UserId)) {
                     game.p1go = !game.p1go;
                     foreach (string slot in game.board) {
                         if (slot == reaction.Emote.Name) {
@@ -103,8 +97,8 @@ namespace FinderNET {
                         x.Embed = new EmbedBuilder() {
                             Title = "Tic Tac Toe",
                             Color = Color.Orange,
-                            Fields = new List<EmbedFieldBuilder> {new EmbedFieldBuilder {Name = "The Playing Board", Value = game.GenerateGrid()}},
-                            Footer = new EmbedFooterBuilder {Text = $"FinderBot"}
+                            Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
+                            Footer = new EmbedFooterBuilder { Text = $"FinderBot" }
                         }.Build();
                         x.Content = $"{game.player1.Mention} has been assigned the {game.p1Symbol} symbol.\n{game.player2.Mention} has been assigned the {game.p2Symbol} symbol.\n\n{(game.p1go ? game.player1.Mention : game.player2.Mention)}'s Turn!";
                     });
@@ -115,8 +109,8 @@ namespace FinderNET {
                             x.Embed = new EmbedBuilder() {
                                 Title = "Tic Tac Toe",
                                 Color = Color.Green,
-                                Fields = new List<EmbedFieldBuilder> {new EmbedFieldBuilder {Name = "The Playing Board", Value = game.GenerateGrid()}},
-                                Footer = new EmbedFooterBuilder {Text = $"FinderBot"}
+                                Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
+                                Footer = new EmbedFooterBuilder { Text = $"FinderBot" }
                             }.Build();
                         });
                         await game.playChannel.SendMessageAsync($"{game.player1.Mention} has won the game!");
@@ -126,8 +120,8 @@ namespace FinderNET {
                             x.Embed = new EmbedBuilder() {
                                 Title = "Tic Tac Toe",
                                 Color = Color.Green,
-                                Fields = new List<EmbedFieldBuilder> {new EmbedFieldBuilder {Name = "The Playing Board", Value = game.GenerateGrid()}},
-                                Footer = new EmbedFooterBuilder {Text = $"FinderBot"}
+                                Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
+                                Footer = new EmbedFooterBuilder { Text = $"FinderBot" }
                             }.Build();
                         });
                         await game.playChannel.SendMessageAsync($"{game.player1.Mention} has won the game!");
@@ -154,7 +148,7 @@ namespace FinderNET {
             public bool p2Ready;
             public bool win;
             public bool p1go;
-            public List<String> board;
+            public List<string> board;
             public bool lobby;
 
             public TicTacToe(SocketInteractionContext _ctx, IUser _player1, IUser _player2, string _p1Symbol, string _p2Symbol) {
@@ -167,7 +161,7 @@ namespace FinderNET {
                 p1go = true;
                 p1Ready = false;
                 p2Ready = false;
-                board = new List<String>() {
+                board = new List<string>() {
                     "1️⃣", "2️⃣", "3️⃣",
                     "4️⃣", "5️⃣", "6️⃣",
                     "7️⃣", "8️⃣", "9️⃣"
@@ -176,7 +170,6 @@ namespace FinderNET {
                 playChannel = null;
                 lobbyMessage = null;
                 lobby = true;
-
                 newChannel(player1, player2);
             }
 
@@ -190,40 +183,37 @@ namespace FinderNET {
                     };
                 });
                 lobbyMessage = await playChannel.SendMessageAsync($"Both players need to react with ✅ to start the game or ❌ to cancel.");
-                await lobbyMessage.AddReactionsAsync(new Emoji[] {new Emoji("✅"), new Emoji("❌")});
+                await lobbyMessage.AddReactionsAsync(new Emoji[] { new Emoji("✅"), new Emoji("❌") });
             }
             public string GenerateGrid() {
                 string grid = "⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n";
                 for (int i = 0; i < 3; i++) {
-                    for (int j = 0; j < 3; j++) grid += $"⬛⬛⬛{this.board[i * 3 + j]}";
+                    for (int j = 0; j < 3; j++) grid += $"⬛⬛⬛{board[i * 3 + j]}";
                     grid += "⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n";
                 }
                 return grid;
             }
             public IUser? CheckWin() {
                 if (
-                   this.board[1] == this.board[2] && this.board[2] == this.board[3] && this.board[3] == this.p1Symbol // 1, 2, 3
-                || this.board[4] == this.board[5] && this.board[5] == this.board[6] && this.board[6] == this.p1Symbol // 4, 5, 6
-                || this.board[7] == this.board[8] && this.board[8] == this.board[9] && this.board[9] == this.p1Symbol // 7, 8, 9
-                || this.board[1] == this.board[4] && this.board[4] == this.board[7] && this.board[7] == this.p1Symbol // 1, 4, 7
-                || this.board[2] == this.board[5] && this.board[5] == this.board[8] && this.board[8] == this.p1Symbol // 2, 5, 8
-                || this.board[3] == this.board[6] && this.board[6] == this.board[9] && this.board[9] == this.p1Symbol // 3, 6, 9
-                || this.board[1] == this.board[5] && this.board[5] == this.board[9] && this.board[9] == this.p1Symbol // 1, 5, 9
-                || this.board[3] == this.board[5] && this.board[5] == this.board[7] && this.board[7] == this.p1Symbol // 3, 5, 7 
-                ) {
-                    return this.player1;
-                } else if (
-                   this.board[1] == this.board[2] && this.board[2] == this.board[3] && this.board[3] == this.p2Symbol // 1, 2, 3
-                || this.board[4] == this.board[5] && this.board[5] == this.board[6] && this.board[6] == this.p2Symbol // 4, 5, 6
-                || this.board[7] == this.board[8] && this.board[8] == this.board[9] && this.board[9] == this.p2Symbol // 7, 8, 9
-                || this.board[1] == this.board[4] && this.board[4] == this.board[7] && this.board[7] == this.p2Symbol // 1, 4, 7
-                || this.board[2] == this.board[5] && this.board[5] == this.board[8] && this.board[8] == this.p2Symbol // 2, 5, 8
-                || this.board[3] == this.board[6] && this.board[6] == this.board[9] && this.board[9] == this.p2Symbol // 3, 6, 9
-                || this.board[1] == this.board[5] && this.board[5] == this.board[9] && this.board[9] == this.p2Symbol // 1, 5, 9
-                || this.board[3] == this.board[5] && this.board[5] == this.board[7] && this.board[7] == this.p2Symbol // 3, 5, 7
-                ) {
-                    return this.player2;
-                }
+                   board[1] == board[2] && board[2] == board[3] && board[3] == p1Symbol // 1, 2, 3
+                || board[4] == board[5] && board[5] == board[6] && board[6] == p1Symbol // 4, 5, 6
+                || board[7] == board[8] && board[8] == board[9] && board[9] == p1Symbol // 7, 8, 9
+                || board[1] == board[4] && board[4] == board[7] && board[7] == p1Symbol // 1, 4, 7
+                || board[2] == board[5] && board[5] == board[8] && board[8] == p1Symbol // 2, 5, 8
+                || board[3] == board[6] && board[6] == board[9] && board[9] == p1Symbol // 3, 6, 9
+                || board[1] == board[5] && board[5] == board[9] && board[9] == p1Symbol // 1, 5, 9
+                || board[3] == board[5] && board[5] == board[7] && board[7] == p1Symbol // 3, 5, 7 
+                ) {return player1;}
+                else if (
+                   board[1] == board[2] && board[2] == board[3] && board[3] == p2Symbol // 1, 2, 3
+                || board[4] == board[5] && board[5] == board[6] && board[6] == p2Symbol // 4, 5, 6
+                || board[7] == board[8] && board[8] == board[9] && board[9] == p2Symbol // 7, 8, 9
+                || board[1] == board[4] && board[4] == board[7] && board[7] == p2Symbol // 1, 4, 7
+                || board[2] == board[5] && board[5] == board[8] && board[8] == p2Symbol // 2, 5, 8
+                || board[3] == board[6] && board[6] == board[9] && board[9] == p2Symbol // 3, 6, 9
+                || board[1] == board[5] && board[5] == board[9] && board[9] == p2Symbol // 1, 5, 9
+                || board[3] == board[5] && board[5] == board[7] && board[7] == p2Symbol // 3, 5, 7
+                ) {return player2;}
                 return null;
             }
         }

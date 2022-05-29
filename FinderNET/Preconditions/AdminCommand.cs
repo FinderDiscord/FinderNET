@@ -1,7 +1,6 @@
 using Discord;
 using Discord.Interactions;
-
-namespace InteractionsDemo {
+namespace FinderNET.Preconditions {
     public class RequireAdmin : PreconditionAttribute {
         public override Task<PreconditionResult> CheckRequirementsAsync(IInteractionContext context, ICommandInfo commandInfo, IServiceProvider services) {
             if (context.User is IGuildUser guildUser && guildUser.GuildPermissions.Administrator) {

@@ -1,8 +1,12 @@
-﻿using Discord;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using FinderNET.Modules;
+using FinderNET.Database.Contexts;
+using Microsoft.EntityFrameworkCore;
+using FinderNET.Database;
 
 namespace FinderNET {
     class Program {
@@ -16,18 +20,23 @@ namespace FinderNET {
             await handler.Initialize();
             client.Log += LoggingService.LogAsync;
             commands.Log += LoggingService.LogAsync;
-            client.ReactionAdded += FinderNET.TicTacToeModule.OnReactionAddedEvent;
+            client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
             client.ReactionAdded += FinderNET.BlackjackModule.OnReactionAdded;
             await client.LoginAsync(TokenType.Bot, config["token"]);
             await client.StartAsync();
             await Task.Delay(Timeout.Infinite);
         }
 
-        static ServiceProvider ConfigureServices() => new ServiceCollection()
-            .AddSingleton<IConfiguration>(new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", false, true).Build())
+        static ServiceProvider ConfigureServices() {
+            var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", false, true).Build();
+            return new ServiceCollection()
+            .AddSingleton<IConfiguration>(configuration)
             .AddSingleton<DiscordSocketClient>()
             .AddSingleton<InteractionService>()
             .AddSingleton<CommandHandler>()
+            .AddDbContextFactory<FinderDatabaseContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default")))
+            .AddSingleton<DataAccessLayer>()
             .BuildServiceProvider();
+        }
     }
 }
