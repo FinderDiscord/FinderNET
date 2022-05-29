@@ -36,7 +36,7 @@ namespace FinderNET
             .AddSingleton<DiscordSocketClient>()
             .AddSingleton<InteractionService>()
             .AddSingleton<CommandHandler>()
-            .AddDbContext<FinderDatabaseContext>(options =>
+            .AddDbContextFactory<FinderDatabaseContext>(options =>
             options.UseNpgsql("Server=localhost;Database=finder;Username=postgres;Password=password;"))
             .AddSingleton<DataAccessLayer>()
             .BuildServiceProvider();

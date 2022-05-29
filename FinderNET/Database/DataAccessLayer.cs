@@ -1,15 +1,9 @@
-﻿using Discord;
-using FinderNET.Database.Contexts;
+﻿using FinderNET.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FinderNET.Database
 {
-    class DataAccessLayer
+    public class DataAccessLayer
     {
         private readonly IDbContextFactory<FinderDatabaseContext> contextFactory;
 
