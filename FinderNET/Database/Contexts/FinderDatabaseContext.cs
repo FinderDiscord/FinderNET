@@ -6,19 +6,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 
 
-namespace FinderNET.Database.Contexts {
-    public class FinderDatabaseContext: DbContext {       
-        public IServiceProvider services { get; }
-        private readonly IConfiguration configuration;
-        public FinderDatabaseContext(DbContextOptions<FinderDatabaseContext> options, IConfiguration _configuration, IServiceProvider _services) : base(options) {
-            configuration = _configuration; 
-            services = _services;
-        }
-            
-        protected override void OnModelCreating(ModelBuilder modelBuilder) {
-            base.OnModelCreating(modelBuilder);
-        }
+namespace FinderNET.Database.Contexts
+{
+    public class FinderDatabaseContext : DbContext
+    {
+        public FinderDatabaseContext(DbContextOptions options) : base(options) { }
 
-        public Task<GuildConfig> GetGuildConfigAsync(ulong guildId) => GuildConfigurations.GetOrCreateObjectAsync(guildId);
+        public DbSet<Addons> addons { get; set; }
     }
 }
