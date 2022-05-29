@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 #nullable disable
 namespace FinderNET.Migrations {
-    [DbContext(typeof(FinderDatabaseContextFactory))]
-    [Migration("20220529103024_ChangedToBigInt")]
-    partial class ChangedToBigInt {
+    [DbContext(typeof(FinderDatabaseContext))]
+    [Migration("20220529152108_ah")]
+    partial class ah {
         protected override void BuildTargetModel(ModelBuilder modelBuilder) {
             #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.0-preview.4.22229.2").HasAnnotation("Relational:MaxIdentifierLength", 63);

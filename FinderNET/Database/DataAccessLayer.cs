@@ -2,8 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace FinderNET.Database {
-    public class DataAccessLayer
-    {
+    public class DataAccessLayer {
         private readonly IDbContextFactory<FinderDatabaseContext> contextFactory;
 
         public DataAccessLayer(IDbContextFactory<FinderDatabaseContext> _contextFactory) {
