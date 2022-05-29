@@ -9,7 +9,6 @@ namespace FinderNET {
         private readonly DiscordSocketClient client;
         private readonly IConfiguration config;
         private readonly IServiceProvider services;
-
         public CommandHandler(InteractionService _commands, DiscordSocketClient _client, IConfiguration _config, IServiceProvider _services) {
             commands = _commands;
             client = _client;

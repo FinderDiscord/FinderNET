@@ -10,23 +10,19 @@ namespace FinderNET.Modules
     // delete channel after
     // check win conditions
     // check delays on line 81
-    public class TicTacToeModule : ModuleBase
-    {
+    public class TicTacToeModule : ModuleBase {
         public TicTacToeModule(DataAccessLayer dataAccessLayer) : base(dataAccessLayer) { }
         private static List<string> validEmotes = new List<string>() { "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "✅", "❌" };
         private static List<TicTacToe> games = new List<TicTacToe>();
 
         [SlashCommand("tictactoe", "Play TicTacToe")]
-        public async Task TicTacToeCommand(SocketGuildUser user)
-        {
+        public async Task TicTacToeCommand(SocketGuildUser user) {
             SocketInteractionContext ctx = new SocketInteractionContext(Context.Client, Context.Interaction);
-            if (user.IsBot)
-            {
+            if (user.IsBot) {
                 await RespondAsync("The user is a bot.");
                 return;
             }
-            if (user.Id == ctx.User.Id)
-            {
+            if (user.Id == ctx.User.Id) {
                 await RespondAsync("You can't play TicTacToe with yourself.");
                 return;
             }
@@ -41,10 +37,8 @@ namespace FinderNET.Modules
             foreach (TicTacToe game in games) {
                 if (reaction.User.Value.IsBot) return;
                 bool valid = false;
-                foreach (string symbol in validEmotes)
-                {
-                    if (reaction.Emote.Name == symbol)
-                    {
+                foreach (string symbol in validEmotes) {
+                    if (reaction.Emote.Name == symbol) {
                         valid = true;
                         break;
                     }
@@ -57,27 +51,22 @@ namespace FinderNET.Modules
                         game.p1Ready = game.player1.Id == reaction.UserId ? true : game.p1Ready;
                         game.p2Ready = game.player2.Id == reaction.UserId ? true : game.p2Ready;
                         await game.playChannel.SendMessageAsync($"{reaction.User.Value.Mention} is ready!");
-                        if (game.p1Ready && game.p2Ready)
-                        {
+                        if (game.p1Ready && game.p2Ready) {
                             game.lobby = false;
                             await game.playChannel.SendMessageAsync($"{game.player1.Mention} and {game.player2.Mention} are ready!\nStarting game...");
-                            game.playMessage = await game.playChannel.SendMessageAsync("", false, new EmbedBuilder()
-                            {
+                            game.playMessage = await game.playChannel.SendMessageAsync("", false, new EmbedBuilder() {
                                 Title = "Tic Tac Toe",
                                 Color = Color.Blue,
                                 Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = "Please Wait..." } },
                                 Footer = new EmbedFooterBuilder { Text = $"FinderBot" }
                             }.Build());
                             List<Emoji> emojis = new List<Emoji>();
-                            foreach (string item in game.board)
-                            {
+                            foreach (string item in game.board) {
                                 emojis.Add(new Emoji(item));
                             };
                             await game.playMessage.AddReactionsAsync(emojis);
-                            await game.playMessage.ModifyAsync((x) =>
-                            {
-                                x.Embed = new EmbedBuilder()
-                                {
+                            await game.playMessage.ModifyAsync((x) => {
+                                x.Embed = new EmbedBuilder() {
                                     Title = "Tic Tac Toe",
                                     Color = Color.Orange,
                                     Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
@@ -87,9 +76,7 @@ namespace FinderNET.Modules
                             });
                         }
                         return;
-                    }
-                    else if (reaction.Emote.Name == "❌")
-                    {
+                    } else if (reaction.Emote.Name == "❌") {
                         await game.playChannel.SendMessageAsync($"{reaction.User.Value.Mention} has cancelled game.");
                         // dunno if this makes the bot unresponsive
                         Thread.Sleep(2000);
@@ -99,25 +86,16 @@ namespace FinderNET.Modules
                     }
                 }
                 if (game.playMessage == null) return;
-                if (
-                    !game.win
-                    && game.playMessage.Id == reaction.MessageId
-                    && (game.p1go && game.player1.Id == reaction.UserId || !game.p1go && game.player2.Id == reaction.UserId)
-                )
-                {
+                if (!game.win && game.playMessage.Id == reaction.MessageId && (game.p1go && game.player1.Id == reaction.UserId || !game.p1go && game.player2.Id == reaction.UserId)) {
                     game.p1go = !game.p1go;
-                    foreach (string slot in game.board)
-                    {
-                        if (slot == reaction.Emote.Name)
-                        {
+                    foreach (string slot in game.board) {
+                        if (slot == reaction.Emote.Name) {
                             game.board[game.board.IndexOf(slot)] = game.p1go ? game.p1Symbol : game.p2Symbol;
                             break;
                         }
                     }
-                    await game.playMessage.ModifyAsync((x) =>
-                    {
-                        x.Embed = new EmbedBuilder()
-                        {
+                    await game.playMessage.ModifyAsync((x) => {
+                        x.Embed = new EmbedBuilder() {
                             Title = "Tic Tac Toe",
                             Color = Color.Orange,
                             Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
@@ -127,12 +105,9 @@ namespace FinderNET.Modules
                     });
                     await game.playMessage.RemoveAllReactionsForEmoteAsync(reaction.Emote);
                     IUser? winner = game.CheckWin();
-                    if (winner != null && winner.Id == game.player1.Id)
-                    {
-                        await game.playMessage.ModifyAsync((x) =>
-                        {
-                            x.Embed = new EmbedBuilder()
-                            {
+                    if (winner != null && winner.Id == game.player1.Id) {
+                        await game.playMessage.ModifyAsync((x) => {
+                            x.Embed = new EmbedBuilder() {
                                 Title = "Tic Tac Toe",
                                 Color = Color.Green,
                                 Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
@@ -141,13 +116,9 @@ namespace FinderNET.Modules
                         });
                         await game.playChannel.SendMessageAsync($"{game.player1.Mention} has won the game!");
                         game.win = true;
-                    }
-                    else if (winner != null && winner.Id == game.player2.Id)
-                    {
-                        await game.playMessage.ModifyAsync((x) =>
-                        {
-                            x.Embed = new EmbedBuilder()
-                            {
+                    } else if (winner != null && winner.Id == game.player2.Id) {
+                        await game.playMessage.ModifyAsync((x) => {
+                            x.Embed = new EmbedBuilder() {
                                 Title = "Tic Tac Toe",
                                 Color = Color.Green,
                                 Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
@@ -156,9 +127,7 @@ namespace FinderNET.Modules
                         });
                         await game.playChannel.SendMessageAsync($"{game.player1.Mention} has won the game!");
                         game.win = true;
-                    }
-                    else if (game.board.All(x => x == "⭕" || x == "❌"))
-                    {
+                    } else if (game.board.All(x => x == "⭕" || x == "❌")) {
                         await game.playChannel.SendMessageAsync("The game has ended in a draw!");
                         game.win = true;
                     }
@@ -167,8 +136,7 @@ namespace FinderNET.Modules
             }
         }
 
-        public class TicTacToe
-        {
+        public class TicTacToe {
             private SocketInteractionContext ctx;
             public RestTextChannel? playChannel;
             public RestUserMessage? playMessage;
@@ -184,8 +152,7 @@ namespace FinderNET.Modules
             public List<string> board;
             public bool lobby;
 
-            public TicTacToe(SocketInteractionContext _ctx, IUser _player1, IUser _player2, string _p1Symbol, string _p2Symbol)
-            {
+            public TicTacToe(SocketInteractionContext _ctx, IUser _player1, IUser _player2, string _p1Symbol, string _p2Symbol) {
                 ctx = _ctx;
                 player1 = _player1;
                 player2 = _player2;
@@ -204,14 +171,11 @@ namespace FinderNET.Modules
                 playChannel = null;
                 lobbyMessage = null;
                 lobby = true;
-
                 newChannel(player1, player2);
             }
 
-            private async void newChannel(IUser player1, IUser player2)
-            {
-                playChannel = await ctx.Guild.CreateTextChannelAsync("tictactoe", (x) =>
-                {
+            private async void newChannel(IUser player1, IUser player2) {
+                playChannel = await ctx.Guild.CreateTextChannelAsync("tictactoe", (x) => {
                     x.Topic = "TicTacToe";
                     x.PermissionOverwrites = new List<Overwrite> {
                         new Overwrite(ctx.Guild.EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Deny)),
@@ -222,18 +186,15 @@ namespace FinderNET.Modules
                 lobbyMessage = await playChannel.SendMessageAsync($"Both players need to react with ✅ to start the game or ❌ to cancel.");
                 await lobbyMessage.AddReactionsAsync(new Emoji[] { new Emoji("✅"), new Emoji("❌") });
             }
-            public string GenerateGrid()
-            {
+            public string GenerateGrid() {
                 string grid = "⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n";
-                for (int i = 0; i < 3; i++)
-                {
+                for (int i = 0; i < 3; i++) {
                     for (int j = 0; j < 3; j++) grid += $"⬛⬛⬛{board[i * 3 + j]}";
                     grid += "⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n";
                 }
                 return grid;
             }
-            public IUser? CheckWin()
-            {
+            public IUser? CheckWin() {
                 if (
                    board[1] == board[2] && board[2] == board[3] && board[3] == p1Symbol // 1, 2, 3
                 || board[4] == board[5] && board[5] == board[6] && board[6] == p1Symbol // 4, 5, 6
@@ -243,23 +204,17 @@ namespace FinderNET.Modules
                 || board[3] == board[6] && board[6] == board[9] && board[9] == p1Symbol // 3, 6, 9
                 || board[1] == board[5] && board[5] == board[9] && board[9] == p1Symbol // 1, 5, 9
                 || board[3] == board[5] && board[5] == board[7] && board[7] == p1Symbol // 3, 5, 7 
-                )
-                {
-                    return player1;
-                }
+                ) {return player1;}
                 else if (
-                 board[1] == board[2] && board[2] == board[3] && board[3] == p2Symbol // 1, 2, 3
-              || board[4] == board[5] && board[5] == board[6] && board[6] == p2Symbol // 4, 5, 6
-              || board[7] == board[8] && board[8] == board[9] && board[9] == p2Symbol // 7, 8, 9
-              || board[1] == board[4] && board[4] == board[7] && board[7] == p2Symbol // 1, 4, 7
-              || board[2] == board[5] && board[5] == board[8] && board[8] == p2Symbol // 2, 5, 8
-              || board[3] == board[6] && board[6] == board[9] && board[9] == p2Symbol // 3, 6, 9
-              || board[1] == board[5] && board[5] == board[9] && board[9] == p2Symbol // 1, 5, 9
-              || board[3] == board[5] && board[5] == board[7] && board[7] == p2Symbol // 3, 5, 7
-              )
-                {
-                    return player2;
-                }
+                   board[1] == board[2] && board[2] == board[3] && board[3] == p2Symbol // 1, 2, 3
+                || board[4] == board[5] && board[5] == board[6] && board[6] == p2Symbol // 4, 5, 6
+                || board[7] == board[8] && board[8] == board[9] && board[9] == p2Symbol // 7, 8, 9
+                || board[1] == board[4] && board[4] == board[7] && board[7] == p2Symbol // 1, 4, 7
+                || board[2] == board[5] && board[5] == board[8] && board[8] == p2Symbol // 2, 5, 8
+                || board[3] == board[6] && board[6] == board[9] && board[9] == p2Symbol // 3, 6, 9
+                || board[1] == board[5] && board[5] == board[9] && board[9] == p2Symbol // 1, 5, 9
+                || board[3] == board[5] && board[5] == board[7] && board[7] == p2Symbol // 3, 5, 7
+                ) {return player2;}
                 return null;
             }
         }

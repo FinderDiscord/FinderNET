@@ -8,13 +8,10 @@ using FinderNET.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using FinderNET.Database;
 
-namespace FinderNET
-{
-    class Program
-    {
+namespace FinderNET {
+    class Program {
         static void Main(string[] args) => RunAsync().GetAwaiter().GetResult();
-        static async Task RunAsync()
-        {
+        static async Task RunAsync() {
             using ServiceProvider services = ConfigureServices();
             DiscordSocketClient client = services.GetRequiredService<DiscordSocketClient>();
             InteractionService commands = services.GetRequiredService<InteractionService>();
@@ -29,8 +26,7 @@ namespace FinderNET
             await Task.Delay(Timeout.Infinite);
         }
 
-        static ServiceProvider ConfigureServices()
-        {
+        static ServiceProvider ConfigureServices() {
             return new ServiceCollection()
             .AddSingleton<IConfiguration>(new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", false, true).Build())
             .AddSingleton<DiscordSocketClient>()

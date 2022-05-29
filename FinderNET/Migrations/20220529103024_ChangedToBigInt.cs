@@ -1,16 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-
 #nullable disable
-
-namespace FinderNET.Migrations
-{
-    /// <inheritdoc />
-    public partial class ChangedToBigInt : Migration
-    {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
+namespace FinderNET.Migrations {
+    public partial class ChangedToBigInt : Migration {
+        protected override void Up(MigrationBuilder migrationBuilder) {
             migrationBuilder.AlterColumn<long>(
                 name: "Id",
                 table: "addons",
@@ -20,10 +13,7 @@ namespace FinderNET.Migrations
                 oldType: "numeric(20,0)")
                 .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
         }
-
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+        protected override void Down(MigrationBuilder migrationBuilder) {
             migrationBuilder.AlterColumn<decimal>(
                 name: "Id",
                 table: "addons",
