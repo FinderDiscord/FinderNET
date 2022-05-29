@@ -20,7 +20,11 @@ namespace FinderNET {
             await handler.Initialize();
             client.Log += LoggingService.LogAsync;
             commands.Log += LoggingService.LogAsync;
+            
             client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
+            // change this later!
+            client.ReactionAdded += FinderNET.BlackjackModule.OnReactionAdded;
+
             await client.LoginAsync(TokenType.Bot, config["token"]);
             await client.StartAsync();
             await Task.Delay(Timeout.Infinite);
