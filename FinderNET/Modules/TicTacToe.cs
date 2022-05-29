@@ -37,13 +37,8 @@ namespace FinderNET.Modules
             string p2Symbol = p1Symbol == "❌" ? "⭕" : "❌";
             games.Add(new TicTacToe(ctx, p1, p2, p1Symbol, p2Symbol));
         }
-
-        public static async Task OnReactionAddedEvent(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction)
-        {
-            foreach (TicTacToe game in games)
-            {
-                if (game.playChannel == null || game.lobbyMessage == null) return;
-                if (game.playChannel.Id != reaction.Channel.Id) return;
+        public static async Task OnReactionAddedEvent(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction) {
+            foreach (TicTacToe game in games) {
                 if (reaction.User.Value.IsBot) return;
                 bool valid = false;
                 foreach (string symbol in validEmotes)
@@ -55,13 +50,10 @@ namespace FinderNET.Modules
                     }
                 }
                 if (!valid) return;
-                if (
-                    game.lobby
-                    && reaction.MessageId == game.lobbyMessage.Id
-                )
-                {
-                    if (reaction.Emote.Name == "✅")
-                    {
+                if (game.playChannel == null || game.lobbyMessage == null) continue;
+                if (game.playChannel.Id != reaction.Channel.Id) continue;
+                if (game.lobby && reaction.MessageId == game.lobbyMessage.Id) {
+                    if (reaction.Emote.Name == "✅") {
                         game.p1Ready = game.player1.Id == reaction.UserId ? true : game.p1Ready;
                         game.p2Ready = game.player2.Id == reaction.UserId ? true : game.p2Ready;
                         await game.playChannel.SendMessageAsync($"{reaction.User.Value.Mention} is ready!");
