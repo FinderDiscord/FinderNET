@@ -7,7 +7,7 @@ using FinderNET.Database;
 namespace FinderNET.Modules {
     public class ModerationModule : ModuleBase {
         public ModerationModule(DataAccessLayer dataAccessLayer) : base(dataAccessLayer) { }
-        public List<ModerationMessage> moderationMessages = new List<ModerationMessage>();
+        public static List<ModerationMessage> moderationMessages = new List<ModerationMessage>();
 
         [SlashCommand("ban", "Bans a user from the server.")]
         public async Task BanCommand(SocketGuildUser user, string reason = "No reason given.") {
@@ -108,25 +108,17 @@ namespace FinderNET.Modules {
             });
         }
 
-        public async void ReactionAdded_Event(Cacheable<IUserMessage, UInt64> arg, ISocketMessageChannel arg1, SocketReaction reaction) {
+        public async Task OnReactionAddedEvent(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction) {
             if (reaction.User.Value.IsBot) return;
             foreach (var moderationMessage in moderationMessages) {
-                var guild = Context.Client.GetGuild(moderationMessage.guildId);
-                if (guild == null) continue;
-                var user = guild.GetUser(moderationMessage.userId);
-                if (user == null) continue;
-                var channel = guild.GetTextChannel(moderationMessage.channelId);
-                if (channel == null) continue;
+                var guild = ((SocketGuildChannel)reaction.Channel).Guild;
+                SocketTextChannel channel = (SocketTextChannel)guild.GetChannel(moderationMessage.channelId);
                 var message = await channel.GetMessageAsync(moderationMessage.messageId);
-                if (message == null) continue;
-                var sender = guild.GetUser(moderationMessage.senderId);
-                if (sender == null) continue;
-                var reason = moderationMessage.reason;
-                var type = moderationMessage.Type;
-                if (message.Id == reaction.MessageId && reaction.UserId == Context.User.Id) {
+                var user = guild.GetUser(moderationMessage.userId);
+                if (guild.Id == moderationMessage.guildId && message.Id == reaction.MessageId && reaction.UserId == moderationMessage.senderId) {
                     if (reaction.User.Value.Id == moderationMessage.senderId && reaction.Emote.Name == "✅") {
-                        if (type == ModerationMessageType.Ban) {
-                            await Context.Guild.AddBanAsync(user, reason: moderationMessage.reason);
+                        if (moderationMessage.Type == ModerationMessageType.Ban) {
+                            await guild.AddBanAsync(user, reason: moderationMessage.reason);
                             await message.RemoveAllReactionsAsync();
                             await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
                                 Title = "User Banned",
@@ -139,7 +131,7 @@ namespace FinderNET.Modules {
                                     },
                                     new EmbedFieldBuilder() {
                                         Name = "for reason",
-                                        Value = $"{reason}",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     }
                                 },
@@ -158,7 +150,7 @@ namespace FinderNET.Modules {
                                     },
                                     new EmbedFieldBuilder() {
                                         Name = "Reason",
-                                        Value = $"{reason}",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     },
                                 },
@@ -170,8 +162,8 @@ namespace FinderNET.Modules {
                             moderationMessages.Remove(moderationMessage);
                             await dataAccessLayer.SetUserBans((Int64)guild.Id, (Int64)user.Id, dataAccessLayer.GetUserBans((Int64)guild.Id, (Int64)user.Id) + 1);
                             return;
-                        } else if (type == ModerationMessageType.Kick) {
-                            await user.KickAsync(reason);
+                        } else if (moderationMessage.Type == ModerationMessageType.Kick) {
+                            await user.KickAsync(moderationMessage.reason);
                             await message.RemoveAllReactionsAsync();
                             await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
                                 Title = "User Kicked",
@@ -184,7 +176,7 @@ namespace FinderNET.Modules {
                                     },
                                     new EmbedFieldBuilder() {
                                         Name = "for reason",
-                                        Value = $"{reason}",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     }
                                 },
@@ -203,7 +195,7 @@ namespace FinderNET.Modules {
                                     },
                                     new EmbedFieldBuilder() {
                                         Name = "Reason",
-                                        Value = $"{reason}",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     },
                                 },
@@ -215,7 +207,7 @@ namespace FinderNET.Modules {
                             moderationMessages.Remove(moderationMessage);
                             await dataAccessLayer.SetUserKicks((Int64)guild.Id, (Int64)user.Id, dataAccessLayer.GetUserKicks((Int64)guild.Id, (Int64)user.Id) + 1);
                             return;
-                        } else if (type == ModerationMessageType.Warn) {
+                        } else if (moderationMessage.Type == ModerationMessageType.Warn) {
                             await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
                                 Title = "User Warned",
                                 Color = Color.Red,
@@ -227,7 +219,7 @@ namespace FinderNET.Modules {
                                     },
                                     new EmbedFieldBuilder() {
                                         Name = "for reason",
-                                        Value = $"{reason}",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     }
                                 },
@@ -246,7 +238,7 @@ namespace FinderNET.Modules {
                                     },
                                     new EmbedFieldBuilder() {
                                         Name = "Reason",
-                                        Value = $"{reason}",
+                                        Value = $"{moderationMessage.reason}",
                                         IsInline = false
                                     },
                                 },
@@ -264,6 +256,8 @@ namespace FinderNET.Modules {
             }
         }
     }
+
+
 
     public class ModerationMessage {
         public ulong messageId { get; set; }
