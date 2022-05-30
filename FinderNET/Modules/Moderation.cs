@@ -321,6 +321,7 @@ namespace FinderNET.Modules {
                             var userMutes = await dataAccessLayer.GetUserMutes((Int64)guild.Id, (Int64)user.Id);
                             await dataAccessLayer.SetUserMutes((Int64)guild.Id, (Int64)user.Id, userMutes + 1);
                             return;
+                        }
                     }
                 }
             }
