@@ -1,6 +1,5 @@
 ﻿using FinderNET.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
-using Discord;
 
 namespace FinderNET.Database {
     public class DataAccessLayer {
@@ -91,36 +90,28 @@ namespace FinderNET.Database {
         public async Task<int> GetUserBans(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
             var userLogs = await context.userLogs.FindAsync(guildId, userId);
-            if (userLogs == null) {
-                return 0;
-            }
+            if (userLogs == null) return 0;
             return userLogs.bans;
         }
 
         public async Task<int> GetUserKicks(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
             var userLogs = await context.userLogs.FindAsync(guildId, userId);
-            if (userLogs == null) {
-                return 0;
-            }
+            if (userLogs == null) return 0;
             return userLogs.kicks;
         }
 
         public async Task<int> GetUserWarns(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
             var userLogs = await context.userLogs.FindAsync(guildId, userId);
-            if (userLogs == null) {
-                return 0;
-            }
+            if (userLogs == null) return 0;
             return userLogs.warns;
         }
 
         public async Task<int> GetUserMutes(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
             var userLogs = await context.userLogs.FindAsync(guildId, userId);
-            if (userLogs == null) {
-                return 0;
-            }
+            if (userLogs == null) return 0;
             return userLogs.mutes;
         }
 
@@ -289,6 +280,40 @@ namespace FinderNET.Database {
                 warns = userLogs.warns,
                 mutes = 0
             }).Property(x => x.mutes).IsModified = true;
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<string?> GetSettingsValue(Int64 guildId, string key) {
+            using var context = contextFactory.CreateDbContext();
+            var settings = await context.settings.FindAsync(guildId, key);
+            if (settings == null) return null;
+            return settings.value;
+        }
+
+        public async Task SetSettingsValue(Int64 guildId, string key, string value) {
+            using var context = contextFactory.CreateDbContext();
+            var settings = await context.settings.FindAsync(guildId, key);
+            if (settings == null) {
+                settings = context.Add(new Settings() {
+                    guildId = guildId,
+                    key = key,
+                    value = value
+                }).Entity;
+            } else {
+                context.Entry(settings).CurrentValues.SetValues(new Settings() {
+                    guildId = guildId,
+                    key = key,
+                    value = value
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveSettingsValue(Int64 guildId, string key) {
+            using var context = contextFactory.CreateDbContext();
+            var settings = await context.settings.FindAsync(guildId, key);
+            if (settings == null) return;
+            context.Remove(settings);
             await context.SaveChangesAsync();
         }
     }

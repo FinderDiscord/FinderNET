@@ -11,5 +11,6 @@ namespace FinderNET.Database.Contexts {
 
         public DbSet<Addons> addons { get; set; }
         public DbSet<UserLogs> userLogs { get; set; }
+        public DbSet<Settings> settings { get; set; }
     }
 }

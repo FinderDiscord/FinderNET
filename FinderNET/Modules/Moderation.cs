@@ -266,7 +266,61 @@ namespace FinderNET.Modules {
                             var userWarns = await dataAccessLayer.GetUserWarns((Int64)guild.Id, (Int64)user.Id);
                             await dataAccessLayer.SetUserWarns((Int64)guild.Id, (Int64)user.Id, userWarns + 1);
                             return;
-                        }
+                        } else if (moderationMessage.Type == ModerationMessageType.Mute) {
+                            await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
+                                Title = "User Muted",
+                                Color = Color.Red,
+                                Fields = new List<EmbedFieldBuilder>() {
+                                    new EmbedFieldBuilder() {
+                                        Name = "User",
+                                        Value = $"{user.Mention} ({user})",
+                                        IsInline = false
+                                    },
+                                    new EmbedFieldBuilder() {
+                                        Name = "for reason",
+                                        Value = $"{moderationMessage.reason}",
+                                        IsInline = false
+                                    }
+                                },
+                                Footer = new EmbedFooterBuilder() {
+                                    Text = $"FinderBot"
+                                }
+                            }.Build());
+                            try {
+                                await user.SendMessageAsync("", false, new EmbedBuilder() {
+                                    Title = "You have been muted",
+                                    Color = Color.Red,
+                                    Fields = new List<EmbedFieldBuilder>() {
+                                        new EmbedFieldBuilder() {
+                                            Name = "Server",
+                                            Value = $"{guild.Name}",
+                                            IsInline = false
+                                        },
+                                        new EmbedFieldBuilder() {
+                                            Name = "Reason",
+                                            Value = $"{moderationMessage.reason}",
+                                            IsInline = false
+                                        },
+                                    },
+                                    Footer = new EmbedFooterBuilder() {
+                                        Text = $"FinderBot"
+                                    },
+                                    ThumbnailUrl = guild.IconUrl
+                                }.Build());
+                            } catch (HttpException) {
+                                // User has DMs disabled
+                            }
+                            if (await dataAccessLayer.GetSettingsValue((Int64)guild.Id, "muteRoleId") == null) {
+                                var muteRole1 = await guild.CreateRoleAsync("Muted", new GuildPermissions(connect: true, readMessageHistory: true), Color.DarkGrey, false, true);
+                                await dataAccessLayer.SetSettingsValue((Int64)guild.Id, "muteRoleId", muteRole1.Id.ToString());
+                            }
+                            var muteRole = guild.GetRole(Convert.ToUInt64(await dataAccessLayer.GetSettingsValue((Int64)guild.Id, "muteRoleId")));
+                            await user.AddRoleAsync(muteRole);
+                            await message.RemoveAllReactionsAsync();
+                            moderationMessages.Remove(moderationMessage);
+                            var userMutes = await dataAccessLayer.GetUserMutes((Int64)guild.Id, (Int64)user.Id);
+                            await dataAccessLayer.SetUserMutes((Int64)guild.Id, (Int64)user.Id, userMutes + 1);
+                            return;
                     }
                 }
             }
@@ -290,6 +344,7 @@ namespace FinderNET.Modules {
         Null,
         Ban,
         Kick,
-        Warn
+        Warn,
+        Mute
     }
 }
