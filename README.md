@@ -1,6 +1,6 @@
 # FinderNET - A Advanced Discord Bot
 
-FinderNET is a Discord bot written in [Discord.NET](https://github.com/discord-net/Discord.Net) in C#. It is remake of a bot called Finder written in [Discord.py](https://github.com/Rapptz/discord.py) in Python which has since been discontinued due to the [Discontinuation of Discord.py](https://gist.github.com/Rapptz/4a2f62751b9600a31a0d3c78100287f1) and the [rapidly changing Discord API](https://github.com/discord/discord-api-docs).
+FinderNET is a Discord bot written in [Discord.NET](https://github.com/discord-net/Discord.Net) in C#. It is remake of a bot called [Finder](https://github.com/FinderDiscord/Finder) written in [Discord.py](https://github.com/Rapptz/discord.py) in Python which has since been discontinued due to the [Discontinuation of Discord.py](https://gist.github.com/Rapptz/4a2f62751b9600a31a0d3c78100287f1) and the [rapidly changing Discord API](https://github.com/discord/discord-api-docs).
 
 ## Features
 
