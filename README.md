@@ -53,6 +53,7 @@ $ exit;
 
 ```bash
 $ git clone https://github.com/FinderDiscord/FinderNET.git
+$ cd FinderNET/FinderNET
 ```
 
 ### Making a Configuration
