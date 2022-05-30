@@ -46,6 +46,7 @@ Provide the privileges to the postgres user
 ```bash
 $ alter user finder with encrypted password 'enter a password here';
 $ grant all privileges on database finder to finder;
+$ exit;
 ```
 
 **You need to clone this repository.**
