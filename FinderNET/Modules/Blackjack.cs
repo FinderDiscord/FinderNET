@@ -37,8 +37,7 @@ namespace FinderNET {
                     }
                 } else if (game.lobby && game.playChannel.Id == reaction.Channel.Id && reaction.MessageId == game.lobbyMessage.Id && reaction.User.Value.Id == game.creator.Id) {
                     if (reaction.Emote.Name == "✅") {
-                        await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Blackjack", $"{reaction.User.Value.Username} has started the game!"));
-                        await game.playChannel.SendMessageAsync($"{reaction.User.Value.Mention} has started the game!");
+                        game.StartGame();
                         return;
                     } else if (reaction.Emote.Name == "❌") {
                         await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Blackjack", $"{reaction.User.Value.Username} has cancelled the game!"));
@@ -50,6 +49,21 @@ namespace FinderNET {
                     }
                 }
             }
+        }
+
+        public static async Task ButtonHandler(SocketMessageComponent component){
+            Blackjack? game = null;
+            foreach (Blackjack _game in games){
+                if (_game.playChannel == null || _game.lobbyMessage == null) continue;
+                foreach (IUser user in _game.players){
+                    if (user.Id == component.User.Id){
+                        game = _game;
+                        break;
+                    }
+                }
+            }
+            if (game == null) return;
+            await component.RespondAsync("test");
         }
     }
 
@@ -94,6 +108,21 @@ namespace FinderNET {
             }
             players.Add(user);
             await playChannel.AddPermissionOverwriteAsync(user, new OverwritePermissions(viewChannel: PermValue.Allow));
+        }
+
+        public async void StartGame() {
+            //TODO: Make this not one line
+            if (!lobby || playChannel == null) { await LoggingService.LogAsync(new LogMessage(LogSeverity.Critical, "Blackjack", "Tried to start a game!")); return;}
+            lobby = false;
+            await lobbyMessage.DeleteAsync();
+            await playChannel.GetMessagesAsync().Flatten().ForEachAsync(async (x) => {
+                await x.DeleteAsync();
+            });
+            await playChannel.SendMessageAsync($"{creator.Mention} has started the game!");
+            playMessage = await playChannel.SendMessageAsync($"test");
+            foreach (IUser user in players) {
+                await user.SendMessageAsync("test", components: new ComponentBuilder().WithButton("hit", "hit").WithButton("stick", "stick").Build());
+            }
         }
     }
 }
