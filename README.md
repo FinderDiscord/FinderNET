@@ -65,6 +65,13 @@ Make a `appsettings.json` file in the `FinderNET` folder, and input
     }
 }
 ```
+    
+### Run Migrations
+```bash
+$ dotnet tool install --global dotnet-ef
+$ dotnet ef migrations add Installation
+$ dotnet ef database update
+```
 
 ### Finally run the bot.
 ```bash
