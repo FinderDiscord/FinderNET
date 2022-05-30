@@ -2,6 +2,7 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Discord.Rest;
+using Discord.Net;
 using FinderNET.Database;
 
 namespace FinderNET.Modules {
@@ -139,28 +140,33 @@ namespace FinderNET.Modules {
                                     Text = $"FinderBot"
                                 }
                             }.Build());
-                            await user.SendMessageAsync("", false, new EmbedBuilder() {
-                                Title = "You have been banned",
-                                Color = Color.Red,
-                                Fields = new List<EmbedFieldBuilder>() {
-                                    new EmbedFieldBuilder() {
-                                        Name = "Server",
-                                        Value = $"{guild.Name}",
-                                        IsInline = false
+                            try {
+                                await user.SendMessageAsync("", false, new EmbedBuilder() {
+                                    Title = "You have been banned",
+                                    Color = Color.Red,
+                                    Fields = new List<EmbedFieldBuilder>() {
+                                        new EmbedFieldBuilder() {
+                                            Name = "Server",
+                                            Value = $"{guild.Name}",
+                                            IsInline = false
+                                        },
+                                        new EmbedFieldBuilder() {
+                                            Name = "Reason",
+                                            Value = $"{moderationMessage.reason}",
+                                            IsInline = false
+                                        },
                                     },
-                                    new EmbedFieldBuilder() {
-                                        Name = "Reason",
-                                        Value = $"{moderationMessage.reason}",
-                                        IsInline = false
+                                    Footer = new EmbedFooterBuilder() {
+                                        Text = $"FinderBot"
                                     },
-                                },
-                                Footer = new EmbedFooterBuilder() {
-                                    Text = $"FinderBot"
-                                },
-                                ThumbnailUrl = guild.IconUrl
-                            }.Build());
+                                    ThumbnailUrl = guild.IconUrl
+                                }.Build());
+                            } catch (HttpException) {
+                                // User has DMs disabled
+                            }
                             moderationMessages.Remove(moderationMessage);
-                            await dataAccessLayer.SetUserBans((Int64)guild.Id, (Int64)user.Id, dataAccessLayer.GetUserBans((Int64)guild.Id, (Int64)user.Id) + 1);
+                            var userBans = await dataAccessLayer.GetUserBans((Int64)guild.Id, (Int64)user.Id);
+                            await dataAccessLayer.SetUserBans((Int64)guild.Id, (Int64)user.Id, userBans + 1);
                             return;
                         } else if (moderationMessage.Type == ModerationMessageType.Kick) {
                             await user.KickAsync(moderationMessage.reason);
@@ -184,28 +190,33 @@ namespace FinderNET.Modules {
                                     Text = $"FinderBot"
                                 }
                             }.Build());
-                            await user.SendMessageAsync("", false, new EmbedBuilder() {
-                                Title = "You have been kicked",
-                                Color = Color.Red,
-                                Fields = new List<EmbedFieldBuilder>() {
-                                    new EmbedFieldBuilder() {
-                                        Name = "Server",
-                                        Value = $"{guild.Name}",
-                                        IsInline = false
+                            try {
+                                await user.SendMessageAsync("", false, new EmbedBuilder() {
+                                    Title = "You have been kicked",
+                                    Color = Color.Red,
+                                    Fields = new List<EmbedFieldBuilder>() {
+                                        new EmbedFieldBuilder() {
+                                            Name = "Server",
+                                            Value = $"{guild.Name}",
+                                            IsInline = false
+                                        },
+                                        new EmbedFieldBuilder() {
+                                            Name = "Reason",
+                                            Value = $"{moderationMessage.reason}",
+                                            IsInline = false
+                                        },
                                     },
-                                    new EmbedFieldBuilder() {
-                                        Name = "Reason",
-                                        Value = $"{moderationMessage.reason}",
-                                        IsInline = false
+                                    Footer = new EmbedFooterBuilder() {
+                                        Text = $"FinderBot"
                                     },
-                                },
-                                Footer = new EmbedFooterBuilder() {
-                                    Text = $"FinderBot"
-                                },
-                                ThumbnailUrl = guild.IconUrl
-                            }.Build());
+                                    ThumbnailUrl = guild.IconUrl
+                                }.Build());
+                            } catch (HttpException) {
+                                // User has DMs disabled
+                            }
                             moderationMessages.Remove(moderationMessage);
-                            await dataAccessLayer.SetUserKicks((Int64)guild.Id, (Int64)user.Id, dataAccessLayer.GetUserKicks((Int64)guild.Id, (Int64)user.Id) + 1);
+                            var userKicks = await dataAccessLayer.GetUserKicks((Int64)guild.Id, (Int64)user.Id);
+                            await dataAccessLayer.SetUserKicks((Int64)guild.Id, (Int64)user.Id, userKicks + 1);
                             return;
                         } else if (moderationMessage.Type == ModerationMessageType.Warn) {
                             await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
@@ -227,28 +238,33 @@ namespace FinderNET.Modules {
                                     Text = $"FinderBot"
                                 }
                             }.Build());
-                            await user.SendMessageAsync("", false, new EmbedBuilder() {
-                                Title = "You have been warned",
-                                Color = Color.Red,
-                                Fields = new List<EmbedFieldBuilder>() {
-                                    new EmbedFieldBuilder() {
-                                        Name = "Server",
-                                        Value = $"{guild.Name}",
-                                        IsInline = false
+                            try {
+                                await user.SendMessageAsync("", false, new EmbedBuilder() {
+                                    Title = "You have been warned",
+                                    Color = Color.Red,
+                                    Fields = new List<EmbedFieldBuilder>() {
+                                        new EmbedFieldBuilder() {
+                                            Name = "Server",
+                                            Value = $"{guild.Name}",
+                                            IsInline = false
+                                        },
+                                        new EmbedFieldBuilder() {
+                                            Name = "Reason",
+                                            Value = $"{moderationMessage.reason}",
+                                            IsInline = false
+                                        },
                                     },
-                                    new EmbedFieldBuilder() {
-                                        Name = "Reason",
-                                        Value = $"{moderationMessage.reason}",
-                                        IsInline = false
+                                    Footer = new EmbedFooterBuilder() {
+                                        Text = $"FinderBot"
                                     },
-                                },
-                                Footer = new EmbedFooterBuilder() {
-                                    Text = $"FinderBot"
-                                },
-                                ThumbnailUrl = guild.IconUrl
-                            }.Build());
+                                    ThumbnailUrl = guild.IconUrl
+                                }.Build());
+                            } catch (HttpException) {
+                                // User has DMs disabled
+                            }
                             moderationMessages.Remove(moderationMessage);
-                            await dataAccessLayer.SetUserWarns((Int64)guild.Id, (Int64)user.Id, dataAccessLayer.GetUserWarns((Int64)guild.Id, (Int64)user.Id) + 1);
+                            var userWarns = await dataAccessLayer.GetUserWarns((Int64)guild.Id, (Int64)user.Id);
+                            await dataAccessLayer.SetUserWarns((Int64)guild.Id, (Int64)user.Id, userWarns + 1);
                             return;
                         }
                     }

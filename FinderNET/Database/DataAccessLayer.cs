@@ -1,5 +1,6 @@
 ﻿using FinderNET.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Discord;
 
 namespace FinderNET.Database {
     public class DataAccessLayer {
@@ -76,191 +77,156 @@ namespace FinderNET.Database {
 
         // ModerationLogs
 
-        public UserLogs GetUserLogs(Int64 guildId, Int64 userId) {
+        public async Task<UserLogs> GetUserLogs(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = context.moderationLogs.Find(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) {
                 return new UserLogs() {
                     userId = userId, bans = 0, kicks = 0, warns = 0, mutes = 0
                 };
             }
-            return userLogs.userLogs;
+            return userLogs;
         }
 
-        public int GetUserBans(Int64 guildId, Int64 userId) {
+        public async Task<int> GetUserBans(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = context.moderationLogs.Find(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) {
                 return 0;
             }
-            return userLogs.userLogs.bans;
+            return userLogs.bans;
         }
 
-        public int GetUserKicks(Int64 guildId, Int64 userId) {
+        public async Task<int> GetUserKicks(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = context.moderationLogs.Find(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) {
                 return 0;
             }
-            return userLogs.userLogs.kicks;
+            return userLogs.kicks;
         }
 
-        public int GetUserWarns(Int64 guildId, Int64 userId) {
+        public async Task<int> GetUserWarns(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = context.moderationLogs.Find(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) {
                 return 0;
             }
-            return userLogs.userLogs.warns;
+            return userLogs.warns;
         }
 
-        public int GetUserMutes(Int64 guildId, Int64 userId) {
+        public async Task<int> GetUserMutes(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = context.moderationLogs.Find(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) {
                 return 0;
             }
-            return userLogs.userLogs.mutes;
+            return userLogs.mutes;
         }
 
         public async Task SetUserBans(Int64 guildId, Int64 userId, int bans) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = await context.moderationLogs.FindAsync(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) {
-                userLogs = context.Add(new ModerationLogs() {
+                userLogs = context.Add(new UserLogs() {
                     guildId = guildId,
-                    userLogs = new UserLogs() {
-                        userId = userId,
-                        bans = bans,
-                        kicks = 0,
-                        warns = 0,
-                        mutes = 0
-                    }
+                    userId = userId,
+                    bans = bans,
+                    kicks = 0,
+                    warns = 0,
+                    mutes = 0
                 }).Entity;
             } else {
-                userLogs.userLogs.bans = bans;
-                context.Entry(new ModerationLogs() {
+                context.Entry(userLogs).CurrentValues.SetValues(new UserLogs() {
                     guildId = guildId,
-                    userLogs = userLogs.userLogs
-                }).Property(x => x.userLogs.bans).IsModified = true;
+                    userId = userId,
+                    bans = bans,
+                    kicks = userLogs.kicks,
+                    warns = userLogs.warns,
+                    mutes = userLogs.mutes
+                });
             }
             await context.SaveChangesAsync();
         }
 
         public async Task SetUserKicks(Int64 guildId, Int64 userId, int kicks) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = await context.moderationLogs.FindAsync(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) {
-                userLogs = context.Add(new ModerationLogs() {
+                userLogs = context.Add(new UserLogs() {
                     guildId = guildId,
-                    userLogs = new UserLogs() {
-                        userId = userId,
-                        bans = 0,
-                        kicks = kicks,
-                        warns = 0,
-                        mutes = 0
-                    }
+                    userId = userId,
+                    bans = 0,
+                    kicks = kicks,
+                    warns = 0,
+                    mutes = 0
                 }).Entity;
             } else {
-                userLogs.userLogs.kicks = kicks;
-                context.Entry(new ModerationLogs() {
+                context.Entry(userLogs).CurrentValues.SetValues(new UserLogs() {
                     guildId = guildId,
-                    userLogs = userLogs.userLogs
-                }).Property(x => x.userLogs.kicks).IsModified = true;
+                    userId = userId,
+                    bans = userLogs.bans,
+                    kicks = kicks,
+                    warns = userLogs.warns,
+                    mutes = userLogs.mutes
+                });
             }
             await context.SaveChangesAsync();
         }
 
         public async Task SetUserWarns(Int64 guildId, Int64 userId, int warns) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = await context.moderationLogs.FindAsync(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) {
-                userLogs = context.Add(new ModerationLogs() {
+                userLogs = context.Add(new UserLogs() {
                     guildId = guildId,
-                    userLogs = new UserLogs() {
-                        userId = userId,
-                        bans = 0,
-                        kicks = 0,
-                        warns = warns,
-                        mutes = 0
-                    }
+                    userId = userId,
+                    bans = 0,
+                    kicks = 0,
+                    warns = warns,
+                    mutes = 0
                 }).Entity;
             } else {
-                userLogs.userLogs.warns = warns;
-                context.Entry(new ModerationLogs() {
+                context.Entry(userLogs).CurrentValues.SetValues(new UserLogs() {
                     guildId = guildId,
-                    userLogs = userLogs.userLogs
-                }).Property(x => x.userLogs.warns).IsModified = true;
+                    userId = userId,
+                    bans = userLogs.bans,
+                    kicks = userLogs.kicks,
+                    warns = warns,
+                    mutes = userLogs.mutes
+                });
             }
             await context.SaveChangesAsync();
         }
 
         public async Task SetUserMutes(Int64 guildId, Int64 userId, int mutes) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = await context.moderationLogs.FindAsync(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) {
-                userLogs = context.Add(new ModerationLogs() {
+                userLogs = context.Add(new UserLogs() {
                     guildId = guildId,
-                    userLogs = new UserLogs() {
-                        userId = userId,
-                        bans = 0,
-                        kicks = 0,
-                        warns = 0,
-                        mutes = mutes
-                    }
+                    userId = userId,
+                    bans = 0,
+                    kicks = 0,
+                    warns = 0,
+                    mutes = mutes
                 }).Entity;
             } else {
-                userLogs.userLogs.mutes = mutes;
-                context.Entry(new ModerationLogs() {
+                context.Entry(userLogs).CurrentValues.SetValues(new UserLogs() {
                     guildId = guildId,
-                    userLogs = userLogs.userLogs
-                }).Property(x => x.userLogs.mutes).IsModified = true;
-            }
-            await context.SaveChangesAsync();
-        }
-
-        public async Task SetUserLogs(Int64 guildId, Int64 userId, int bans, int kicks, int warns, int mutes) {
-            using var context = contextFactory.CreateDbContext();
-            var userLogs = await context.moderationLogs.FindAsync(guildId);
-            if (userLogs == null) {
-                userLogs = context.Add(new ModerationLogs() {
-                    guildId = guildId,
-                    userLogs = new UserLogs() {
-                        userId = userId,
-                        bans = bans,
-                        kicks = kicks,
-                        warns = warns,
-                        mutes = mutes
-                    }
-                }).Entity;
-            } else {
-                userLogs.userLogs.bans = bans;
-                userLogs.userLogs.kicks = kicks;
-                userLogs.userLogs.warns = warns;
-                userLogs.userLogs.mutes = mutes;
-                context.Entry(new ModerationLogs() {
-                    guildId = guildId,
-                    userLogs = userLogs.userLogs
-                }).Property(x => x.userLogs.bans).IsModified = true;
-                context.Entry(new ModerationLogs() {
-                    guildId = guildId,
-                    userLogs = userLogs.userLogs
-                }).Property(x => x.userLogs.kicks).IsModified = true;
-                context.Entry(new ModerationLogs() {
-                    guildId = guildId,
-                    userLogs = userLogs.userLogs
-                }).Property(x => x.userLogs.warns).IsModified = true;
-                context.Entry(new ModerationLogs() {
-                    guildId = guildId,
-                    userLogs = userLogs.userLogs
-                }).Property(x => x.userLogs.mutes).IsModified = true;
+                    userId = userId,
+                    bans = userLogs.bans,
+                    kicks = userLogs.kicks,
+                    warns = userLogs.warns,
+                    mutes = mutes
+                });
             }
             await context.SaveChangesAsync();
         }
 
         public async Task RemoveUserLogs(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = await context.moderationLogs.FindAsync(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) return;
             context.Remove(userLogs);
             await context.SaveChangesAsync();
@@ -268,49 +234,61 @@ namespace FinderNET.Database {
 
         public async Task RemoveUserBans(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = await context.moderationLogs.FindAsync(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) return;
-            userLogs.userLogs.bans = 0;
-            context.Entry(new ModerationLogs() {
+            context.Entry(new UserLogs() {
                 guildId = guildId,
-                userLogs = userLogs.userLogs
-            }).Property(x => x.userLogs.bans).IsModified = true;
+                userId = userId,
+                bans = 0,
+                kicks = userLogs.kicks,
+                warns = userLogs.warns,
+                mutes = userLogs.mutes
+            }).Property(x => x.mutes).IsModified = true;
             await context.SaveChangesAsync();
         }
 
         public async Task RemoveUserKicks(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = await context.moderationLogs.FindAsync(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) return;
-            userLogs.userLogs.kicks = 0;
-            context.Entry(new ModerationLogs() {
+            context.Entry(new UserLogs() {
                 guildId = guildId,
-                userLogs = userLogs.userLogs
-            }).Property(x => x.userLogs.kicks).IsModified = true;
+                userId = userId,
+                bans = userLogs.bans,
+                kicks = 0,
+                warns = userLogs.warns,
+                mutes = userLogs.mutes
+            }).Property(x => x.mutes).IsModified = true;
             await context.SaveChangesAsync();
         }
 
         public async Task RemoveUserWarns(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = await context.moderationLogs.FindAsync(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) return;
-            userLogs.userLogs.warns = 0;
-            context.Entry(new ModerationLogs() {
+            context.Entry(new UserLogs() {
                 guildId = guildId,
-                userLogs = userLogs.userLogs
-            }).Property(x => x.userLogs.warns).IsModified = true;
+                userId = userId,
+                bans = userLogs.bans,
+                kicks = userLogs.kicks,
+                warns = 0,
+                mutes = userLogs.mutes
+            }).Property(x => x.mutes).IsModified = true;
             await context.SaveChangesAsync();
         }
 
         public async Task RemoveUserMutes(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
-            var userLogs = await context.moderationLogs.FindAsync(guildId);
+            var userLogs = await context.userLogs.FindAsync(guildId, userId);
             if (userLogs == null) return;
-            userLogs.userLogs.mutes = 0;
-            context.Entry(new ModerationLogs() {
+            context.Entry(new UserLogs() {
                 guildId = guildId,
-                userLogs = userLogs.userLogs
-            }).Property(x => x.userLogs.mutes).IsModified = true;
+                userId = userId,
+                bans = userLogs.bans,
+                kicks = userLogs.kicks,
+                warns = userLogs.warns,
+                mutes = 0
+            }).Property(x => x.mutes).IsModified = true;
             await context.SaveChangesAsync();
         }
     }

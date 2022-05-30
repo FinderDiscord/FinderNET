@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinderNET.Migrations
 {
     [DbContext(typeof(FinderDatabaseContext))]
-    [Migration("20220530111015_addModerationLogs")]
-    partial class addModerationLogs
+    [Migration("20220530184401_stuff")]
+    partial class stuff
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,31 +42,13 @@ namespace FinderNET.Migrations
                     b.ToTable("addons");
                 });
 
-            modelBuilder.Entity("FinderNET.Database.ModerationLogs", b =>
-                {
-                    b.Property<long>("guildId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("guildId"));
-
-                    b.Property<long>("userLogsuserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("guildId");
-
-                    b.HasIndex("userLogsuserId");
-
-                    b.ToTable("moderationLogs");
-                });
-
             modelBuilder.Entity("FinderNET.Database.UserLogs", b =>
                 {
-                    b.Property<long>("userId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<long>("guildId")
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("userId"));
+                    b.Property<long>("userId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("bans")
                         .HasColumnType("integer");
@@ -80,20 +62,9 @@ namespace FinderNET.Migrations
                     b.Property<int>("warns")
                         .HasColumnType("integer");
 
-                    b.HasKey("userId");
+                    b.HasKey("guildId", "userId");
 
-                    b.ToTable("UserLogs");
-                });
-
-            modelBuilder.Entity("FinderNET.Database.ModerationLogs", b =>
-                {
-                    b.HasOne("FinderNET.Database.UserLogs", "userLogs")
-                        .WithMany()
-                        .HasForeignKey("userLogsuserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("userLogs");
+                    b.ToTable("userLogs");
                 });
 #pragma warning restore 612, 618
         }
