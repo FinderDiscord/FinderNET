@@ -52,18 +52,19 @@ namespace FinderNET {
         }
 
         public static async Task ButtonHandler(SocketMessageComponent component){
+            await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Blackjack", $"{component.User.Username} has pressed {component.Data.CustomId}!"));
             Blackjack? game = null;
             foreach (Blackjack _game in games){
                 if (_game.playChannel == null || _game.lobbyMessage == null) continue;
                 foreach (IUser user in _game.players){
-                    if (user.Id == component.User.Id){
+                    if (user.Id == component.User.Id && (component.Data.CustomId == $"{_game.gameId}-H" || component.Data.CustomId == $"{_game.gameId}-S")) {
                         game = _game;
                         break;
                     }
                 }
             }
             if (game == null) return;
-            await component.RespondAsync("test");
+            await component.RespondAsync($"{component.User.Mention} has pressed {component.Data.CustomId}!");
         }
     }
 
@@ -77,6 +78,7 @@ namespace FinderNET {
         public IUser creator;
         public List<IUser> players = new List<IUser>();
         public bool lobby = true;
+        public int gameId;
         public Blackjack(SocketInteractionContext _ctx, IUser _creator, ISocketMessageChannel _joinChannel, IUserMessage _joinMessage) {
             ctx = _ctx;
             players.Add(_creator);
@@ -84,6 +86,8 @@ namespace FinderNET {
             joinChannel = _joinChannel;
             joinMessage = _joinMessage;
             newChannel(creator);
+            // generate random game id
+            gameId = new Random().Next(100000000, 999999999);
         }
 
         private async void newChannel(IUser creator){
@@ -121,7 +125,7 @@ namespace FinderNET {
             await playChannel.SendMessageAsync($"{creator.Mention} has started the game!");
             playMessage = await playChannel.SendMessageAsync($"test");
             foreach (IUser user in players) {
-                await user.SendMessageAsync("test", components: new ComponentBuilder().WithButton("hit", "hit").WithButton("stick", "stick").Build());
+                await user.SendMessageAsync("test", components: new ComponentBuilder().WithButton("hit", $"{gameId}-H").WithButton("stick", $"{gameId}-S").Build());
             }
         }
     }
