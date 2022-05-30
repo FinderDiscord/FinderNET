@@ -13,6 +13,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0-preview.4.22229.4" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0-preview.4.22229.4" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0-preview.4" />
+		<PackageReference Include="Chronic" Version="0.3.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.0-preview.4.22229.2">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
