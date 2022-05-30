@@ -42,6 +42,39 @@ namespace FinderNET.Modules {
             });
         }
 
+        [SlashCommand("kick", "Kicks a user from the server.")]
+        public async Task KickCommand(SocketGuildUser user, string reason = "No reason given.") {
+            var confirmMessage = await ReplyAsync("", false, new EmbedBuilder() {
+                Title = "Are you sure you want to kick this user?",
+                Color = Color.Red,
+                Fields = new List<EmbedFieldBuilder>() {
+                    new EmbedFieldBuilder() {
+                        Name = "User",
+                        Value = $"{user.Mention} ({user.Username})",
+                        IsInline = false
+                    },
+                    new EmbedFieldBuilder() {
+                        Name = "for reason",
+                        Value = $"{reason}",
+                        IsInline = false
+                    }
+                },
+                Footer = new EmbedFooterBuilder() {
+                    Text = $"FinderBot"
+                }
+            }.Build());
+            await confirmMessage.AddReactionAsync(new Emoji("✅"));
+            moderationMessages.Add(new ModerationMessage() {
+                messageId = confirmMessage.Id,
+                channelId = confirmMessage.Channel.Id,
+                guildId = Context.Guild.Id,
+                senderId = Context.User.Id,
+                userId = user.Id,
+                reason = reason,
+                Type = ModerationMessageType.Kick
+            });
+        }
+
         public async void ReactionAdded_Event(Cacheable<IUserMessage, UInt64> arg, ISocketMessageChannel arg1, SocketReaction reaction) {
             if (reaction.User.Value.IsBot) return;
             foreach (var moderationMessage in moderationMessages) {
@@ -104,6 +137,51 @@ namespace FinderNET.Modules {
                             moderationMessages.Remove(moderationMessage);
                             await dataAccessLayer.SetUserBans((Int64)guild.Id, (Int64)user.Id, dataAccessLayer.GetUserBans((Int64)guild.Id, (Int64)user.Id) + 1);
                             return;
+                        } else if (type == ModerationMessageType.Kick) {
+                            await user.KickAsync(reason);
+                            await message.RemoveAllReactionsAsync();
+                            await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
+                                Title = "User Kicked",
+                                Color = Color.Red,
+                                Fields = new List<EmbedFieldBuilder>() {
+                                    new EmbedFieldBuilder() {
+                                        Name = "User",
+                                        Value = $"{user.Mention} ({user})",
+                                        IsInline = false
+                                    },
+                                    new EmbedFieldBuilder() {
+                                        Name = "for reason",
+                                        Value = $"{reason}",
+                                        IsInline = false
+                                    }
+                                },
+                                Footer = new EmbedFooterBuilder() {
+                                    Text = $"FinderBot"
+                                }
+                            }.Build());
+                            await user.SendMessageAsync("", false, new EmbedBuilder() {
+                                Title = "You have been kicked",
+                                Color = Color.Red,
+                                Fields = new List<EmbedFieldBuilder>() {
+                                    new EmbedFieldBuilder() {
+                                        Name = "Server",
+                                        Value = $"{guild.Name}",
+                                        IsInline = false
+                                    },
+                                    new EmbedFieldBuilder() {
+                                        Name = "Reason",
+                                        Value = $"{reason}",
+                                        IsInline = false
+                                    },
+                                },
+                                Footer = new EmbedFooterBuilder() {
+                                    Text = $"FinderBot"
+                                },
+                                ThumbnailUrl = guild.IconUrl
+                            }.Build());
+                            moderationMessages.Remove(moderationMessage);
+                            await dataAccessLayer.SetUserKicks((Int64)guild.Id, (Int64)user.Id, dataAccessLayer.GetUserKicks((Int64)guild.Id, (Int64)user.Id) + 1);
+                            return;
                         }
                     }
                 }
@@ -124,6 +202,7 @@ namespace FinderNET.Modules {
 
     public enum ModerationMessageType {
         Null,
-        Ban
+        Ban,
+        Kick
     }
 }
