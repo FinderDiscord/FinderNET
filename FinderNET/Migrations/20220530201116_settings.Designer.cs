@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinderNET.Migrations
 {
     [DbContext(typeof(FinderDatabaseContext))]
-    [Migration("20220530184401_stuff")]
-    partial class stuff
+    [Migration("20220530201116_settings")]
+    partial class settings
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,27 @@ namespace FinderNET.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("addons");
+                });
+
+            modelBuilder.Entity("FinderNET.Database.Settings", b =>
+                {
+                    b.Property<long>("guildId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("guildId"));
+
+                    b.Property<string>("key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("guildId");
+
+                    b.ToTable("settings");
                 });
 
             modelBuilder.Entity("FinderNET.Database.UserLogs", b =>

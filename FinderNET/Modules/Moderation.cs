@@ -109,6 +109,39 @@ namespace FinderNET.Modules {
             });
         }
 
+        [SlashCommand("mute", "Mutes a user.")]
+        public async Task MuteCommand(SocketGuildUser user, string reason = "No reason given.") {
+            var confirmMessage = await ReplyAsync("", false, new EmbedBuilder() {
+                Title = "Are you sure you want to mute this user?",
+                Color = Color.Red,
+                Fields = new List<EmbedFieldBuilder>() {
+                    new EmbedFieldBuilder() {
+                        Name = "User",
+                        Value = $"{user.Mention} ({user.Username})",
+                        IsInline = false
+                    },
+                    new EmbedFieldBuilder() {
+                        Name = "for reason",
+                        Value = $"{reason}",
+                        IsInline = false
+                    }
+                },
+                Footer = new EmbedFooterBuilder() {
+                    Text = $"FinderBot"
+                }
+            }.Build());
+            await confirmMessage.AddReactionAsync(new Emoji("✅"));
+            moderationMessages.Add(new ModerationMessage() {
+                messageId = confirmMessage.Id,
+                channelId = confirmMessage.Channel.Id,
+                guildId = Context.Guild.Id,
+                senderId = Context.User.Id,
+                userId = user.Id,
+                reason = reason,
+                Type = ModerationMessageType.Mute
+            });
+        }
+
         public async Task OnReactionAddedEvent(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction) {
             if (reaction.User.Value.IsBot) return;
             foreach (var moderationMessage in moderationMessages) {
@@ -313,6 +346,9 @@ namespace FinderNET.Modules {
                             if (await dataAccessLayer.GetSettingsValue((Int64)guild.Id, "muteRoleId") == null) {
                                 var muteRole1 = await guild.CreateRoleAsync("Muted", new GuildPermissions(connect: true, readMessageHistory: true), Color.DarkGrey, false, true);
                                 await dataAccessLayer.SetSettingsValue((Int64)guild.Id, "muteRoleId", muteRole1.Id.ToString());
+                                foreach (var otherchannel in guild.Channels) {
+                                    await channel.AddPermissionOverwriteAsync(muteRole1, OverwritePermissions.DenyAll(channel).Modify(viewChannel: PermValue.Allow, readMessageHistory: PermValue.Allow));
+                                }
                             }
                             var muteRole = guild.GetRole(Convert.ToUInt64(await dataAccessLayer.GetSettingsValue((Int64)guild.Id, "muteRoleId")));
                             await user.AddRoleAsync(muteRole);

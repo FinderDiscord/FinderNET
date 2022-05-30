@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinderNET.Migrations
 {
     /// <inheritdoc />
-    public partial class stuff : Migration
+    public partial class settings : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,6 +23,20 @@ namespace FinderNET.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_addons", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "settings",
+                columns: table => new
+                {
+                    guildId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    key = table.Column<string>(type: "text", nullable: false),
+                    value = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_settings", x => x.guildId);
                 });
 
             migrationBuilder.CreateTable(
@@ -47,6 +61,9 @@ namespace FinderNET.Migrations
         {
             migrationBuilder.DropTable(
                 name: "addons");
+
+            migrationBuilder.DropTable(
+                name: "settings");
 
             migrationBuilder.DropTable(
                 name: "userLogs");

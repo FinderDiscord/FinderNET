@@ -285,14 +285,14 @@ namespace FinderNET.Database {
 
         public async Task<string?> GetSettingsValue(Int64 guildId, string key) {
             using var context = contextFactory.CreateDbContext();
-            var settings = await context.settings.FindAsync(guildId, key);
+            var settings = await context.settings.FindAsync(guildId);
             if (settings == null) return null;
             return settings.value;
         }
 
         public async Task SetSettingsValue(Int64 guildId, string key, string value) {
             using var context = contextFactory.CreateDbContext();
-            var settings = await context.settings.FindAsync(guildId, key);
+            var settings = await context.settings.FindAsync(guildId);
             if (settings == null) {
                 settings = context.Add(new Settings() {
                     guildId = guildId,
@@ -311,7 +311,7 @@ namespace FinderNET.Database {
 
         public async Task RemoveSettingsValue(Int64 guildId, string key) {
             using var context = contextFactory.CreateDbContext();
-            var settings = await context.settings.FindAsync(guildId, key);
+            var settings = await context.settings.FindAsync(guildId);
             if (settings == null) return;
             context.Remove(settings);
             await context.SaveChangesAsync();

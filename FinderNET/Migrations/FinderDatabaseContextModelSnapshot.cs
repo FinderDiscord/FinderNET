@@ -39,6 +39,27 @@ namespace FinderNET.Migrations
                     b.ToTable("addons");
                 });
 
+            modelBuilder.Entity("FinderNET.Database.Settings", b =>
+                {
+                    b.Property<long>("guildId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("guildId"));
+
+                    b.Property<string>("key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("guildId");
+
+                    b.ToTable("settings");
+                });
+
             modelBuilder.Entity("FinderNET.Database.UserLogs", b =>
                 {
                     b.Property<long>("guildId")
