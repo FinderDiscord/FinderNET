@@ -86,7 +86,6 @@ $ dotnet run
 
 
 </details>
-<br>
 Have Fun Trying out FinderNET! 👍
 
 ## Contributing
