@@ -63,7 +63,7 @@ Make a `appsettings.json` file in the `FinderNET` folder, and input
 {
     "token": "your bot token here",
     "ConnectionStrings": {
-        "DefaultConnection": "Server=localhost;Database=finder;Username=finder;Password=enter your password here"
+        "Default": "Server=localhost;Database=finder;Username=finder;Password=enter your password here"
     }
 }
 ```
@@ -71,6 +71,7 @@ Make a `appsettings.json` file in the `FinderNET` folder, and input
 ### Run Migrations
 ```bash
 $ dotnet tool install --global dotnet-ef
+$ sudo reboot
 $ dotnet ef migrations add Installation
 $ dotnet ef database update
 ```
