@@ -7,7 +7,6 @@ using FinderNET.Database;
 namespace FinderNET.Modules {
    public class PollModule : ModuleBase {
       public PollModule(DataAccessLayer dataAccessLayer) : base(dataAccessLayer) { }
-      public static List<Poll> polls = new List<Poll>();
       [SlashCommand("poll", "Create a poll for users to vote on.")]
       public async Task PollCommand(string question, string? answer1 = null, string? answer2 = null, string? answer3 = null, string? answer4 = null, string? answer5 = null, string? answer6 = null, string? answer7 = null, string? answer8 = null, string? answer9 = null, string? answer10 = null,
       string? answer11 = null, string? answer12 = null, string? answer13 = null, string? answer14 = null, string? answer15 = null, string? answer16 = null, string? answer17 = null, string? answer18 = null, string? answer19 = null, string? answer20 = null, string? answer21 = null, string? answer22 = null, 
@@ -155,60 +154,45 @@ namespace FinderNET.Modules {
             answers.Add(answer24);
          }
          var message = await ReplyAsync("", false, embed.Build(), components: builder.Build());
-         Poll poll = new Poll() {
-            messageID = message.Id,
-            question = question,
-            answers = answers,
-         };
-         polls.Add(poll);
+         await dataAccessLayer.SetPoll((Int64)message.Id, answers, new List<Int64>());
       }
 
 
-      public static async Task OnButtonExecutedEvent(SocketMessageComponent messageComponent) {
-         foreach (var poll in polls) {
-            if (poll.messageID == messageComponent.Message.Id) {
-               for (int i = 0; i < poll.answers.Count; i++) {
-                  if (messageComponent.Data.CustomId == i.ToString() && !poll.votersId.Contains(messageComponent.User.Id)) {
-                     var message = messageComponent.Message;
-                     var embed = message.Embeds.First();
-                     var fields = embed.Fields;
-                     var newFields = new List<EmbedFieldBuilder>();
-                     for (int j = 0; j < fields.Count(); j++) {
-                        if (j == i) {
-                           newFields.Add(new EmbedFieldBuilder() {
-                              Name = fields[j].Name,
-                              Value = int.Parse(fields[j].Value) + 1,
-                              IsInline = fields[j].Inline,
-                           });
-                        } else {
-                           newFields.Add(new EmbedFieldBuilder() {
-                              Name = fields[j].Name,
-                              Value = fields[j].Value,
-                              IsInline = fields[j].Inline,
-                           });
-                        }
-                     }
-                     await messageComponent.Message.ModifyAsync(x => {
-                        EmbedBuilder newEmbed = new EmbedBuilder();
-                        newEmbed.WithTitle(embed.Title);
-                        newEmbed.WithDescription(embed.Description);
-                        newEmbed.WithColor(Color.Blue);
-                        newEmbed.WithFooter(new EmbedFooterBuilder().WithText("FinderBot"));
-                        newEmbed.WithFields(newFields);
-                        x.Embed = newEmbed.Build();
+      public async Task OnButtonExecutedEvent(SocketMessageComponent messageComponent) {
+         var poll = await dataAccessLayer.GetPoll((Int64)messageComponent.Message.Id);
+         for (int i = 0; i < poll.answers.Count; i++) {
+            if (messageComponent.Data.CustomId == i.ToString() && !poll.votersId.Contains((Int64)messageComponent.User.Id)) {
+               var message = messageComponent.Message;
+               var embed = message.Embeds.First();
+               var fields = embed.Fields;
+               var newFields = new List<EmbedFieldBuilder>();
+               for (int j = 0; j < fields.Count(); j++) {
+                  if (j == i) {
+                     newFields.Add(new EmbedFieldBuilder() {
+                        Name = fields[j].Name,
+                        Value = int.Parse(fields[j].Value) + 1,
+                        IsInline = fields[j].Inline,
                      });
-                     poll.votersId.Add(messageComponent.User.Id);
+                  } else {
+                     newFields.Add(new EmbedFieldBuilder() {
+                        Name = fields[j].Name,
+                        Value = fields[j].Value,
+                        IsInline = fields[j].Inline,
+                     });
                   }
                }
+               await messageComponent.Message.ModifyAsync(x => {
+                  EmbedBuilder newEmbed = new EmbedBuilder();
+                  newEmbed.WithTitle(embed.Title);
+                  newEmbed.WithDescription(embed.Description);
+                  newEmbed.WithColor(Color.Blue);
+                  newEmbed.WithFooter(new EmbedFooterBuilder().WithText("FinderBot"));
+                  newEmbed.WithFields(newFields);
+                  x.Embed = newEmbed.Build();
+               });
+               poll.votersId.Add((Int64)messageComponent.User.Id);
             }
          }
       }
-   }
-
-   public class Poll {
-      public ulong messageID;
-      public string question;
-      public List<string> answers = new List<string>();
-      public List<ulong> votersId = new List<ulong>();
    }
 }
