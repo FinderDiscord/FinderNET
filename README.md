@@ -72,6 +72,7 @@ Make a `appsettings.json` file in the `FinderNET` folder, and input
 ```bash
 $ dotnet tool install --global dotnet-ef
 $ sudo reboot
+$ cd FinderNET/FinderNET
 $ dotnet ef migrations add Installation
 $ dotnet ef database update
 ```
