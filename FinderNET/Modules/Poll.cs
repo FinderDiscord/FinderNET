@@ -168,7 +168,7 @@ namespace FinderNET.Modules {
          foreach (var poll in polls) {
             if (poll.messageID == messageComponent.Message.Id) {
                for (int i = 0; i < poll.answers.Count; i++) {
-                  if (messageComponent.Data.CustomId == i.ToString()) {
+                  if (messageComponent.Data.CustomId == i.ToString() && !poll.votersId.Contains(messageComponent.User.Id)) {
                      var message = messageComponent.Message;
                      var embed = message.Embeds.First();
                      var fields = embed.Fields;
@@ -197,6 +197,7 @@ namespace FinderNET.Modules {
                         newEmbed.WithFields(newFields);
                         x.Embed = newEmbed.Build();
                      });
+                     poll.votersId.Add(messageComponent.User.Id);
                   }
                }
             }
@@ -208,5 +209,6 @@ namespace FinderNET.Modules {
       public ulong messageID;
       public string question;
       public List<string> answers = new List<string>();
+      public List<ulong> votersId = new List<ulong>();
    }
 }
