@@ -74,7 +74,7 @@ namespace FinderNET.Database {
 
 
 
-        // ModerationLogs
+        // UserLogs
 
         public async Task<UserLogs> GetUserLogs(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
@@ -283,6 +283,9 @@ namespace FinderNET.Database {
             await context.SaveChangesAsync();
         }
 
+
+        // Settings
+
         public async Task<string?> GetSettingsValue(Int64 guildId, string key) {
             using var context = contextFactory.CreateDbContext();
             var settings = await context.settings.FindAsync(guildId);
@@ -314,6 +317,169 @@ namespace FinderNET.Database {
             var settings = await context.settings.FindAsync(guildId);
             if (settings == null) return;
             context.Remove(settings);
+            await context.SaveChangesAsync();
+        }
+
+
+        // Polls
+
+        public async Task<Poll?> GetPoll(Int64 messageId) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) return null;
+            return poll;
+        }
+
+        public async Task<List<string>> GetAnswers(Int64 messageId) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) return new List<string>();
+            return poll.answers;
+        }
+
+        public async Task<List<Int64>> GetVotersIds(Int64 messageId) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) return new List<Int64>();
+            return poll.votersId;
+        }
+
+        public async Task<Int64> GetVotersCount(Int64 messageId) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) return 0;
+            return poll.votersId.Count;
+        }
+
+        public async Task SetPoll(Int64 messageId, List<string> answers, List<Int64> votersId) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) {
+                poll = context.Add(new Poll() {
+                    messageId = messageId,
+                    answers = answers,
+                    votersId = votersId
+                }).Entity;
+            } else {
+                context.Entry(poll).CurrentValues.SetValues(new Poll() {
+                    messageId = messageId,
+                    answers = answers,
+                    votersId = votersId
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+        public async Task SetAnswers(Int64 messageId, List<string> answers) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) {
+                poll = context.Add(new Poll() {
+                    messageId = messageId,
+                    answers = answers
+                }).Entity;
+            } else {
+                context.Entry(poll).CurrentValues.SetValues(new Poll() {
+                    messageId = messageId,
+                    answers = answers
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task SetVotersIds(Int64 messageId, List<Int64> votersId) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) {
+                poll = context.Add(new Poll() {
+                    messageId = messageId,
+                    votersId = votersId
+                }).Entity;
+            } else {
+                context.Entry(poll).CurrentValues.SetValues(new Poll() {
+                    messageId = messageId,
+                    votersId = votersId
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task AddAnswer(Int64 messageId, string answer) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) {
+                poll = context.Add(new Poll() {
+                    messageId = messageId,
+                    answers = new List<string>() { answer }
+                }).Entity;
+            } else {
+                var answers = poll.answers;
+                answers.Add(answer);
+                context.Entry(poll).CurrentValues.SetValues(new Poll() {
+                    messageId = messageId,
+                    answers = answers
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task AddVoterId(Int64 messageId, Int64 voterId) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) {
+                poll = context.Add(new Poll() {
+                    messageId = messageId,
+                    votersId = new List<Int64>() { voterId }
+                }).Entity;
+            } else {
+                var votersId = poll.votersId;
+                votersId.Add(voterId);
+                context.Entry(poll).CurrentValues.SetValues(new Poll() {
+                    messageId = messageId,
+                    votersId = votersId
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveAnswer(Int64 messageId, string answer) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) return;
+            var answers = poll.answers;
+            answers.Remove(answer);
+            context.Entry(poll).CurrentValues.SetValues(new Poll() {
+                messageId = messageId,
+                answers = answers
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveVoter(Int64 messageId, Int64 voterId) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) return;
+            var votersId = poll.votersId;
+            votersId.Remove(voterId);
+            context.Entry(poll).CurrentValues.SetValues(new Poll() {
+                messageId = messageId,
+                votersId = votersId
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveAllVoters(Int64 messageId) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) return;
+            context.Remove(poll);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveAllAnswers(Int64 messageId) {
+            using var context = contextFactory.CreateDbContext();
+            var poll = await context.polls.FindAsync(messageId);
+            if (poll == null) return;
+            context.Remove(poll);
             await context.SaveChangesAsync();
         }
     }
