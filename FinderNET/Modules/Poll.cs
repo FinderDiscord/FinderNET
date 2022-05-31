@@ -26,23 +26,23 @@ namespace FinderNET.Modules {
             }
          };
          List<string> answers = new List<string>();
+         if (answer1 == null && answer2 == null && answer3 == null && answer4 == null && answer5 == null && answer6 == null && answer7 == null && answer8 == null && answer9 == null && answer10 == null && answer11 == null && answer12 == null && answer13 == null && answer14 == null && answer15 == null && answer16 == null && answer17 == null && answer18 == null && answer19 == null && answer20 == null && answer21 == null && answer22 == null && answer23 == null && answer24 == null) {
+            embed.AddField("Yes", 0, true);
+            builder.WithButton("Yes", "0");
+            answers.Add("Yes");
+            embed.AddField("No", 0, true);
+            builder.WithButton("No", "1");
+            answers.Add("No");
+         }
          if (answer1 != null) {
             embed.AddField(answer1, 0, true);
             builder.WithButton($"{answer1}", "0");
             answers.Add(answer1);
-         } else {
-            embed.AddField("Yes", 0, true);
-            builder.WithButton("Yes", "0");
-            answers.Add("Yes");
          }
          if (answer2 != null) {
             embed.AddField(answer2, 0, true);
             builder.WithButton($"{answer2}", "1");
             answers.Add(answer2);
-         } else {
-            embed.AddField("No", 0, true);
-            builder.WithButton("No", "1");
-            answers.Add("No");
          }
          if (answer3 != null) {
             embed.AddField(answer3, 0, true);
