@@ -153,7 +153,7 @@ namespace FinderNET.Modules {
             builder.WithButton($"{answer24}", "23");
             answers.Add(answer24);
          }
-         var message = await ReplyAsync("", false, embed.Build(), components: builder.Build());
+         var message = await ReplyAsync("", embed: embed.Build(), components: builder.Build());
          await dataAccessLayer.SetPoll((Int64)message.Id, answers, new List<Int64>());
       }
 
