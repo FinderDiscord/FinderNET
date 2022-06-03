@@ -190,24 +190,6 @@ namespace FinderNET.Database {
             await context.SaveChangesAsync();
         }
 
-        public async Task<DateTime> GetDateTime(Int64 id) {
-            using var context = contextFactory.CreateDbContext();
-            var countdown = await context.countdowns.FindAsync(id);
-            if (countdown == null) return DateTime.MinValue;
-            return countdown.dateTime;
-        }
-
-        public async Task SetDateTime(Int64 id, DateTime dateTime) {
-            using var context = contextFactory.CreateDbContext();
-            var countdown = await context.countdowns.FindAsync(id);
-            if (countdown == null) {
-                context.Add(new Countdown { MessageId = id, dateTime = dateTime });
-            } else {
-                context.Entry(new Countdown() { MessageId = id, dateTime = dateTime }).Property(x => x.dateTime).IsModified = true;
-            }
-            await context.SaveChangesAsync();
-        }
-
         public async Task SetUserMutes(Int64 guildId, Int64 userId, int mutes) {
             using var context = contextFactory.CreateDbContext();
             var userLogs = await context.userLogs.FindAsync(guildId, userId);
