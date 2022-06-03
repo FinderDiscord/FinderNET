@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FinderNET.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinderNET.Migrations
 {
     [DbContext(typeof(FinderDatabaseContext))]
-    partial class FinderDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20220530201116_settings")]
+    partial class settings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,27 +40,6 @@ namespace FinderNET.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("addons");
-                });
-
-            modelBuilder.Entity("FinderNET.Database.Poll", b =>
-                {
-                    b.Property<long>("messageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("messageId"));
-
-                    b.Property<List<string>>("answers")
-                        .IsRequired()
-                        .HasColumnType("text[]");
-
-                    b.Property<List<long>>("votersId")
-                        .IsRequired()
-                        .HasColumnType("bigint[]");
-
-                    b.HasKey("messageId");
-
-                    b.ToTable("polls");
                 });
 
             modelBuilder.Entity("FinderNET.Database.Settings", b =>
