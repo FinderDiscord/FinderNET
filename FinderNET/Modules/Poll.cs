@@ -13,7 +13,7 @@ namespace FinderNET.Modules {
       string? answer23 = null, string? answer24 = null) {
          ComponentBuilder builder = new ComponentBuilder();
          if (question == null) {
-            await ReplyAsync("You must provide a question.");
+            await RespondAsync("You must provide a question.");
             return;
          }
          var embed = new EmbedBuilder() {
@@ -153,8 +153,8 @@ namespace FinderNET.Modules {
             builder.WithButton($"{answer24}", "23");
             answers.Add(answer24);
          }
-         var message = await ReplyAsync("", embed: embed.Build(), components: builder.Build());
-         await dataAccessLayer.SetPoll((Int64)message.Id, answers, new List<Int64>());
+         await RespondAsync("", embed: embed.Build(), components: builder.Build());
+         await dataAccessLayer.SetPoll((Int64)(await GetOriginalResponseAsync()).Id, answers, new List<Int64>());
       }
 
 
