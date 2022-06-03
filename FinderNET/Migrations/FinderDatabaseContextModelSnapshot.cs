@@ -39,27 +39,6 @@ namespace FinderNET.Migrations
                     b.ToTable("addons");
                 });
 
-            modelBuilder.Entity("FinderNET.Database.Poll", b =>
-                {
-                    b.Property<long>("messageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("messageId"));
-
-                    b.Property<List<string>>("answers")
-                        .IsRequired()
-                        .HasColumnType("text[]");
-
-                    b.Property<List<long>>("votersId")
-                        .IsRequired()
-                        .HasColumnType("bigint[]");
-
-                    b.HasKey("messageId");
-
-                    b.ToTable("polls");
-                });
-
             modelBuilder.Entity("FinderNET.Database.Settings", b =>
                 {
                     b.Property<long>("guildId")

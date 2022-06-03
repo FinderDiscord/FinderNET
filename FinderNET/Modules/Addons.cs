@@ -34,7 +34,7 @@ namespace FinderNET.Modules {
                     }
                 }
             }
-            await RespondAsync("", embed: embed.Build());
+            await ReplyAsync("", false, embed.Build());
         }
 
         

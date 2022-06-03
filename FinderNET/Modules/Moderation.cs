@@ -12,7 +12,7 @@ namespace FinderNET.Modules {
 
         [SlashCommand("ban", "Bans a user from the server.")]
         public async Task BanCommand(SocketGuildUser user, string reason = "No reason given.") {
-            await RespondAsync("", embed: new EmbedBuilder() {
+            var confirmMessage = await ReplyAsync("", false, new EmbedBuilder() {
                 Title = "Are you sure you want to ban this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder>() {
@@ -31,11 +31,10 @@ namespace FinderNET.Modules {
                     Text = $"FinderBot"
                 }
             }.Build());
-            var message = await GetOriginalResponseAsync();
-            await message.AddReactionAsync(new Emoji("✅"));
+            await confirmMessage.AddReactionAsync(new Emoji("✅"));
             moderationMessages.Add(new ModerationMessage() {
-                messageId = message.Id,
-                channelId = message.Channel.Id,
+                messageId = confirmMessage.Id,
+                channelId = confirmMessage.Channel.Id,
                 guildId = Context.Guild.Id,
                 senderId = Context.User.Id,
                 userId = user.Id,
@@ -46,7 +45,7 @@ namespace FinderNET.Modules {
 
         [SlashCommand("kick", "Kicks a user from the server.")]
         public async Task KickCommand(SocketGuildUser user, string reason = "No reason given.") {
-            await RespondAsync("", embed: new EmbedBuilder() {
+            var confirmMessage = await ReplyAsync("", false, new EmbedBuilder() {
                 Title = "Are you sure you want to kick this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder>() {
@@ -65,11 +64,10 @@ namespace FinderNET.Modules {
                     Text = $"FinderBot"
                 }
             }.Build());
-            var message = await GetOriginalResponseAsync();
-            await message.AddReactionAsync(new Emoji("✅"));
+            await confirmMessage.AddReactionAsync(new Emoji("✅"));
             moderationMessages.Add(new ModerationMessage() {
-                messageId = message.Id,
-                channelId = message.Channel.Id,
+                messageId = confirmMessage.Id,
+                channelId = confirmMessage.Channel.Id,
                 guildId = Context.Guild.Id,
                 senderId = Context.User.Id,
                 userId = user.Id,
@@ -80,7 +78,7 @@ namespace FinderNET.Modules {
 
         [SlashCommand("warn", "Warns a user.")]
         public async Task WarnCommand(SocketGuildUser user, string reason = "No reason given.") {
-            await RespondAsync("", embed: new EmbedBuilder() {
+            var confirmMessage = await ReplyAsync("", false, new EmbedBuilder() {
                 Title = "Are you sure you want to warn this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder>() {
@@ -99,11 +97,10 @@ namespace FinderNET.Modules {
                     Text = $"FinderBot"
                 }
             }.Build());
-            var message = await GetOriginalResponseAsync();
-            await message.AddReactionAsync(new Emoji("✅"));
+            await confirmMessage.AddReactionAsync(new Emoji("✅"));
             moderationMessages.Add(new ModerationMessage() {
-                messageId = message.Id,
-                channelId = message.Channel.Id,
+                messageId = confirmMessage.Id,
+                channelId = confirmMessage.Channel.Id,
                 guildId = Context.Guild.Id,
                 senderId = Context.User.Id,
                 userId = user.Id,
@@ -114,7 +111,7 @@ namespace FinderNET.Modules {
 
         [SlashCommand("mute", "Mutes a user.")]
         public async Task MuteCommand(SocketGuildUser user, string reason = "No reason given.") {
-            await RespondAsync("", embed: new EmbedBuilder() {
+            var confirmMessage = await ReplyAsync("", false, new EmbedBuilder() {
                 Title = "Are you sure you want to mute this user?",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder>() {
@@ -133,11 +130,10 @@ namespace FinderNET.Modules {
                     Text = $"FinderBot"
                 }
             }.Build());
-            var message = await GetOriginalResponseAsync();
-            await message.AddReactionAsync(new Emoji("✅"));
+            await confirmMessage.AddReactionAsync(new Emoji("✅"));
             moderationMessages.Add(new ModerationMessage() {
-                messageId = message.Id,
-                channelId = message.Channel.Id,
+                messageId = confirmMessage.Id,
+                channelId = confirmMessage.Channel.Id,
                 guildId = Context.Guild.Id,
                 senderId = Context.User.Id,
                 userId = user.Id,
