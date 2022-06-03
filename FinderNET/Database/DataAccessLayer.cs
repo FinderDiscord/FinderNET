@@ -70,10 +70,7 @@ namespace FinderNET.Database {
             context.Entry(new Addons() { Id = id, addons = addonsList.addons }).Property(x => x.addons).IsModified = true;
             await context.SaveChangesAsync();
         }
-
-
-
-
+      
         // UserLogs
 
         public async Task<UserLogs> GetUserLogs(Int64 guildId, Int64 userId) {
@@ -419,8 +416,36 @@ namespace FinderNET.Database {
                     answers = answers
                 });
             }
+        }
+        // Countdown
+
+        public async Task<DateTime?> GetDateTime(Int64 id) {
+            using var context = contextFactory.CreateDbContext();
+            var countdown = await context.countdown.FindAsync(id);
+            if (countdown == null) return null;
+            return countdown.CountdownEnd;
+        }
+
+        public async Task SetDateTime(Int64 id, DateTime dateTime) {
+            using var context = contextFactory.CreateDbContext();
+            var countdown = await context.countdown.FindAsync(id);
+            if (countdown == null) {
+                context.Add(new Countdown { MessageId = id, CountdownEnd = dateTime });
+            } else {
+                context.Entry(new Countdown() { MessageId = id, CountdownEnd = dateTime }).Property(x => x.CountdownEnd).IsModified = true;
+            }
             await context.SaveChangesAsync();
         }
+              
+        public async Task RemoveDateTime(Int64 id) {
+            using var context = contextFactory.CreateDbContext();
+            var countdown = await context.countdown.FindAsync(id);
+            if (countdown == null) return;
+            context.Remove(countdown);
+            await context.SaveChangesAsync();
+        }
+              
+        // polls
 
         public async Task AddVoterId(Int64 messageId, Int64 voterId) {
             using var context = contextFactory.CreateDbContext();
@@ -480,7 +505,6 @@ namespace FinderNET.Database {
             var poll = await context.polls.FindAsync(messageId);
             if (poll == null) return;
             context.Remove(poll);
-            await context.SaveChangesAsync();
         }
     }
 }
