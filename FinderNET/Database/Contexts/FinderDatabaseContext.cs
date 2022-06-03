@@ -10,8 +10,12 @@ namespace FinderNET.Database.Contexts {
         }
 
         public DbSet<Addons> addons { get; set; }
+<<<<<<< Updated upstream
         public DbSet<UserLogs> userLogs { get; set; }
         public DbSet<Settings> settings { get; set; }
         public DbSet<Poll> polls { get; set; }
+=======
+        public DbSet<Countdown> countdowns { get; set; }
+>>>>>>> Stashed changes
     }
 }
