@@ -13,14 +13,14 @@ namespace FinderNET.Modules {
             var pharser = new Parser();
             var date = pharser.Parse(datetime);
             if (date == null || date.Start == null) {
-                await ReplyAsync("Invalid date or time");
+                await RespondAsync("Invalid date or time");
                 return;
             }
             if (date.Start.Value < DateTime.Now) {
-                await ReplyAsync("The date or time is in the past");
+                await RespondAsync("The date or time is in the past");
                 return;
             }
-            await ReplyAsync("", false, new EmbedBuilder() {
+            await RespondAsync("", embed: new EmbedBuilder() {
                 Title = "Countdown",
                 Color = Color.Orange,
                 Fields = new List<EmbedFieldBuilder> {
