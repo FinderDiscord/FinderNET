@@ -70,5 +70,33 @@ namespace FinderNET.Database {
             context.Entry(new Addons() { Id = id, addons = addonsList.addons }).Property(x => x.addons).IsModified = true;
             await context.SaveChangesAsync();
         }
+
+        // Countdown
+
+        public async Task<DateTime?> GetDateTime(Int64 id) {
+            using var context = contextFactory.CreateDbContext();
+            var countdown = await context.countdown.FindAsync(id);
+            if (countdown == null) return null;
+            return countdown.CountdownEnd;
+        }
+
+        public async Task SetDateTime(Int64 id, DateTime dateTime) {
+            using var context = contextFactory.CreateDbContext();
+            var countdown = await context.countdown.FindAsync(id);
+            if (countdown == null) {
+                context.Add(new Countdown { MessageId = id, CountdownEnd = dateTime });
+            } else {
+                context.Entry(new Countdown() { MessageId = id, CountdownEnd = dateTime }).Property(x => x.CountdownEnd).IsModified = true;
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveDateTime(Int64 id) {
+            using var context = contextFactory.CreateDbContext();
+            var countdown = await context.countdown.FindAsync(id);
+            if (countdown == null) return;
+            context.Remove(countdown);
+            await context.SaveChangesAsync();
+        }
     }
 }
