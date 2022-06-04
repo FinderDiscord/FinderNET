@@ -9,7 +9,7 @@ namespace FinderNET.Modules {
     public class CountdownModule : ModuleBase {
         public CountdownModule(DataAccessLayer dataAccessLayer) : base(dataAccessLayer) { }
         [SlashCommand("countdown", "Countdown to a specific date or time")]
-        public async Task CountdownCommand(string datetime) {
+        public async Task CountdownCommand(string datetime, IMentionable? ping = null) {
             var pharser = new Parser();
             var date = pharser.Parse(datetime);
             if (date == null || date.Start == null) {
@@ -52,6 +52,21 @@ namespace FinderNET.Modules {
             }.Build());
             var messages = await GetOriginalResponseAsync();
             await dataAccessLayer.SetCountdown((Int64)messages.Id, (Int64)messages.Channel.Id, (Int64)Context.Guild.Id, date.ToTime().ToUniversalTime());
+            SocketRole? role = null;
+            SocketGuildUser? user = null;
+            if (ping != null) {
+                if (ping as SocketGuildUser == null) {
+                    if (ping as SocketRole == null) {
+                        await RespondAsync("Invalid ping");
+                        return;
+                    }
+                    role = (SocketRole)ping;
+                    await dataAccessLayer.SetPingUserId((Int64)messages.Id, (Int64)messages.Channel.Id, (Int64)Context.Guild.Id, (Int64)role.Id);
+                } else {
+                    user = (SocketGuildUser)ping;
+                    await dataAccessLayer.SetPingUserId((Int64)messages.Id, (Int64)messages.Channel.Id, (Int64)Context.Guild.Id, (Int64)user.Id);
+                }
+            }
         }
     }
     public static class CountdownTimer {
@@ -69,7 +84,9 @@ namespace FinderNET.Modules {
 
         public static async void OnTimerElapsed(object source, ElapsedEventArgs e) {
             foreach (var c in await dataAccessLayer.GetAllCountdowns()) {
-                IUserMessage messages = (IUserMessage) await ((ISocketMessageChannel)client.GetGuild((ulong)c.guildId).GetChannel((ulong)c.channelId)).GetMessageAsync((ulong)c.messageId);
+                SocketGuild guild = client.GetGuild((ulong)c.guildId);
+                ITextChannel channel = (ITextChannel)guild.GetChannel((ulong)c.channelId);
+                IUserMessage messages = (IUserMessage) await channel.GetMessageAsync((ulong)c.messageId);
                 if (c.dateTime < DateTime.UtcNow) {
                     await messages.ModifyAsync(x => x.Embed = new EmbedBuilder() {
                         Title = "Countdown",
@@ -84,6 +101,19 @@ namespace FinderNET.Modules {
                             Text = "FinderBot"
                         }
                     }.Build());
+                    Int64? userId = await dataAccessLayer.GetPingUserId(c.messageId, c.channelId, c.guildId);
+                    Int64? roleId = await dataAccessLayer.GetPingRoleId(c.messageId, c.channelId, c.guildId);
+                    if (userId != null) {
+                        SocketGuildUser user = guild.GetUser((ulong)userId);
+                        if (user != null) {
+                            await channel.SendMessageAsync($"{user.Mention} times up!");
+                        }
+                    } else if (roleId != null) {
+                        SocketRole role = guild.GetRole((ulong)roleId);
+                        if (role != null) {
+                            await channel.SendMessageAsync($"{role.Mention} times up!");
+                        }
+                    }
                     await dataAccessLayer.RemoveCountdown(c.messageId, c.channelId, c.guildId);
                     continue;
                 } else {

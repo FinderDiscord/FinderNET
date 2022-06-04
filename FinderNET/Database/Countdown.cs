@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Discord;
 namespace FinderNET.Database {
     public class Countdown {
         [Key]
@@ -8,7 +9,7 @@ namespace FinderNET.Database {
         [Key]
         public Int64 guildId { get; set; }
         public DateTime dateTime { get; set; }
-        // public List<Int64> pingUsersId { get; set; }
-        // todo add ping roles support
+        public Int64? pingUserId { get; set; }
+        public Int64? pingRoleId { get; set; }
     }
 }

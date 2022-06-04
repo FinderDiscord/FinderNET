@@ -583,5 +583,72 @@ namespace FinderNET.Database {
             });
             await context.SaveChangesAsync();
         }
+
+        public async Task<Int64?> GetPingUserId(Int64 messageId, Int64 channelId, Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var ping = await context.countdowns.FindAsync(messageId, channelId, guildId);
+            if (ping == null) return null;
+            return ping.pingUserId;
+        }
+
+        public async Task SetPingUserId(Int64 messageId, Int64 channelId, Int64 guildId, Int64 userId) {
+            using var context = contextFactory.CreateDbContext();
+            var ping = await context.countdowns.FindAsync(messageId, channelId, guildId);
+            if (ping == null) return;
+            context.Entry(ping).CurrentValues.SetValues(new Countdown() {
+                messageId = messageId,
+                channelId = channelId,
+                guildId = guildId,
+                pingUserId = userId
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<Int64?> GetPingRoleId(Int64 messageId, Int64 channelId, Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var ping = await context.countdowns.FindAsync(messageId, channelId, guildId);
+            if (ping == null) return null;
+            return ping.pingRoleId;
+        }
+
+        public async Task SetPingRoleId(Int64 messageId, Int64 channelId, Int64 guildId, Int64 roleId) {
+            using var context = contextFactory.CreateDbContext();
+            var ping = await context.countdowns.FindAsync(messageId, channelId, guildId);
+            if (ping == null) return;
+            context.Entry(ping).CurrentValues.SetValues(new Countdown() {
+                messageId = messageId,
+                channelId = channelId,
+                guildId = guildId,
+                pingRoleId = roleId
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemovePingUserId(Int64 messageId, Int64 channelId, Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var ping = await context.countdowns.FindAsync(messageId, channelId, guildId);
+            if (ping == null) return;
+            context.Entry(ping).CurrentValues.SetValues(new Countdown() {
+                messageId = messageId,
+                channelId = channelId,
+                guildId = guildId,
+                pingUserId = null
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemovePingRoleId(Int64 messageId, Int64 channelId, Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var ping = await context.countdowns.FindAsync(messageId, channelId, guildId);
+            if (ping == null) return;
+            context.Entry(ping).CurrentValues.SetValues(new Countdown() {
+                messageId = messageId,
+                channelId = channelId,
+                guildId = guildId,
+                pingRoleId = null
+            });
+            await context.SaveChangesAsync();
+        }
+
     }
 }
