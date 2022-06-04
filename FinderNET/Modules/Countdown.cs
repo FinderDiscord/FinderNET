@@ -25,18 +25,48 @@ namespace FinderNET.Modules {
                 return;
             }
             string message = "";
-            if (date.Start.Value.Second - DateTime.Now.Second > 0)
-                message = $"{date.Start.Value.Second - DateTime.Now.Second} seconds{(date.Start.Value.Second - DateTime.Now.Second == 1 ? "" : "s")} {message}";
-            if (date.Start.Value.Minute - DateTime.Now.Minute > 0)
-                message = $"{date.Start.Value.Minute - DateTime.Now.Minute} minute{(date.Start.Value.Minute - DateTime.Now.Minute == 1 ? "" : "s")} {message}";
-            if (date.Start.Value.Hour - DateTime.Now.Hour > 0)
-                message = $"{date.Start.Value.Hour - DateTime.Now.Hour} hour{(date.Start.Value.Hour - DateTime.Now.Hour == 1 ? "" : "s")} {message}";
-            if (date.Start.Value.Day - DateTime.Now.Day > 0)
-                message = $"{date.Start.Value.Day - DateTime.Now.Day} day{(date.Start.Value.Day - DateTime.Now.Day == 1 ? "" : "s")} {message}";
-            if (date.Start.Value.Month - DateTime.Now.Month > 0)
-                message = $"{date.Start.Value.Month - DateTime.Now.Month} month{(date.Start.Value.Month - DateTime.Now.Month == 1 ? "" : "s")} {message}";
-            if (date.Start.Value.Year - DateTime.Now.Year > 0)
-                message = $"{date.Start.Value.Year - DateTime.Now.Year} year{(date.Start.Value.Year - DateTime.Now.Year == 1 ? "" : "s")} {message}";
+            if (int.Parse(date.Start.Value.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy")) > 0) {
+                message += $"{int.Parse(date.Start.Value.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy"))} year";
+                if (int.Parse(date.Start.Value.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy")) > 1) {
+                    message += "s";
+                }
+                message += " ";
+            }
+            if (int.Parse(date.Start.Value.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM")) > 0) {
+                message += $"{int.Parse(date.Start.Value.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM"))} month";
+                if (int.Parse(date.Start.Value.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM")) > 1) {
+                    message += "s";
+                }
+                message += " ";
+            }
+            if (int.Parse(date.Start.Value.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd")) > 0) {
+                message += $"{int.Parse(date.Start.Value.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd"))} day";
+                if (int.Parse(date.Start.Value.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd")) > 1) {
+                    message += "s";
+                }
+                message += " ";
+            }
+            if (int.Parse(date.Start.Value.ToString("hh")) - int.Parse(DateTime.Now.ToString("hh")) > 0) {
+                message += $"{int.Parse(date.Start.Value.ToString("hh")) - int.Parse(DateTime.Now.ToString("hh"))} hour";
+                if (int.Parse(date.Start.Value.ToString("hh")) - int.Parse(DateTime.Now.ToString("hh")) > 1) {
+                    message += "s";
+                }
+                message += " ";
+            }
+            if (int.Parse(date.Start.Value.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm")) > 0) {
+                message += $"{int.Parse(date.Start.Value.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm"))} minute";
+                if (int.Parse(date.Start.Value.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm")) > 1) {
+                    message += "s";
+                }
+                message += " ";
+            }
+            if (int.Parse(date.Start.Value.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss")) > 0) {
+                message += $"{int.Parse(date.Start.Value.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss"))} second";
+                if (int.Parse(date.Start.Value.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss")) > 1) {
+                    message += "s";
+                }
+                message += " ";
+            }
             await RespondAsync("", embed: new EmbedBuilder() {
                 Title = "Countdown",
                 Color = Color.Orange,
@@ -118,18 +148,49 @@ namespace FinderNET.Modules {
                     continue;
                 } else {
                     string message = "";
-                    if (c.dateTime.Second - DateTime.Now.Second > 0)
-                        message = $"{c.dateTime.Second - DateTime.Now.Second} seconds{(c.dateTime.Second - DateTime.Now.Second == 1 ? "" : "s")} {messages}";
-                    if (c.dateTime.Minute - DateTime.Now.Minute > 0)
-                        message = $"{c.dateTime.Minute - DateTime.Now.Minute} minute{(c.dateTime.Minute - DateTime.Now.Minute == 1 ? "" : "s")} {messages}";
-                    if (c.dateTime.Hour - DateTime.Now.Hour > 0)
-                        message = $"{c.dateTime.Hour - DateTime.Now.Hour} hour{(c.dateTime.Hour - DateTime.Now.Hour == 1 ? "" : "s")} {messages}";
-                    if (c.dateTime.Day - DateTime.Now.Day > 0)
-                        message = $"{c.dateTime.Day - DateTime.Now.Day} day{(c.dateTime.Day - DateTime.Now.Day == 1 ? "" : "s")} {messages}";
-                    if (c.dateTime.Month - DateTime.Now.Month > 0)
-                        message = $"{c.dateTime.Month - DateTime.Now.Month} month{(c.dateTime.Month - DateTime.Now.Month == 1 ? "" : "s")} {messages}";
-                    if (c.dateTime.Year - DateTime.Now.Year > 0)
-                        message = $"{c.dateTime.Year - DateTime.Now.Year} year{(c.dateTime.Year - DateTime.Now.Year == 1 ? "" : "s")} {messages}";
+                    if (c.dateTime.ToString("yyyy") != DateTime.Now.ToString("yyyy")) {
+                        message += $"{int.Parse(c.dateTime.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy"))} year";
+                        if (int.Parse(c.dateTime.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy")) > 1) {
+                            message += "s";
+                        }
+                        message += " ";
+                    }
+                    if (c.dateTime.ToString("MM") != DateTime.Now.ToString("MM")) {
+                        message += $"{int.Parse(c.dateTime.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM"))} month";
+                        if (int.Parse(c.dateTime.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM")) > 1) {
+                            message += "s";
+                        }
+                        message += " ";
+                    }
+                    if (c.dateTime.ToString("dd") != DateTime.Now.ToString("dd")) {
+                        message += $"{int.Parse(c.dateTime.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd"))} day";
+                        if (int.Parse(c.dateTime.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd")) > 1) {
+                            message += "s";
+                        }
+                        message += " ";
+                    }
+                    if (c.dateTime.ToString("hh") != DateTime.Now.ToString("hh")) {
+                        message += $"{int.Parse(c.dateTime.ToString("hh")) - int.Parse(DateTime.Now.ToString("hh"))} hour";
+                        if (int.Parse(c.dateTime.ToString("hh")) - int.Parse(DateTime.Now.ToString("hh")) > 1) {
+                            message += "s";
+                        }
+                        message += " ";
+                    }
+                    if (c.dateTime.ToString("mm") != DateTime.Now.ToString("mm")) {
+                        message += $"{int.Parse(c.dateTime.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm"))} minute";
+                        if (int.Parse(c.dateTime.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm")) > 1) {
+                            message += "s";
+                        }
+                        message += " ";
+                    }
+                    if (c.dateTime.ToString("ss") != DateTime.Now.ToString("ss")) {
+                        message += $"{int.Parse(c.dateTime.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss"))} second";
+                        if (int.Parse(c.dateTime.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss")) > 1) {
+                            message += "s";
+                        }
+                        message += " ";
+                    }
+                    await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Countdown", $"{c.dateTime.Year - DateTime.Now.Year} y {c.dateTime.Month - DateTime.Now.Month} month {c.dateTime.Day - DateTime.Now.Day} d {c.dateTime.Hour - DateTime.Now.Hour} h {c.dateTime.Minute - DateTime.Now.Minute} m {c.dateTime.Second - DateTime.Now.Second} s"));
                     await messages.ModifyAsync((x => x.Embed = new EmbedBuilder() {
                         Title = "Countdown",
                         Color = Color.Orange,
