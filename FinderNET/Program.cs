@@ -21,6 +21,8 @@ namespace FinderNET {
             client.Log += LoggingService.LogAsync;
             commands.Log += LoggingService.LogAsync;
             client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
+            client.ReactionAdded += new ModerationModule(services.GetRequiredService<DataAccessLayer>()).OnReactionAddedEvent;
+            client.ButtonExecuted += new PollModule(services.GetRequiredService<DataAccessLayer>()).OnButtonExecutedEvent;
             await client.LoginAsync(TokenType.Bot, config["token"]);
             await client.StartAsync();
             await Task.Delay(Timeout.Infinite);
