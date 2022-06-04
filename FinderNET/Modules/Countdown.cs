@@ -87,7 +87,7 @@ namespace FinderNET.Modules {
                 SocketGuild guild = client.GetGuild((ulong)c.guildId);
                 ITextChannel channel = (ITextChannel)guild.GetChannel((ulong)c.channelId);
                 IUserMessage messages = (IUserMessage) await channel.GetMessageAsync((ulong)c.messageId);
-                if (c.dateTime < DateTime.UtcNow) {
+                if (c.dateTime > DateTime.Now) {
                     await messages.ModifyAsync(x => x.Embed = new EmbedBuilder() {
                         Title = "Countdown",
                         Color = Color.Orange,
