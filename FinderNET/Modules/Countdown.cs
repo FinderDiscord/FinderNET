@@ -190,7 +190,6 @@ namespace FinderNET.Modules {
                         }
                         message += " ";
                     }
-                    await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Countdown", $"{c.dateTime.Year - DateTime.Now.Year} y {c.dateTime.Month - DateTime.Now.Month} month {c.dateTime.Day - DateTime.Now.Day} d {c.dateTime.Hour - DateTime.Now.Hour} h {c.dateTime.Minute - DateTime.Now.Minute} m {c.dateTime.Second - DateTime.Now.Second} s"));
                     await messages.ModifyAsync((x => x.Embed = new EmbedBuilder() {
                         Title = "Countdown",
                         Color = Color.Orange,
