@@ -1,5 +1,6 @@
 ﻿using FinderNET.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Discord;
 
 namespace FinderNET.Database {
     public class DataAccessLayer {
@@ -478,6 +479,109 @@ namespace FinderNET.Database {
             var poll = await context.polls.FindAsync(messageId);
             if (poll == null) return;
             context.Remove(poll);
+        }
+
+
+        // countdown
+        public async Task<Countdown?> GetCountdown(Int64 messageId, Int64 channelId, Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var countdown = await context.countdowns.FindAsync(messageId, channelId, guildId);
+            if (countdown == null) return null;
+            return countdown;
+        }
+
+        public async Task<List<Countdown?>> GetCountdownsInChannel(Int64 channelId, Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var countdowns = await context.countdowns.Where(x => x.channelId == channelId && x.guildId == guildId).ToListAsync();
+            return countdowns;
+        }
+
+        public async Task<List<Countdown?>> GetCountdownsInGuild(Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var countdowns = await context.countdowns.Where(x => x.guildId == guildId).ToListAsync();
+            return countdowns;
+        }
+
+        public async Task<List<Countdown?>> GetAllCountdowns() {
+            using var context = contextFactory.CreateDbContext();
+            var countdowns = await context.countdowns.ToListAsync();
+            return countdowns;
+        }
+
+        public async Task SetCountdown(Int64 messageId, Int64 channelId, Int64 guildId, DateTime endTime) {
+            using var context = contextFactory.CreateDbContext();
+            var countdown = await context.countdowns.FindAsync(messageId, channelId, guildId);
+            if (countdown == null) {
+                countdown = context.Add(new Countdown() {
+                    messageId = messageId,
+                    channelId = channelId,
+                    guildId = guildId,
+                    dateTime = endTime
+                }).Entity;
+            } else {
+                context.Entry(countdown).CurrentValues.SetValues(new Countdown() {
+                    messageId = messageId,
+                    channelId = channelId,
+                    guildId = guildId,
+                    dateTime = endTime
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveCountdown(Int64 messageId, Int64 channelId, Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var countdown = await context.countdowns.FindAsync(messageId, channelId, guildId);
+            if (countdown == null) return;
+            context.Remove(countdown);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveAllCountdownsInChannel(Int64 channelId, Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var countdowns = await context.countdowns.Where(x => x.channelId == channelId && x.guildId == guildId).ToListAsync();
+            foreach (var countdown in countdowns) {
+                context.Remove(countdown);
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveAllCountdownsInGuild(Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var countdowns = await context.countdowns.Where(x => x.guildId == guildId).ToListAsync();
+            foreach (var countdown in countdowns) {
+                context.Remove(countdown);
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveAllCountdowns() {
+            using var context = contextFactory.CreateDbContext();
+            var countdowns = await context.countdowns.ToListAsync();
+            foreach (var countdown in countdowns) {
+                context.Remove(countdown);
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<DateTime?> GetCountdownEndTime(Int64 messageId, Int64 channelId, Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var countdown = await context.countdowns.FindAsync(messageId, channelId, guildId);
+            if (countdown == null) return null;
+            return countdown.dateTime;
+        }
+
+        public async Task SetCountdownEndTime(Int64 messageId, Int64 channelId, Int64 guildId, DateTime endTime) {
+            using var context = contextFactory.CreateDbContext();
+            var countdown = await context.countdowns.FindAsync(messageId, channelId, guildId);
+            if (countdown == null) return;
+            context.Entry(countdown).CurrentValues.SetValues(new Countdown() {
+                messageId = messageId,
+                channelId = channelId,
+                guildId = guildId,
+                dateTime = endTime
+            });
+            await context.SaveChangesAsync();
         }
     }
 }
