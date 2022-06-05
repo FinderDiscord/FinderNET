@@ -16,56 +16,30 @@ namespace FinderNET.Modules {
                 await RespondAsync("Invalid date or time");
                 return;
             }
-            if (date < DateTime.Now) {
+            TimeSpan timeLeft = date - DateTime.Now;
+            if (timeLeft.TotalSeconds < 0) {
                 await RespondAsync("The date or time is in the past");
                 return;
             }
-            if (date.Year - DateTime.Now.Year > 2) {
+            if (timeLeft.TotalDays > 365) {
                 await RespondAsync("The date or time is too far in the future");
                 return;
             }
             string message = "";
-            if (int.Parse(date.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy")) > 0) {
-                message += $"{int.Parse(date.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy"))} year";
-                if (int.Parse(date.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy")) > 1) {
-                    message += "s";
-                }
-                message += " ";
+            if (timeLeft.Days > 0) {
+                message += $"{timeLeft.Days} day{(timeLeft.Days == 1 ? "" : "s")}";
             }
-            if (int.Parse(date.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM")) > 0) {
-                message += $"{int.Parse(date.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM"))} month";
-                if (int.Parse(date.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM")) > 1) {
-                    message += "s";
-                }
-                message += " ";
+            if (timeLeft.Hours > 0) {
+                if (message != "") message += ", ";
+                message += $"{timeLeft.Hours} hour{(timeLeft.Hours == 1 ? "" : "s")}";
             }
-            if (int.Parse(date.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd")) > 0) {
-                message += $"{int.Parse(date.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd"))} day";
-                if (int.Parse(date.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd")) > 1) {
-                    message += "s";
-                }
-                message += " ";
+            if (timeLeft.Minutes > 0) {
+                if (message != "") message += ", ";
+                message += $"{timeLeft.Minutes} minute{(timeLeft.Minutes == 1 ? "" : "s")}";
             }
-            if (int.Parse(date.ToString("HH")) - int.Parse(DateTime.Now.ToString("HH")) > 0) {
-                message += $"{int.Parse(date.ToString("HH")) - int.Parse(DateTime.Now.ToString("HH"))} hour";
-                if (int.Parse(date.ToString("HH")) - int.Parse(DateTime.Now.ToString("HH")) > 1) {
-                    message += "s";
-                }
-                message += " ";
-            }
-            if (int.Parse(date.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm")) > 0) {
-                message += $"{int.Parse(date.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm"))} minute";
-                if (int.Parse(date.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm")) > 1) {
-                    message += "s";
-                }
-                message += " ";
-            }
-            if (int.Parse(date.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss")) > 0) {
-                message += $"{int.Parse(date.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss"))} second";
-                if (int.Parse(date.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss")) > 1) {
-                    message += "s";
-                }
-                message += " ";
+            if (timeLeft.Seconds > 0) {
+                if (message != "") message += " and ";
+                message += $"{timeLeft.Seconds} second{(timeLeft.Seconds == 1 ? "" : "s")}";
             }
             await RespondAsync("", embed: new EmbedBuilder() {
                 Title = "Countdown",
@@ -117,7 +91,8 @@ namespace FinderNET.Modules {
                 SocketGuild guild = client.GetGuild((ulong)c.guildId);
                 ITextChannel channel = (ITextChannel)guild.GetChannel((ulong)c.channelId);
                 IUserMessage messages = (IUserMessage) await channel.GetMessageAsync((ulong)c.messageId);
-                if (c.dateTime < DateTime.Now) {
+                TimeSpan timeLeft = c.dateTime - DateTime.Now;
+                if (timeLeft.TotalSeconds < 0) {
                     await messages.ModifyAsync(x => x.Embed = new EmbedBuilder() {
                         Title = "Countdown",
                         Color = Color.Orange,
@@ -148,47 +123,20 @@ namespace FinderNET.Modules {
                     continue;
                 } else {
                     string message = "";
-                    if (c.dateTime.ToString("yyyy") != DateTime.Now.ToString("yyyy")) {
-                        message += $"{int.Parse(c.dateTime.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy"))} year";
-                        if (int.Parse(c.dateTime.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy")) > 1) {
-                            message += "s";
-                        }
-                        message += " ";
+                    if (timeLeft.Days > 0) {
+                        message += $"{timeLeft.Days} day{(timeLeft.Days == 1 ? "" : "s")}";
                     }
-                    if (c.dateTime.ToString("MM") != DateTime.Now.ToString("MM")) {
-                        message += $"{int.Parse(c.dateTime.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM"))} month";
-                        if (int.Parse(c.dateTime.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM")) > 1) {
-                            message += "s";
-                        }
-                        message += " ";
+                    if (timeLeft.Hours > 0) {
+                        if (message != "") message += ", ";
+                        message += $"{timeLeft.Hours} hour{(timeLeft.Hours == 1 ? "" : "s")}";
                     }
-                    if (c.dateTime.ToString("dd") != DateTime.Now.ToString("dd")) {
-                        message += $"{int.Parse(c.dateTime.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd"))} day";
-                        if (int.Parse(c.dateTime.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd")) > 1) {
-                            message += "s";
-                        }
-                        message += " ";
+                    if (timeLeft.Minutes > 0) {
+                        if (message != "") message += ", ";
+                        message += $"{timeLeft.Minutes} minute{(timeLeft.Minutes == 1 ? "" : "s")}";
                     }
-                    if (c.dateTime.ToString("hh") != DateTime.Now.ToString("hh")) {
-                        message += $"{int.Parse(c.dateTime.ToString("hh")) - int.Parse(DateTime.Now.ToString("hh"))} hour";
-                        if (int.Parse(c.dateTime.ToString("hh")) - int.Parse(DateTime.Now.ToString("hh")) > 1) {
-                            message += "s";
-                        }
-                        message += " ";
-                    }
-                    if (c.dateTime.ToString("mm") != DateTime.Now.ToString("mm")) {
-                        message += $"{int.Parse(c.dateTime.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm"))} minute";
-                        if (int.Parse(c.dateTime.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm")) > 1) {
-                            message += "s";
-                        }
-                        message += " ";
-                    }
-                    if (c.dateTime.ToString("ss") != DateTime.Now.ToString("ss")) {
-                        message += $"{int.Parse(c.dateTime.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss"))} second";
-                        if (int.Parse(c.dateTime.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss")) > 1) {
-                            message += "s";
-                        }
-                        message += " ";
+                    if (timeLeft.Seconds > 0) {
+                        if (message != "") message += " and ";
+                        message += $"{timeLeft.Seconds} second{(timeLeft.Seconds == 1 ? "" : "s")}";
                     }
                     await messages.ModifyAsync((x => x.Embed = new EmbedBuilder() {
                         Title = "Countdown",
