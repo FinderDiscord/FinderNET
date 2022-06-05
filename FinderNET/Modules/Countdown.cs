@@ -2,67 +2,67 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using FinderNET.Database;
-using Chronic;
 using System.Timers;
-
+using Pathoschild.NaturalTimeParser.Parser;
 namespace FinderNET.Modules {
     public class CountdownModule : ModuleBase {
         public CountdownModule(DataAccessLayer dataAccessLayer) : base(dataAccessLayer) { }
         [SlashCommand("countdown", "Countdown to a specific date or time")]
         public async Task CountdownCommand(string datetime, IMentionable? ping = null) {
-            var pharser = new Parser();
-            var date = pharser.Parse(datetime);
-            if (date == null || date.Start == null) {
+            DateTime date;
+            try {
+                date = DateTime.Now.Offset(datetime);
+            } catch (TimeParseFormatException) {
                 await RespondAsync("Invalid date or time");
                 return;
             }
-            if (date.Start.Value < DateTime.Now) {
+            if (date < DateTime.Now) {
                 await RespondAsync("The date or time is in the past");
                 return;
             }
-            if (date.Start.Value.Year - DateTime.Now.Year > 2) {
+            if (date.Year - DateTime.Now.Year > 2) {
                 await RespondAsync("The date or time is too far in the future");
                 return;
             }
             string message = "";
-            if (int.Parse(date.Start.Value.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy")) > 0) {
-                message += $"{int.Parse(date.Start.Value.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy"))} year";
-                if (int.Parse(date.Start.Value.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy")) > 1) {
+            if (int.Parse(date.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy")) > 0) {
+                message += $"{int.Parse(date.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy"))} year";
+                if (int.Parse(date.ToString("yyyy")) - int.Parse(DateTime.Now.ToString("yyyy")) > 1) {
                     message += "s";
                 }
                 message += " ";
             }
-            if (int.Parse(date.Start.Value.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM")) > 0) {
-                message += $"{int.Parse(date.Start.Value.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM"))} month";
-                if (int.Parse(date.Start.Value.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM")) > 1) {
+            if (int.Parse(date.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM")) > 0) {
+                message += $"{int.Parse(date.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM"))} month";
+                if (int.Parse(date.ToString("MM")) - int.Parse(DateTime.Now.ToString("MM")) > 1) {
                     message += "s";
                 }
                 message += " ";
             }
-            if (int.Parse(date.Start.Value.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd")) > 0) {
-                message += $"{int.Parse(date.Start.Value.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd"))} day";
-                if (int.Parse(date.Start.Value.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd")) > 1) {
+            if (int.Parse(date.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd")) > 0) {
+                message += $"{int.Parse(date.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd"))} day";
+                if (int.Parse(date.ToString("dd")) - int.Parse(DateTime.Now.ToString("dd")) > 1) {
                     message += "s";
                 }
                 message += " ";
             }
-            if (int.Parse(date.Start.Value.ToString("hh")) - int.Parse(DateTime.Now.ToString("hh")) > 0) {
-                message += $"{int.Parse(date.Start.Value.ToString("hh")) - int.Parse(DateTime.Now.ToString("hh"))} hour";
-                if (int.Parse(date.Start.Value.ToString("hh")) - int.Parse(DateTime.Now.ToString("hh")) > 1) {
+            if (int.Parse(date.ToString("HH")) - int.Parse(DateTime.Now.ToString("HH")) > 0) {
+                message += $"{int.Parse(date.ToString("HH")) - int.Parse(DateTime.Now.ToString("HH"))} hour";
+                if (int.Parse(date.ToString("HH")) - int.Parse(DateTime.Now.ToString("HH")) > 1) {
                     message += "s";
                 }
                 message += " ";
             }
-            if (int.Parse(date.Start.Value.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm")) > 0) {
-                message += $"{int.Parse(date.Start.Value.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm"))} minute";
-                if (int.Parse(date.Start.Value.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm")) > 1) {
+            if (int.Parse(date.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm")) > 0) {
+                message += $"{int.Parse(date.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm"))} minute";
+                if (int.Parse(date.ToString("mm")) - int.Parse(DateTime.Now.ToString("mm")) > 1) {
                     message += "s";
                 }
                 message += " ";
             }
-            if (int.Parse(date.Start.Value.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss")) > 0) {
-                message += $"{int.Parse(date.Start.Value.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss"))} second";
-                if (int.Parse(date.Start.Value.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss")) > 1) {
+            if (int.Parse(date.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss")) > 0) {
+                message += $"{int.Parse(date.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss"))} second";
+                if (int.Parse(date.ToString("ss")) - int.Parse(DateTime.Now.ToString("ss")) > 1) {
                     message += "s";
                 }
                 message += " ";
@@ -81,7 +81,7 @@ namespace FinderNET.Modules {
                 }
             }.Build());
             var messages = await GetOriginalResponseAsync();
-            await dataAccessLayer.SetCountdown((Int64)messages.Id, (Int64)messages.Channel.Id, (Int64)Context.Guild.Id, date.ToTime().ToUniversalTime());
+            await dataAccessLayer.SetCountdown((Int64)messages.Id, (Int64)messages.Channel.Id, (Int64)Context.Guild.Id, date.ToUniversalTime());
             SocketRole? role = null;
             SocketGuildUser? user = null;
             if (ping != null) {
@@ -117,7 +117,7 @@ namespace FinderNET.Modules {
                 SocketGuild guild = client.GetGuild((ulong)c.guildId);
                 ITextChannel channel = (ITextChannel)guild.GetChannel((ulong)c.channelId);
                 IUserMessage messages = (IUserMessage) await channel.GetMessageAsync((ulong)c.messageId);
-                if (c.dateTime > DateTime.Now) {
+                if (c.dateTime < DateTime.Now) {
                     await messages.ModifyAsync(x => x.Embed = new EmbedBuilder() {
                         Title = "Countdown",
                         Color = Color.Orange,
