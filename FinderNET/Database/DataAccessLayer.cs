@@ -650,5 +650,194 @@ namespace FinderNET.Database {
             await context.SaveChangesAsync();
         }
 
+        // tickets
+
+        public async Task<List<Tickets>> GetTickets(Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            return await context.tickets.Where(x => x.guildId == guildId).ToListAsync();
+        }
+
+        public async Task<Tickets?> GetTicket(Int64 ticketId) {
+            using var context = contextFactory.CreateDbContext();
+            return await context.tickets.FindAsync(ticketId);
+        }
+
+        public async Task<Int64?> GetIntroMessageId(Int64 ticketId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return null;
+            return ticket.introMessageId;
+        }
+
+        public async Task SetIntroMessageId(Int64 ticketId, Int64 messageId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            context.Entry(ticket).CurrentValues.SetValues(new Tickets() {
+                ticketId = ticketId,
+                introMessageId = messageId
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveIntroMessageId(Int64 ticketId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            context.Entry(ticket).CurrentValues.SetValues(new Tickets() {
+                ticketId = ticketId,
+                introMessageId = null
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<string?> GetTicketName(Int64 ticketId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return null;
+            return ticket.name;
+        }
+
+        public async Task SetTicketName(Int64 ticketId, string name) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            context.Entry(ticket).CurrentValues.SetValues(new Tickets() {
+                ticketId = ticketId,
+                name = name
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveTicketName(Int64 ticketId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            context.Entry(ticket).CurrentValues.SetValues(new Tickets() {
+                ticketId = ticketId,
+                name = null
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task AddTicket(Int64 ticketId, Int64? guildId, Int64? channelId, Int64? userId, string? name, Int64? introMessageId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = new Tickets() {
+                ticketId = ticketId,
+                guildId = guildId,
+                supportChannelId = channelId,
+                userIds = new List<long?>() { userId },
+                name = name,
+                introMessageId = introMessageId,
+                claimedUserId = new List<long>()
+            };
+            context.tickets.Add(ticket);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveTicket(Int64 ticketId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            context.tickets.Remove(ticket);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<Int64?> GetGuildId(Int64 ticketId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return null;
+            return ticket.guildId;
+        }
+
+        public async Task<Int64?> GetChannelId(Int64 ticketId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return null;
+            return ticket.supportChannelId;
+        }
+
+        public async Task SetGuildId(Int64 ticketId, Int64 guildId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            context.Entry(ticket).CurrentValues.SetValues(new Tickets() {
+                ticketId = ticketId,
+                guildId = guildId
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task SetChannelId(Int64 ticketId, Int64 channelId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            context.Entry(ticket).CurrentValues.SetValues(new Tickets() {
+                ticketId = ticketId,
+                supportChannelId = channelId
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<List<Int64?>> GetTicketUsers(Int64 ticketId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return new List<Int64?>();
+            return ticket.userIds;
+        }
+
+        public async Task AddTicketUser(Int64 ticketId, Int64 userId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            if (ticket.userIds.Contains(userId)) return;
+            ticket.userIds.Add(userId);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveTicketUser(Int64 ticketId, Int64 userId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            if (!ticket.userIds.Contains(userId)) return;
+            ticket.userIds.Remove(userId);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<List<Int64>> GetClaimedUserId(Int64 ticketId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return new List<Int64>();
+            return ticket.claimedUserId;
+        }
+
+        public async Task SetClaimedUserId(Int64 ticketId, List<Int64> userIds) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            context.Entry(ticket).CurrentValues.SetValues(new Tickets() {
+                ticketId = ticketId,
+                claimedUserId = userIds
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task AddClaimedUserId(Int64 ticketId, Int64 userId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            if (ticket.claimedUserId.Contains(userId)) return;
+            ticket.claimedUserId.Add(userId);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveClaimedUserId(Int64 ticketId, Int64 userId) {
+            using var context = contextFactory.CreateDbContext();
+            var ticket = await context.tickets.FindAsync(ticketId);
+            if (ticket == null) return;
+            if (!ticket.claimedUserId.Contains(userId)) return;
+            ticket.claimedUserId.Remove(userId);
+            await context.SaveChangesAsync();
+        }
     }
 }
