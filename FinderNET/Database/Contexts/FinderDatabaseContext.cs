@@ -7,11 +7,17 @@ namespace FinderNET.Database.Contexts {
             builder.Entity<UserLogs>().HasKey(table => new {
                 table.guildId, table.userId
             });
+            builder.Entity<Countdown>().HasKey(table => new {
+                table.messageId, table.channelId, table.guildId
+            });
         }
+
+        
 
         public DbSet<Addons> addons { get; set; }
         public DbSet<UserLogs> userLogs { get; set; }
         public DbSet<Settings> settings { get; set; }
         public DbSet<Poll> polls { get; set; }
+        public DbSet<Countdown> countdowns { get; set; }
     }
 }

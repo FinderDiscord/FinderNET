@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using FinderNET.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinderNET.Migrations
 {
     [DbContext(typeof(FinderDatabaseContext))]
-    partial class FinderDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20220604113850_countdowns")]
+    partial class countdowns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,12 +56,6 @@ namespace FinderNET.Migrations
 
                     b.Property<DateTime>("dateTime")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("pingRoleId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("pingUserId")
-                        .HasColumnType("bigint");
 
                     b.HasKey("messageId", "channelId", "guildId");
 
