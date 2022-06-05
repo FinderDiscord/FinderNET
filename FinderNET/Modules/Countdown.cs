@@ -80,7 +80,7 @@ namespace FinderNET.Modules {
         public static void StartTimer(DiscordSocketClient _client, DataAccessLayer _dataAccessLayer) {
             client = _client;
             dataAccessLayer = _dataAccessLayer;
-            messageTimer = new System.Timers.Timer(5000);
+            messageTimer = new System.Timers.Timer(3000);
             messageTimer.Elapsed += OnTimerElapsed;
             messageTimer.AutoReset = true;
             messageTimer.Enabled = true;
@@ -91,6 +91,10 @@ namespace FinderNET.Modules {
                 SocketGuild guild = client.GetGuild((ulong)c.guildId);
                 ITextChannel channel = (ITextChannel)guild.GetChannel((ulong)c.channelId);
                 IUserMessage messages = (IUserMessage) await channel.GetMessageAsync((ulong)c.messageId);
+                if (messages == null) {
+                    await dataAccessLayer.RemoveCountdown((Int64)c.messageId, (Int64)c.channelId, (Int64)c.guildId);
+                    continue;
+                }
                 TimeSpan timeLeft = c.dateTime - DateTime.Now;
                 if (timeLeft.TotalSeconds < 0) {
                     await messages.ModifyAsync(x => x.Embed = new EmbedBuilder() {
