@@ -78,6 +78,7 @@ $ dotnet ef database update
 ```
 
 ### Finally run the bot.
+#### The database will start automaticly if not already running
 ```bash
 $ dotnet restore
 $ dotnet run
