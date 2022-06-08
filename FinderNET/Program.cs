@@ -4,16 +4,19 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using FinderNET.Modules;
-using Discord.Commands;
 using FinderNET.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using FinderNET.Database;
+using System.Diagnostics;
 
 namespace FinderNET {
     class Program {
         static void Main(string[] args) => RunAsync().GetAwaiter().GetResult();
         static async Task RunAsync() {
-            
+            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "/bin/bash", Arguments = "service postgresql start", }; 
+            Process proc = new Process() { StartInfo = startInfo, };
+            proc.Start();
+            proc.WaitForExit();
             using ServiceProvider services = ConfigureServices();
             DiscordSocketClient client = services.GetRequiredService<DiscordSocketClient>();
             InteractionService commands = services.GetRequiredService<InteractionService>();
