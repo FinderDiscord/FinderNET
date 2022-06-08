@@ -21,7 +21,6 @@ namespace FinderNET {
             if (!File.Exists(Directory.GetCurrentDirectory() + "appsettings.json")) {
                 List<Appsettings> appsettings = new List<Appsettings>();
                 appsettings.Add(new Appsettings() {
-                    testGuild = 0,
                     ConnectionStrings = new List<string>() {
                         "Server=localhost;Database=finder;Username=postgres;Password=enter database password;"
                     }
