@@ -160,6 +160,9 @@ namespace FinderNET.Modules {
 
       public async Task OnButtonExecutedEvent(SocketMessageComponent messageComponent) {
          var poll = await dataAccessLayer.GetPoll((Int64)messageComponent.Message.Id);
+         if (poll == null) {
+            return;
+         }
          for (int i = 0; i < poll.answers.Count; i++) {
             if (messageComponent.Data.CustomId == i.ToString() && !poll.votersId.Contains((Int64)messageComponent.User.Id)) {
                var message = messageComponent.Message;

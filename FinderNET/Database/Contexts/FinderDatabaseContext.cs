@@ -19,5 +19,6 @@ namespace FinderNET.Database.Contexts {
         public DbSet<Settings> settings { get; set; }
         public DbSet<Poll> polls { get; set; }
         public DbSet<Countdown> countdowns { get; set; }
+        public DbSet<Tickets> tickets { get; set; }
     }
 }

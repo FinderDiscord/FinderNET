@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using FinderNET.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinderNET.Migrations
 {
     [DbContext(typeof(FinderDatabaseContext))]
-    partial class FinderDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20220605204457_tickets")]
+    partial class tickets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,11 +118,7 @@ namespace FinderNET.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ticketId"));
 
-                    b.Property<List<long?>>("claimedUserId")
-                        .IsRequired()
-                        .HasColumnType("bigint[]");
-
-                    b.Property<long?>("guildId")
+                    b.Property<long>("guildId")
                         .HasColumnType("bigint");
 
                     b.Property<long?>("introMessageId")
@@ -128,7 +127,7 @@ namespace FinderNET.Migrations
                     b.Property<string>("name")
                         .HasColumnType("text");
 
-                    b.Property<long?>("supportChannelId")
+                    b.Property<long>("supportChannelId")
                         .HasColumnType("bigint");
 
                     b.Property<List<long?>>("userIds")
