@@ -51,8 +51,23 @@ namespace FinderNET.Modules {
                     },
                     Color = Color.Green
                 }.Build(), components: components);
-                // todo id isnt very unique
-                await dataAccessLayer.AddTicket((await dataAccessLayer.GetTickets((long)Context.Guild.Id)).Count + 1, (long)Context.Guild.Id, (long)supportChannel.Id, (long)Context.User.Id, name, (long)message.Id);
+                var tickets = await dataAccessLayer.GetTickets((long)Context.Guild.Id);
+                List<long> ticketIds = new List<long>();
+                foreach (var ticket in tickets) {
+                    ticketIds.Add(ticket.ticketId);
+                }
+                int _i = 0;
+                for (int i = 0; i < ticketIds.Count; i++) {
+                    if (ticketIds[i] != i + 1) {
+                        await dataAccessLayer.AddTicket(i + 1, (long)Context.Guild.Id, (long)supportChannel.Id, (long)Context.User.Id, name, (long)message.Id);
+                        _i = i;
+                        break;
+                    }
+                    _i = i;
+                }
+                if (await dataAccessLayer.GetTicket(_i) == null) {
+                    await dataAccessLayer.AddTicket(_i + 1, (long)Context.Guild.Id, (long)supportChannel.Id, (long)Context.User.Id, name, (long)message.Id);
+                }
                 await RespondAsync(embed: new EmbedBuilder() {
                     Title = "Ticket Created",
                     Description = $"Opened a new ticket: {supportChannel.Mention}",
@@ -79,7 +94,10 @@ namespace FinderNET.Modules {
 
             [SlashCommand("claim", "Claims a ticket")]
             public async Task ClaimTicket() {
-                // todo make admin only
+                if (!((SocketGuildUser)Context.User).GuildPermissions.Administrator) {
+                    await RespondAsync("You do not have permission to use this command.", ephemeral: true);
+                    return;
+                }
                 var tickets = await dataAccessLayer.GetTickets((long)Context.Guild.Id);
                 var ticket = tickets.Find(x => x.supportChannelId == (long)Context.Channel.Id);
                 if (ticket == null) {
@@ -218,7 +236,7 @@ namespace FinderNET.Modules {
                 SocketUserMessage message = messageComponent.Message;
                 SocketGuildChannel channel = message.Channel as SocketGuildChannel ?? throw new ArgumentException("Channel is not a guild channel");
                 SocketGuild guild = channel.Guild;
-                IUser user = messageComponent.User;
+                SocketGuildUser user = (SocketGuildUser)messageComponent.User;
                 List<Database.Tickets> tickets = await dataAccessLayer.GetTickets((long)guild.Id);
                 Database.Tickets? ticket = tickets.Find(x => x.introMessageId == (long)message.Id && x.supportChannelId == (long)message.Channel.Id);
                 if (ticket == null) {
@@ -246,7 +264,10 @@ namespace FinderNET.Modules {
                     _closeConfirmId = (await messageComponent.GetOriginalResponseAsync()).Id;
                     return;
                 } else if (messageComponent.Data.CustomId == "claim") {
-                    // todo make admin only
+                    if (!user.GuildPermissions.Administrator) {
+                        await messageComponent.RespondAsync("You must be an administrator to claim a ticket.", ephemeral: true);
+                        return;
+                    }
                     var claimedUsers = await dataAccessLayer.GetClaimedUserId((long)ticket.ticketId);
                     if (claimedUsers.Contains((long)user.Id)) {
                         await messageComponent.RespondAsync("You have already claimed this ticket.", ephemeral: true);
