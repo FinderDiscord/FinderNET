@@ -8,6 +8,7 @@ using FinderNET.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using FinderNET.Database;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace FinderNET {
     class Program {
@@ -17,6 +18,17 @@ namespace FinderNET {
             Process proc = new Process() { StartInfo = startInfo, };
             proc.Start();
             proc.WaitForExit();
+            if (!File.Exists(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "appsettings.json")) {
+                Appsettings appsettings = new Appsettings() {
+                    ConnectionStrings = new ConnectionStrings() {
+                        Default = "Server=localhost;Database=finder;Username=postgres;Password=enter database password;"
+                    }
+                };
+                using (StreamWriter file = File.CreateText(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "appsettings.json")) {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(file, appsettings);
+                }
+            }
             using ServiceProvider services = ConfigureServices();
             DiscordSocketClient client = services.GetRequiredService<DiscordSocketClient>();
             InteractionService commands = services.GetRequiredService<InteractionService>();
