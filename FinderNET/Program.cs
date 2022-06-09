@@ -18,16 +18,15 @@ namespace FinderNET {
             Process proc = new Process() { StartInfo = startInfo, };
             proc.Start();
             proc.WaitForExit();
-            if (!File.Exists(Directory.GetCurrentDirectory() + "appsettings.json")) {
-                List<Appsettings> appsettings = new List<Appsettings>();
-                appsettings.Add(new Appsettings() {
-                    ConnectionStrings = new List<string>() {
-                        "Server=localhost;Database=finder;Username=postgres;Password=enter database password;"
+            if (!File.Exists(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "appsettings.json")) {
+                Appsettings appsettings = new Appsettings() {
+                    ConnectionStrings = new ConnectionStrings() {
+                        Default = "Server=localhost;Database=finder;Username=postgres;Password=enter database password;"
                     }
-                });
-                using (StreamWriter file = File.CreateText(Directory.GetCurrentDirectory() + "appsettings.json")) {
+                };
+                using (StreamWriter file = File.CreateText(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "appsettings.json")) {
                     JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(file, appsettings.ToArray());
+                    serializer.Serialize(file, appsettings);
                 }
             }
             using ServiceProvider services = ConfigureServices();
