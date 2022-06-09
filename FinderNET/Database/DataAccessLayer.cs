@@ -855,14 +855,16 @@ namespace FinderNET.Database {
                 user = new Leveling() {
                     guildId = guildId,
                     userId = userId,
-                    level = level
+                    level = level,
+                    exp = 0
                 };
                 context.leveling.Add(user);
             } else {
                 context.Entry(user).CurrentValues.SetValues(new Leveling() {
                     guildId = guildId,
                     userId = userId,
-                    level = level
+                    level = level,
+                    exp = user.exp
                 });
             }
             await context.SaveChangesAsync();
@@ -882,14 +884,16 @@ namespace FinderNET.Database {
                 user = new Leveling() {
                     guildId = guildId,
                     userId = userId,
-                    exp = exp
+                    exp = exp,
+                    level = 0
                 };
                 context.leveling.Add(user);
             } else {
                 context.Entry(user).CurrentValues.SetValues(new Leveling() {
                     guildId = guildId,
                     userId = userId,
-                    exp = exp
+                    exp = exp,
+                    level = user.level
                 });
             }
             await context.SaveChangesAsync();

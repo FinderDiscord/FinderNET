@@ -34,22 +34,24 @@ namespace FinderNET.Modules {
 
 
         public async Task OnMessageReceivedEvent(SocketMessage message) {
-            const int base_xp = 200;
-            const int factor = 2;
+            if (message.Author.IsBot) return;
+            const int base_xp = 50;
+            const double factor = 1.5;
             var guild = ((SocketGuildChannel)message.Channel).Guild;
             var exp = await dataAccessLayer.GetExp((long)guild.Id, (long)message.Author.Id);
             var levelToGet = await dataAccessLayer.GetLevel((long)guild.Id, (long)message.Author.Id) + 1;
             var expToGet = base_xp * (int)Math.Pow(factor, levelToGet);
+            await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Leveling", $"{levelToGet} {exp}/{expToGet}"));
             if (++exp > expToGet) {
                 await dataAccessLayer.SetLevel((long)guild.Id, (long)message.Author.Id, levelToGet);
                 await dataAccessLayer.SetExp((long)guild.Id, (long)message.Author.Id, 0);
-                await RespondAsync("", embed: new EmbedBuilder() {
-                    Title = "Level Up",
+                await message.Channel.SendMessageAsync("", embed: new EmbedBuilder() {
+                    Title = $"Level Up {message.Author.Username}",
                     Color = Color.Orange,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder() {
-                            Name = "You have leveled up to level ",
-                            Value = levelToGet.ToString()
+                            Name = "You have leveled up to level",
+                            Value = levelToGet
                         }
                     },
                     Footer = new EmbedFooterBuilder() {
