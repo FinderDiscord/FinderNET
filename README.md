@@ -56,18 +56,20 @@ $ git clone https://github.com/FinderDiscord/FinderNET.git
 $ cd FinderNET/FinderNET
 ```
 
-### Making a Configuration
-
-Make a `appsettings.json` file in the `FinderNET` folder, and input
-```json
-{
-    "token": "your bot token here",
-    "ConnectionStrings": {
-        "Default": "Server=localhost;Database=finder;Username=finder;Password=enter your password here"
-    }
-}
+### Run the bot
+```bash
+$ dotnet restore
+$ dotnet run
 ```
+this will create the necessary configuration files for the bot
     
+### Enter details into the Configuration
+
+Input your sensitive info into the configuration this will include
+    * The Bot token (Generated from https://discord.dev)
+    * The database infomation (ip, port, database, user, password)
+    * The Test Guild to register the slash commands to. (optional) (it may take up to an hour to register slash commands if this is blank)
+
 ### Run Migrations
 ```bash
 $ dotnet tool install --global dotnet-ef
