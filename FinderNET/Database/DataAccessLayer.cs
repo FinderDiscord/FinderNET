@@ -841,10 +841,10 @@ namespace FinderNET.Database {
         }
 
         // leveling
-        public async Task<Int64?> GetLevel(Int64 guildId, Int64 userId) {
+        public async Task<int> GetLevel(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
             var user = await context.leveling.FindAsync(guildId, userId);
-            if (user == null) return null;
+            if (user == null) return 0;
             return user.level;
         }
 
@@ -868,10 +868,10 @@ namespace FinderNET.Database {
             await context.SaveChangesAsync();
         }
 
-        public async Task<Int64?> GetExp(Int64 guildId, Int64 userId) {
+        public async Task<int> GetExp(Int64 guildId, Int64 userId) {
             using var context = contextFactory.CreateDbContext();
             var user = await context.leveling.FindAsync(guildId, userId);
-            if (user == null) return null;
+            if (user == null) return 0;
             return user.exp;
         }
 
