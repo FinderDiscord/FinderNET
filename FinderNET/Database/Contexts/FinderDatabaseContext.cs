@@ -10,6 +10,9 @@ namespace FinderNET.Database.Contexts {
             builder.Entity<Countdown>().HasKey(table => new {
                 table.messageId, table.channelId, table.guildId
             });
+            builder.Entity<Leveling>().HasKey(table => new {
+                table.guildId, table.userId
+            });
         }
 
         
@@ -20,5 +23,6 @@ namespace FinderNET.Database.Contexts {
         public DbSet<Poll> polls { get; set; }
         public DbSet<Countdown> countdowns { get; set; }
         public DbSet<Tickets> tickets { get; set; }
+        public DbSet<Leveling> leveling { get; set; }
     }
 }

@@ -839,5 +839,98 @@ namespace FinderNET.Database {
             ticket.claimedUserId.Remove(userId);
             await context.SaveChangesAsync();
         }
+
+        // leveling
+        public async Task<int> GetLevel(Int64 guildId, Int64 userId) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.leveling.FindAsync(guildId, userId);
+            if (user == null) return 0;
+            return user.level;
+        }
+
+        public async Task SetLevel(Int64 guildId, Int64 userId, int level) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.leveling.FindAsync(guildId, userId);
+            if (user == null) {
+                user = new Leveling() {
+                    guildId = guildId,
+                    userId = userId,
+                    level = level,
+                    exp = 0
+                };
+                context.leveling.Add(user);
+            } else {
+                context.Entry(user).CurrentValues.SetValues(new Leveling() {
+                    guildId = guildId,
+                    userId = userId,
+                    level = level,
+                    exp = user.exp
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<int> GetExp(Int64 guildId, Int64 userId) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.leveling.FindAsync(guildId, userId);
+            if (user == null) return 0;
+            return user.exp;
+        }
+
+        public async Task SetExp(Int64 guildId, Int64 userId, int exp) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.leveling.FindAsync(guildId, userId);
+            if (user == null) {
+                user = new Leveling() {
+                    guildId = guildId,
+                    userId = userId,
+                    exp = exp,
+                    level = 0
+                };
+                context.leveling.Add(user);
+            } else {
+                context.Entry(user).CurrentValues.SetValues(new Leveling() {
+                    guildId = guildId,
+                    userId = userId,
+                    exp = exp,
+                    level = user.level
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task ResetLevel(Int64 guildId, Int64 userId) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.leveling.FindAsync(guildId, userId);
+            if (user == null) {
+                return;
+            } else {
+                context.Entry(user).CurrentValues.SetValues(new Leveling() {
+                    guildId = guildId,
+                    userId = userId,
+                    level = 0,
+                    exp = user.exp
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task ResetExp(Int64 guildId, Int64 userId) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.leveling.FindAsync(guildId, userId);
+            if (user == null) {
+                return;
+            } else {
+                context.Entry(user).CurrentValues.SetValues(new Leveling() {
+                    guildId = guildId,
+                    userId = userId,
+                    level = user.level,
+                    exp = 0
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+
     }
 }
