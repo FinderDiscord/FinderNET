@@ -66,9 +66,9 @@ this will create the necessary configuration files for the bot
 ### Enter details into the Configuration
 
 Input your sensitive info into the configuration this will include
-    * The Bot token (Generated from https://discord.dev)
-    * The database infomation (ip, port, database, user, password)
-    * The Test Guild to register the slash commands to. (optional) (it may take up to an hour to register slash commands if this is blank)
+* The Bot token (Generated from https://discord.dev)
+* The database infomation (ip, port, database, user, password)
+* The Test Guild to register the slash commands to. (optional) (it may take up to an hour to register slash commands if this is blank)
 
 ### Run Migrations
 ```bash
