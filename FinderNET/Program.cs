@@ -21,7 +21,7 @@ namespace FinderNET {
             if (!File.Exists(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "appsettings.json")) {
                 Appsettings appsettings = new Appsettings() {
                     ConnectionStrings = new ConnectionStrings() {
-                        Default = "Server=localhost;Database=finder;Username=postgres;Password=enter database password;"
+                        Default = "Server=localhost;Database=finder;Username=finder;Password=enter database password;"
                     }
                 };
                 using (StreamWriter file = File.CreateText(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "appsettings.json")) {
