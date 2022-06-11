@@ -13,6 +13,9 @@ namespace FinderNET.Database.Contexts {
             builder.Entity<Leveling>().HasKey(table => new {
                 table.guildId, table.userId
             });
+            builder.Entity<Economy>().HasKey(table => new {
+                table.guildId, table.userId
+            });
         }
 
         
@@ -24,5 +27,6 @@ namespace FinderNET.Database.Contexts {
         public DbSet<Countdown> countdowns { get; set; }
         public DbSet<Tickets> tickets { get; set; }
         public DbSet<Leveling> leveling { get; set; }
+        public DbSet<Economy> economy { get; set; }
     }
 }
