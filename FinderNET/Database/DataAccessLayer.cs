@@ -931,6 +931,134 @@ namespace FinderNET.Database {
             await context.SaveChangesAsync();
         }
 
+        // economy
 
+        public async Task<int> GetBalance(Int64 guildId, Int64 userId) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.economy.FindAsync(guildId, userId);
+            if (user == null) return 0;
+            return user.money;
+        }
+
+        public async Task SetBalance(Int64 guildId, Int64 userId, int money) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.economy.FindAsync(guildId, userId);
+            if (user == null) {
+                user = new Economy() {
+                    guildId = guildId,
+                    userId = userId,
+                    money = money,
+                    bank = 0
+                };
+                context.economy.Add(user);
+            } else {
+                context.Entry(user).CurrentValues.SetValues(new Economy() {
+                    guildId = guildId,
+                    userId = userId,
+                    money = money,
+                    bank = user.bank
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<int> GetBank(Int64 guildId, Int64 userId) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.economy.FindAsync(guildId, userId);
+            if (user == null) return 0;
+            return user.bank;
+        }
+
+        public async Task SetBank(Int64 guildId, Int64 userId, int bank) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.economy.FindAsync(guildId, userId);
+            if (user == null) {
+                user = new Economy() {
+                    guildId = guildId,
+                    userId = userId,
+                    money = 0,
+                    bank = bank
+                };
+                context.economy.Add(user);
+            } else {
+                context.Entry(user).CurrentValues.SetValues(new Economy() {
+                    guildId = guildId,
+                    userId = userId,
+                    money = user.money,
+                    bank = bank
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task AddBalance(Int64 guildId, Int64 userId, int money) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.economy.FindAsync(guildId, userId);
+            if (user == null) {
+                user = new Economy() {
+                    guildId = guildId,
+                    userId = userId,
+                    money = money,
+                    bank = 0
+                };
+                context.economy.Add(user);
+            } else {
+                context.Entry(user).CurrentValues.SetValues(new Economy() {
+                    guildId = guildId,
+                    userId = userId,
+                    money = user.money + money,
+                    bank = user.bank
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveBalance(Int64 guildId, Int64 userId, int money) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.economy.FindAsync(guildId, userId);
+            if (user == null) return;
+            context.Entry(user).CurrentValues.SetValues(new Economy() {
+                guildId = guildId,
+                userId = userId,
+                money = user.money - money,
+                bank = user.bank
+            });
+            await context.SaveChangesAsync();
+        }
+
+        public async Task AddBank(Int64 guildId, Int64 userId, int bank) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.economy.FindAsync(guildId, userId);
+            if (user == null) {
+                user = new Economy() {
+                    guildId = guildId,
+                    userId = userId,
+                    money = 0,
+                    bank = bank
+                };
+                context.economy.Add(user);
+            } else {
+                context.Entry(user).CurrentValues.SetValues(new Economy() {
+                    guildId = guildId,
+                    userId = userId,
+                    money = user.money,
+                    bank = user.bank + bank
+                });
+            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveBank(Int64 guildId, Int64 userId, int bank) {
+            using var context = contextFactory.CreateDbContext();
+            var user = await context.economy.FindAsync(guildId, userId);
+            if (user == null) return;
+            context.Entry(user).CurrentValues.SetValues(new Economy() {
+                guildId = guildId,
+                userId = userId,
+                money = user.money,
+                bank = user.bank - bank
+            });
+            await context.SaveChangesAsync();
+        }
     }
 }

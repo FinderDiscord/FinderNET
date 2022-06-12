@@ -6,5 +6,6 @@ namespace FinderNET.Database {
         [Key]
         public Int64 userId { get; set; }
         public int money { get; set; }
+        public int bank { get; set; }
     }
 }
