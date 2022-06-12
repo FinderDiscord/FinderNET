@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using FinderNET.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinderNET.Migrations
 {
     [DbContext(typeof(FinderDatabaseContext))]
-    partial class FinderDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20220611205441_Installation")]
+    partial class Installation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,25 +66,6 @@ namespace FinderNET.Migrations
                     b.HasKey("messageId", "channelId", "guildId");
 
                     b.ToTable("countdowns");
-                });
-
-            modelBuilder.Entity("FinderNET.Database.Economy", b =>
-                {
-                    b.Property<long>("guildId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("userId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("bank")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("money")
-                        .HasColumnType("integer");
-
-                    b.HasKey("guildId", "userId");
-
-                    b.ToTable("economy");
                 });
 
             modelBuilder.Entity("FinderNET.Database.Leveling", b =>
