@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using FinderNET.Database.Models;
 namespace FinderNET.Database.Contexts {
     public class FinderDatabaseContext : DbContext {
         public FinderDatabaseContext(DbContextOptions options) : base(options) { }
@@ -23,7 +24,7 @@ namespace FinderNET.Database.Contexts {
         public DbSet<Addons> addons { get; set; }
         public DbSet<UserLogs> userLogs { get; set; }
         public DbSet<Settings> settings { get; set; }
-        public DbSet<Poll> polls { get; set; }
+        public DbSet<Polls> polls { get; set; }
         public DbSet<Countdown> countdowns { get; set; }
         public DbSet<Tickets> tickets { get; set; }
         public DbSet<Leveling> leveling { get; set; }

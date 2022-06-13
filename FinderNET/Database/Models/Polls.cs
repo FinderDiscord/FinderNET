@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-namespace FinderNET.Database {
-    public class Poll {
+namespace FinderNET.Database.Models {
+    public class Polls {
         [Key]
         public Int64 messageId { get; set; }
         public List<string> answers { get; set; }

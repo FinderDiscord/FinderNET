@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-namespace FinderNET.Database {
+namespace FinderNET.Database.Models {
     public class Tickets {
         [Key]
         public Int64 ticketId { get; set; }
