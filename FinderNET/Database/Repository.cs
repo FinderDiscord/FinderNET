@@ -1,7 +1,7 @@
 using FinderNET.Database.Contexts;
 using System.Linq.Expressions;
 
-namespace FinderNET.Database.Repositories {
+namespace FinderNET.Database {
     public class Repository<T> where T : class {
         protected readonly FinderDatabaseContext context;
         public Repository(FinderDatabaseContext _context) {

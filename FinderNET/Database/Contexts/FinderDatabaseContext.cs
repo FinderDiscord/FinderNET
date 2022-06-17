@@ -18,9 +18,7 @@ namespace FinderNET.Database.Contexts {
                 table.guildId, table.userId
             });
         }
-
         
-
         public DbSet<Addons> addons { get; set; }
         public DbSet<UserLogs> userLogs { get; set; }
         public DbSet<Settings> settings { get; set; }
