@@ -1,19 +1,20 @@
 using Discord;
 using Discord.Interactions;
-using Discord.Net;
 using Discord.WebSocket;
-using FinderNET.Database;
-using System;
-using System.Collections.Generic;
+using FinderNET.Database.Models;
+using FinderNET.Database.Repositories;
 
 namespace FinderNET.Modules {
     public class TicketingModule {
         [Group("tickets", "Command For Managing Tickets")]
-        public class Tickets : ModuleBase {
+        public class TicketsModule : InteractionModuleBase<InteractionContext> {
             ulong _closeConfirmId;
-            public Tickets(DataAccessLayer dataAccessLayer) : base(dataAccessLayer) { }
+            private readonly TicketsRepository ticketsRepository;
+            public TicketsModule(TicketsRepository _ticketsRepository) {
+                ticketsRepository = _ticketsRepository;
+            }
             [SlashCommand("create", "Creates a ticket")]
-            public async Task CreateTicket(string name) {
+            public async Task CreateTicket(string? name = null) {
                 if (name == null) {
                     await RespondAsync("Please specify a name for the ticket.");
                     return;
@@ -51,23 +52,8 @@ namespace FinderNET.Modules {
                     },
                     Color = Color.Green
                 }.Build(), components: components);
-                var tickets = await dataAccessLayer.GetTickets((long)Context.Guild.Id);
-                List<long> ticketIds = new List<long>();
-                foreach (var ticket in tickets) {
-                    ticketIds.Add(ticket.ticketId);
-                }
-                int _i = 0;
-                for (int i = 0; i < ticketIds.Count; i++) {
-                    if (ticketIds[i] != i + 1) {
-                        await dataAccessLayer.AddTicket(i + 1, (long)Context.Guild.Id, (long)supportChannel.Id, (long)Context.User.Id, name, (long)message.Id);
-                        _i = i;
-                        break;
-                    }
-                    _i = i;
-                }
-                if (await dataAccessLayer.GetTicket(_i) == null) {
-                    await dataAccessLayer.AddTicket(_i + 1, (long)Context.Guild.Id, (long)supportChannel.Id, (long)Context.User.Id, name, (long)message.Id);
-                }
+                await ticketsRepository.AddTicketAsync(Context.Guild.Id, supportChannel.Id, message.Id, new List<long?>() { (long)Context.User.Id }, name, new List<long>());
+                await ticketsRepository.SaveAsync();
                 await RespondAsync(embed: new EmbedBuilder() {
                     Title = "Ticket Created",
                     Description = $"Opened a new ticket: {supportChannel.Mention}",
@@ -77,9 +63,9 @@ namespace FinderNET.Modules {
 
             [SlashCommand("close", "Closes a ticket")]
             public async Task CloseTicket() {
-                var tickets = await dataAccessLayer.GetTickets((long)Context.Guild.Id);
-                var ticket = tickets.Find(x => x.supportChannelId == (long)Context.Channel.Id);
-                if (ticket == null) {
+                var ticket = await ticketsRepository.GetTicketsAsync(Context.Guild.Id, Context.Channel.Id);
+                if (ticket.introMessageId == null
+                    || await Context.Channel.GetMessageAsync((ulong)ticket.introMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
@@ -89,7 +75,8 @@ namespace FinderNET.Modules {
                 }
                 await RespondAsync("Ticket Closed");
                 await ((SocketGuildChannel)Context.Channel).DeleteAsync();
-                await dataAccessLayer.RemoveTicket((long)ticket.ticketId);
+                await ticketsRepository.RemoveTicketAsync(Context.Guild.Id, Context.Channel.Id);
+                await ticketsRepository.SaveAsync();
             }
 
             [SlashCommand("claim", "Claims a ticket")]
@@ -98,9 +85,9 @@ namespace FinderNET.Modules {
                     await RespondAsync("You do not have permission to use this command.", ephemeral: true);
                     return;
                 }
-                var tickets = await dataAccessLayer.GetTickets((long)Context.Guild.Id);
-                var ticket = tickets.Find(x => x.supportChannelId == (long)Context.Channel.Id);
-                if (ticket == null) {
+                var ticket = await ticketsRepository.GetTicketsAsync(Context.Guild.Id, Context.Channel.Id);
+                if (ticket.introMessageId == null
+                    || await Context.Channel.GetMessageAsync((ulong)ticket.introMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
@@ -117,8 +104,8 @@ namespace FinderNET.Modules {
                     viewChannel: PermValue.Allow,
                     useApplicationCommands: PermValue.Allow
                 ));
-                await dataAccessLayer.AddTicketUser((long)ticket.ticketId, (long)Context.User.Id);
-                await dataAccessLayer.AddClaimedUserId((long)ticket.ticketId, (long)Context.User.Id);
+                await ticketsRepository.AddTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
+                await ticketsRepository.SaveAsync();
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder() {
                     Title = "Ticket Claimed",
                     Description = $"{Context.User.Username} has claimed this ticket.",
@@ -130,9 +117,9 @@ namespace FinderNET.Modules {
 
             [SlashCommand("unclaim", "Unclaims a ticket")]
             public async Task UnclaimTicket() {
-                var tickets = await dataAccessLayer.GetTickets((long)Context.Guild.Id);
-                var ticket = tickets.Find(x => x.supportChannelId == (long)Context.Channel.Id);
-                if (ticket == null) {
+                var ticket = await ticketsRepository.GetTicketsAsync(Context.Guild.Id, Context.Channel.Id);
+                if (ticket.introMessageId == null ||
+                    await Context.Channel.GetMessageAsync((ulong)ticket.introMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
@@ -141,7 +128,8 @@ namespace FinderNET.Modules {
                     return;
                 }
                 await ((SocketGuildChannel)Context.Channel).RemovePermissionOverwriteAsync(Context.User);
-                await dataAccessLayer.RemoveClaimedUserId((long)ticket.ticketId, (long)Context.User.Id);
+                await ticketsRepository.RemoveTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
+                await ticketsRepository.SaveAsync();
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder() {
                     Title = "Ticket Unclaimed",
                     Description = $"{Context.User.Username} has unclaimed this ticket.",
@@ -152,9 +140,9 @@ namespace FinderNET.Modules {
 
             [SlashCommand("adduser", "Adds a user to a ticket")]
             public async Task AddUserToTicket(IUser user) {
-                var tickets = await dataAccessLayer.GetTickets((long)Context.Guild.Id);
-                var ticket = tickets.Find(x => x.supportChannelId == (long)Context.Channel.Id);
-                if (ticket == null) {
+                var ticket = await ticketsRepository.GetTicketsAsync(Context.Guild.Id, Context.Channel.Id);
+                if (ticket.introMessageId == null
+                    || await Context.Channel.GetMessageAsync((ulong)ticket.introMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
@@ -166,7 +154,8 @@ namespace FinderNET.Modules {
                     await RespondAsync("This user is already a member of this ticket.", ephemeral: true);
                     return;
                 }
-                await dataAccessLayer.AddTicketUser((long)ticket.ticketId, (long)user.Id);
+                await ticketsRepository.AddTicketUserIdAsync(Context.Guild.Id, Context.Channel.Id, user.Id);
+                await ticketsRepository.SaveAsync();
                 await ((SocketGuildChannel)Context.Channel).AddPermissionOverwriteAsync(user, new OverwritePermissions(
                     addReactions: PermValue.Allow,
                     attachFiles: PermValue.Allow,
@@ -186,9 +175,9 @@ namespace FinderNET.Modules {
 
             [SlashCommand("removeuser", "Removes a user from a ticket")]
             public async Task RemoveUserFromTicket(IUser user) {
-                var tickets = await dataAccessLayer.GetTickets((long)Context.Guild.Id);
-                var ticket = tickets.Find(x => x.supportChannelId == (long)Context.Channel.Id);
-                if (ticket == null) {
+                var ticket = await ticketsRepository.GetTicketsAsync(Context.Guild.Id, Context.Channel.Id);
+                if (ticket.introMessageId == null
+                    || await Context.Channel.GetMessageAsync((ulong)ticket.introMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
@@ -200,7 +189,9 @@ namespace FinderNET.Modules {
                     await RespondAsync("This user is not a member of this ticket.", ephemeral: true);
                     return;
                 }
-                await dataAccessLayer.RemoveTicketUser((long)ticket.ticketId, (long)user.Id);
+                await ticketsRepository.RemoveTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, user.Id);
+                await ticketsRepository.RemoveTicketUserIdAsync(Context.Guild.Id, Context.Channel.Id, user.Id);
+                await ticketsRepository.SaveAsync();
                 await ((SocketGuildChannel)Context.Channel).RemovePermissionOverwriteAsync(user);
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder() {
                     Title = "User Removed",
@@ -212,9 +203,9 @@ namespace FinderNET.Modules {
 
             [SlashCommand("leave", "Leaves a ticket")]
             public async Task LeaveTicket() {
-                var tickets = await dataAccessLayer.GetTickets((long)Context.Guild.Id);
-                var ticket = tickets.Find(x => x.supportChannelId == (long)Context.Channel.Id);
-                if (ticket == null) {
+                var ticket = await ticketsRepository.GetTicketsAsync(Context.Guild.Id, Context.Channel.Id);
+                if (ticket.introMessageId == null
+                    || await Context.Channel.GetMessageAsync((ulong)ticket.introMessageId) == null) {
                     await RespondAsync("You are not in a ticket channel.", ephemeral: true);
                     return;
                 }
@@ -222,8 +213,9 @@ namespace FinderNET.Modules {
                     await RespondAsync("You are not a member of this ticket.", ephemeral: true);
                     return;
                 }
-                await dataAccessLayer.RemoveTicketUser((long)ticket.ticketId, (long)Context.User.Id);
-                await dataAccessLayer.RemoveClaimedUserId((long)ticket.ticketId, (long)Context.User.Id);
+                await ticketsRepository.RemoveTicketClaimedUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
+                await ticketsRepository.RemoveTicketUserIdAsync(Context.Guild.Id, Context.Channel.Id, Context.User.Id);
+                await ticketsRepository.SaveAsync();
                 await Context.Channel.SendMessageAsync(embed: new EmbedBuilder() {
                     Title = "User Removed",
                     Description = $"{Context.User.Username} has left this ticket.",
@@ -237,14 +229,14 @@ namespace FinderNET.Modules {
                 SocketGuildChannel channel = message.Channel as SocketGuildChannel ?? throw new ArgumentException("Channel is not a guild channel");
                 SocketGuild guild = channel.Guild;
                 SocketGuildUser user = (SocketGuildUser)messageComponent.User;
-                List<Database.Tickets> tickets = await dataAccessLayer.GetTickets((long)guild.Id);
-                Database.Tickets? ticket = tickets.Find(x => x.introMessageId == (long)message.Id && x.supportChannelId == (long)message.Channel.Id);
-                if (ticket == null) {
+                Tickets ticket = await ticketsRepository.GetTicketsAsync(guild.Id, channel.Id);
+                if (ticket.introMessageId == (long)message.Id) {
                     if (messageComponent.Message.Id ==  _closeConfirmId) {
                         if (messageComponent.Data.CustomId == "close-yes") {
                             await messageComponent.RespondAsync("Ticket Closed");
                             await ((SocketGuildChannel)message.Channel).DeleteAsync();
-                            await dataAccessLayer.RemoveTicket((long)ticket.ticketId);
+                            await ticketsRepository.RemoveTicketAsync(channel.Guild.Id, channel.Id);
+                            await ticketsRepository.SaveAsync();
                         } else if (messageComponent.Data.CustomId == "close-no") {
                             await messageComponent.RespondAsync("You have cancelled closing this ticket.");
                         }
@@ -263,13 +255,14 @@ namespace FinderNET.Modules {
                         .Build());
                     _closeConfirmId = (await messageComponent.GetOriginalResponseAsync()).Id;
                     return;
-                } else if (messageComponent.Data.CustomId == "claim") {
+                } 
+                if (messageComponent.Data.CustomId == "claim") {
                     if (!user.GuildPermissions.Administrator) {
                         await messageComponent.RespondAsync("You must be an administrator to claim a ticket.", ephemeral: true);
                         return;
                     }
-                    var claimedUsers = await dataAccessLayer.GetClaimedUserId((long)ticket.ticketId);
-                    if (claimedUsers.Contains((long)user.Id)) {
+                    var claimedUsers = await ticketsRepository.GetTicketsAsync(guild.Id, channel.Id);
+                    if (claimedUsers.claimedUserId.Contains((long)user.Id)) {
                         await messageComponent.RespondAsync("You have already claimed this ticket.", ephemeral: true);
                         return;
                     }
@@ -282,8 +275,8 @@ namespace FinderNET.Modules {
                         viewChannel: PermValue.Allow,
                         useApplicationCommands: PermValue.Allow
                     ));
-                    await dataAccessLayer.AddTicketUser((long)ticket.ticketId, (long)user.Id);
-                    await dataAccessLayer.AddClaimedUserId((long)ticket.ticketId, (long)user.Id);
+                    await ticketsRepository.AddTicketClaimedUserIdAsync(channel.Guild.Id, channel.Id, user.Id);
+                    await ticketsRepository.SaveAsync();
                     await message.Channel.SendMessageAsync(embed: new EmbedBuilder() {
                         Title = "Ticket Claimed",
                         Description = $"{user.Username} has claimed this ticket.",

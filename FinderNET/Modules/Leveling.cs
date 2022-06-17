@@ -1,29 +1,31 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using FinderNET.Database;
+using FinderNET.Database.Repositories;
 
 namespace FinderNET.Modules {
     [Group("leveling", "Command For Managing Leveling")]
-    public class LevelingModule : ModuleBase {
-        public LevelingModule(DataAccessLayer dataAccessLayer) : base(dataAccessLayer) { }
+    public class LevelingModule : InteractionModuleBase<InteractionContext> {
+        private readonly LevelingRepository context;
+        public LevelingModule(LevelingRepository _context) {
+            context = _context;
+        }
 
         [SlashCommand("level", "Get your current level")]
         public async Task LevelCommand() {
             var user = Context.User as SocketGuildUser;
-            var level = await dataAccessLayer.GetLevel((long)user.Guild.Id, (long)user.Id);
-            var exp = await dataAccessLayer.GetExp((long)user.Guild.Id, (long)user.Id);
+            var levels = await context.GetLevelingAsync(user.Guild.Id, user.Id);
             await RespondAsync("", embed: new EmbedBuilder() {
                 Title = "Level",
                 Color = Color.Orange,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder() {
                         Name = "Level",
-                        Value = level.ToString()
+                        Value = levels.level.ToString()
                     },
                     new EmbedFieldBuilder() {
                         Name = "Exp",
-                        Value = exp.ToString()
+                        Value = levels.exp.ToString()
                     }
                 },
                 Footer = new EmbedFooterBuilder() {
@@ -38,13 +40,12 @@ namespace FinderNET.Modules {
             const int base_xp = 50;
             const double factor = 1.5;
             var guild = ((SocketGuildChannel)message.Channel).Guild;
-            var exp = await dataAccessLayer.GetExp((long)guild.Id, (long)message.Author.Id);
-            var levelToGet = await dataAccessLayer.GetLevel((long)guild.Id, (long)message.Author.Id) + 1;
+            var levels = await context.GetLevelingAsync(guild.Id, message.Author.Id);
+            var levelToGet = levels.level + 1;
             var expToGet = base_xp * (int)Math.Pow(factor, levelToGet);
-            await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Leveling", $"{levelToGet} {exp}/{expToGet}"));
-            if (++exp > expToGet) {
-                await dataAccessLayer.SetLevel((long)guild.Id, (long)message.Author.Id, levelToGet);
-                await dataAccessLayer.SetExp((long)guild.Id, (long)message.Author.Id, 0);
+            await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Leveling", $"{levelToGet} {levels.exp}/{expToGet}"));
+            if (++levels.exp > expToGet) {
+                await context.AddLevelingAsync(guild.Id, message.Author.Id, levels.level, 0);
                 await message.Channel.SendMessageAsync("", embed: new EmbedBuilder() {
                     Title = $"Level Up {message.Author.Username}",
                     Color = Color.Orange,
@@ -59,7 +60,7 @@ namespace FinderNET.Modules {
                     }
                 }.Build());
             } else {
-                await dataAccessLayer.SetExp((long)guild.Id, (long)message.Author.Id, exp);
+                await context.AddLevelingAsync(guild.Id, message.Author.Id, levels.level, levels.exp);
             }
 
         }

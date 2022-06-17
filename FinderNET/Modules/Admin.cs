@@ -1,12 +1,9 @@
 using Discord;
 using Discord.Interactions;
-using Discord.Net;
 using Discord.WebSocket;
-using FinderNET.Database;
 
 namespace FinderNET.Modules {
-    public class AdminModule : ModuleBase {
-        public AdminModule(DataAccessLayer dataAccessLayer) : base(dataAccessLayer) { }
+    public class AdminModule : InteractionModuleBase<InteractionContext> {
         
         [SlashCommand("purge", "Purge a number of messages", runMode: RunMode.Async)]
         public async Task PurgeCommand(int count) {

@@ -5,10 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using FinderNET.Modules;
 using FinderNET.Database.Contexts;
-using Microsoft.EntityFrameworkCore;
 using FinderNET.Database;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using FinderNET.Database.Repositories;
 
 namespace FinderNET {
     class Program {
@@ -34,16 +35,16 @@ namespace FinderNET {
             InteractionService commands = services.GetRequiredService<InteractionService>();
             IConfiguration config = services.GetRequiredService<IConfiguration>();
             CommandHandler handler = services.GetRequiredService<CommandHandler>();
-            DataAccessLayer dal = services.GetRequiredService<DataAccessLayer>();
+            CountdownRepository countdownRepository = services.GetRequiredService<CountdownRepository>();
             await handler.Initialize();
             client.Log += LoggingService.LogAsync;
             commands.Log += LoggingService.LogAsync;
-            CountdownTimer.StartTimer(client, dal);
-            client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
-            client.ReactionAdded += new ModerationModule(services.GetRequiredService<DataAccessLayer>()).OnReactionAddedEvent;
-            client.ButtonExecuted += new PollModule(services.GetRequiredService<DataAccessLayer>()).OnButtonExecutedEvent;
-            client.ButtonExecuted += new TicketingModule.Tickets(services.GetRequiredService<DataAccessLayer>()).OnButtonExecutedEvent;
-            client.MessageReceived += new LevelingModule(services.GetRequiredService<DataAccessLayer>()).OnMessageReceivedEvent;
+            CountdownTimer.StartTimer(client, countdownRepository);
+            // client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
+            // client.ReactionAdded += new ModerationModule(services.GetRequiredService<DataAccessLayer>()).OnReactionAddedEvent;
+            // client.ButtonExecuted += new PollModule(services.GetRequiredService<DataAccessLayer>()).OnButtonExecutedEvent;
+            // client.ButtonExecuted += new TicketingModule.Tickets(services.GetRequiredService<DataAccessLayer>()).OnButtonExecutedEvent;
+            // client.MessageReceived += new LevelingModule(services.GetRequiredService<DataAccessLayer>()).OnMessageReceivedEvent;
             await client.LoginAsync(TokenType.Bot, config["token"]);
             await client.StartAsync();
             await Task.Delay(Timeout.Infinite);
@@ -57,7 +58,9 @@ namespace FinderNET {
             .AddSingleton<InteractionService>()
             .AddSingleton<CommandHandler>()
             .AddDbContextFactory<FinderDatabaseContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default")))
-            .AddSingleton<DataAccessLayer>()
+            .AddSingleton<AddonsRepository>()
+            .AddSingleton<CountdownRepository>()
+            .AddSingleton<EconomyRepository>()
             .BuildServiceProvider();
         }
     }

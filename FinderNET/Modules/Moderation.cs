@@ -1,13 +1,18 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Discord.Rest;
 using Discord.Net;
-using FinderNET.Database;
+using FinderNET.Database.Repositories;
 
 namespace FinderNET.Modules {
-    public class ModerationModule : ModuleBase {
-        public ModerationModule(DataAccessLayer dataAccessLayer) : base(dataAccessLayer) { }
+    public class ModerationModule : InteractionModuleBase<SocketInteractionContext> {
+        private readonly SettingsRepository settingsRepository;
+        private readonly UserLogsRepository userLogsRepository;
+        public ModerationModule(SettingsRepository _settingsRepository, UserLogsRepository _userLogsRepository) {
+            settingsRepository = _settingsRepository;
+            userLogsRepository = _userLogsRepository;
+        }
+
         public static List<ModerationMessage> moderationMessages = new List<ModerationMessage>();
 
         [SlashCommand("ban", "Bans a user from the server.")]
@@ -155,6 +160,7 @@ namespace FinderNET.Modules {
                 var user = guild.GetUser(moderationMessage.userId);
                 if (guild.Id == moderationMessage.guildId && message.Id == reaction.MessageId && reaction.UserId == moderationMessage.senderId) {
                     if (reaction.User.Value.Id == moderationMessage.senderId && reaction.Emote.Name == "✅") {
+                        var userLogs = await userLogsRepository.GetUserLogsAsync(guild.Id, user.Id);
                         if (moderationMessage.Type == ModerationMessageType.Ban) {
                             await guild.AddBanAsync(user, reason: moderationMessage.reason);
                             await message.RemoveAllReactionsAsync();
@@ -202,8 +208,8 @@ namespace FinderNET.Modules {
                                 // User has DMs disabled
                             }
                             moderationMessages.Remove(moderationMessage);
-                            var userBans = await dataAccessLayer.GetUserBans((Int64)guild.Id, (Int64)user.Id);
-                            await dataAccessLayer.SetUserBans((Int64)guild.Id, (Int64)user.Id, userBans + 1);
+                            await userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.bans + 1, userLogs.kicks, userLogs.warns, userLogs.mutes);
+                            await userLogsRepository.SaveAsync();
                             return;
                         } else if (moderationMessage.Type == ModerationMessageType.Kick) {
                             await user.KickAsync(moderationMessage.reason);
@@ -252,8 +258,8 @@ namespace FinderNET.Modules {
                                 // User has DMs disabled
                             }
                             moderationMessages.Remove(moderationMessage);
-                            var userKicks = await dataAccessLayer.GetUserKicks((Int64)guild.Id, (Int64)user.Id);
-                            await dataAccessLayer.SetUserKicks((Int64)guild.Id, (Int64)user.Id, userKicks + 1);
+                            await userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.bans, userLogs.kicks + 1, userLogs.warns, userLogs.mutes);
+                            await userLogsRepository.SaveAsync();
                             return;
                         } else if (moderationMessage.Type == ModerationMessageType.Warn) {
                             await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
@@ -300,8 +306,8 @@ namespace FinderNET.Modules {
                                 // User has DMs disabled
                             }
                             moderationMessages.Remove(moderationMessage);
-                            var userWarns = await dataAccessLayer.GetUserWarns((Int64)guild.Id, (Int64)user.Id);
-                            await dataAccessLayer.SetUserWarns((Int64)guild.Id, (Int64)user.Id, userWarns + 1);
+                            await userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.bans, userLogs.kicks, userLogs.warns + 1, userLogs.mutes);
+                            await userLogsRepository.SaveAsync();
                             return;
                         } else if (moderationMessage.Type == ModerationMessageType.Mute) {
                             await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
@@ -347,19 +353,20 @@ namespace FinderNET.Modules {
                             } catch (HttpException) {
                                 // User has DMs disabled
                             }
-                            if (await dataAccessLayer.GetSettingsValue((Int64)guild.Id, "muteRoleId") == null) {
+                            if (!settingsRepository.SettingsExists(guild.Id, "muteRoleId")) {
                                 var muteRole1 = await guild.CreateRoleAsync("Muted", new GuildPermissions(connect: true, readMessageHistory: true), Color.DarkGrey, false, true);
-                                await dataAccessLayer.SetSettingsValue((Int64)guild.Id, "muteRoleId", muteRole1.Id.ToString());
+                                await settingsRepository.AddSettingsAsync(guild.Id, "muteRoleId", muteRole1.Id.ToString());
+                                await settingsRepository.SaveAsync();
                                 foreach (var otherchannel in guild.Channels) {
                                     await channel.AddPermissionOverwriteAsync(muteRole1, OverwritePermissions.DenyAll(channel).Modify(viewChannel: PermValue.Allow, readMessageHistory: PermValue.Allow));
                                 }
                             }
-                            var muteRole = guild.GetRole(Convert.ToUInt64(await dataAccessLayer.GetSettingsValue((Int64)guild.Id, "muteRoleId")));
+                            var muteRole = guild.GetRole(Convert.ToUInt64(await settingsRepository.GetSettingsAsync(guild.Id, "muteRoleId")));
                             await user.AddRoleAsync(muteRole);
                             await message.RemoveAllReactionsAsync();
                             moderationMessages.Remove(moderationMessage);
-                            var userMutes = await dataAccessLayer.GetUserMutes((Int64)guild.Id, (Int64)user.Id);
-                            await dataAccessLayer.SetUserMutes((Int64)guild.Id, (Int64)user.Id, userMutes + 1);
+                            await userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.bans, userLogs.kicks, userLogs.warns, userLogs.mutes + 1);
+                            await userLogsRepository.SaveAsync();
                             return;
                         }
                     }

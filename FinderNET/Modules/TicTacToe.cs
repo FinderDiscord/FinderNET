@@ -9,28 +9,26 @@ namespace FinderNET.Modules {
     // delete channel after
     // check win conditions
     // check delays on line 81
-    public class TicTacToeModule : ModuleBase {
-        public TicTacToeModule(DataAccessLayer dataAccessLayer) : base(dataAccessLayer) { }
+    public class TicTacToeModule : InteractionModuleBase<InteractionContext> {
         private static List<string> validEmotes = new List<string>() { "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "✅", "❌" };
         private static List<TicTacToe> games = new List<TicTacToe>();
 
         [SlashCommand("tictactoe", "Play TicTacToe")]
         public async Task TicTacToeCommand(SocketGuildUser user) {
-            SocketInteractionContext ctx = new SocketInteractionContext(Context.Client, Context.Interaction);
             if (user.IsBot) {
                 await RespondAsync("The user is a bot.");
                 return;
             }
-            if (user.Id == ctx.User.Id) {
+            if (user.Id == Context.User.Id) {
                 await RespondAsync("You can't play TicTacToe with yourself.");
                 return;
             }
-            await RespondAsync($"{user.Mention} has been invited to play TicTacToe by {ctx.User.Mention}!");
-            IUser p1 = new Random().Next(0, 2) == 0 ? ctx.User : user;
-            IUser p2 = ctx.User == p1 ? user : ctx.User;
+            await RespondAsync($"{user.Mention} has been invited to play TicTacToe by {Context.User.Mention}!");
+            IUser p1 = new Random().Next(0, 2) == 0 ? Context.User : user;
+            IUser p2 = Context.User == p1 ? user : Context.User;
             string p1Symbol = new Random().Next(0, 2) == 0 ? "❌" : "⭕";
             string p2Symbol = p1Symbol == "❌" ? "⭕" : "❌";
-            games.Add(new TicTacToe(ctx, p1, p2, p1Symbol, p2Symbol));
+            games.Add(new TicTacToe(Context, p1, p2, p1Symbol, p2Symbol));
         }
         public static async Task OnReactionAddedEvent(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction) {
             foreach (TicTacToe game in games) {
@@ -136,8 +134,8 @@ namespace FinderNET.Modules {
         }
 
         public class TicTacToe {
-            private SocketInteractionContext ctx;
-            public RestTextChannel? playChannel;
+            private InteractionContext ctx;
+            public SocketTextChannel? playChannel;
             public RestUserMessage? playMessage;
             public RestUserMessage? lobbyMessage;
             public IUser player1;
@@ -151,7 +149,7 @@ namespace FinderNET.Modules {
             public List<string> board;
             public bool lobby;
 
-            public TicTacToe(SocketInteractionContext _ctx, IUser _player1, IUser _player2, string _p1Symbol, string _p2Symbol) {
+            public TicTacToe(InteractionContext _ctx, IUser _player1, IUser _player2, string _p1Symbol, string _p2Symbol) {
                 ctx = _ctx;
                 player1 = _player1;
                 player2 = _player2;
@@ -174,7 +172,7 @@ namespace FinderNET.Modules {
             }
 
             private async void newChannel(IUser player1, IUser player2) {
-                playChannel = await ctx.Guild.CreateTextChannelAsync("tictactoe", (x) => {
+                playChannel = (SocketTextChannel)await ctx.Guild.CreateTextChannelAsync("tictactoe", (x) => {
                     x.Topic = "TicTacToe";
                     x.PermissionOverwrites = new List<Overwrite> {
                         new Overwrite(ctx.Guild.EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Deny)),
