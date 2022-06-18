@@ -17,6 +17,12 @@ namespace FinderNET.Database.Contexts {
             builder.Entity<Economy>().HasKey(table => new {
                 table.guildId, table.userId
             });
+            builder.Entity<Settings>().HasKey(table => new {
+                table.guildId, table.key
+            });
+            builder.Entity<Tickets>().HasKey(table => new {
+                table.guildId, table.supportChannelId
+            });
         }
         
         public DbSet<Addons> addons { get; set; }
