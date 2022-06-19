@@ -5,11 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using FinderNET.Modules;
 using FinderNET.Database.Contexts;
-using FinderNET.Database;
+using FinderNET.Database.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Newtonsoft.Json;
-using FinderNET.Database.Repositories;
 
 namespace FinderNET {
     class Program {
@@ -40,11 +39,11 @@ namespace FinderNET {
             client.Log += LoggingService.LogAsync;
             commands.Log += LoggingService.LogAsync;
             CountdownTimer.StartTimer(client, countdownRepository);
-            // client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
-            // client.ReactionAdded += new ModerationModule(services.GetRequiredService<DataAccessLayer>()).OnReactionAddedEvent;
-            // client.ButtonExecuted += new PollModule(services.GetRequiredService<DataAccessLayer>()).OnButtonExecutedEvent;
-            // client.ButtonExecuted += new TicketingModule.Tickets(services.GetRequiredService<DataAccessLayer>()).OnButtonExecutedEvent;
-            // client.MessageReceived += new LevelingModule(services.GetRequiredService<DataAccessLayer>()).OnMessageReceivedEvent;
+            client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
+            client.ReactionAdded += new ModerationModule(services.GetRequiredService<SettingsRepository>(), services.GetRequiredService<UserLogsRepository>()).OnReactionAddedEvent;
+            client.ButtonExecuted += new PollModule(services.GetRequiredService<PollsRepository>()).OnButtonExecutedEvent;
+            client.ButtonExecuted += new TicketingModule.TicketsModule(services.GetRequiredService<TicketsRepository>()).OnButtonExecutedEvent;
+            client.MessageReceived += new LevelingModule(services.GetRequiredService<LevelingRepository>()).OnMessageReceivedEvent;
             await client.LoginAsync(TokenType.Bot, config["token"]);
             await client.StartAsync();
             await Task.Delay(Timeout.Infinite);
@@ -61,6 +60,11 @@ namespace FinderNET {
             .AddSingleton<AddonsRepository>()
             .AddSingleton<CountdownRepository>()
             .AddSingleton<EconomyRepository>()
+            .AddSingleton<LevelingRepository>()
+            .AddSingleton<PollsRepository>()
+            .AddSingleton<SettingsRepository>()
+            .AddSingleton<TicketsRepository>()
+            .AddSingleton<UserLogsRepository>()
             .BuildServiceProvider();
         }
     }
