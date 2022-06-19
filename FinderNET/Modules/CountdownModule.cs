@@ -2,6 +2,7 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using FinderNET.Database.Repositories;
+using FinderNET.Resources;
 using Pathoschild.NaturalTimeParser.Parser;
 using System.Text;
 namespace FinderNET.Modules {
@@ -38,7 +39,7 @@ namespace FinderNET.Modules {
                     }
                 },
                 Footer = new EmbedFooterBuilder() {
-                    Text = "FinderBot"
+                    Text = Main.EmbedFooter
                 }
             }.Build());
             var messages = await GetOriginalResponseAsync();

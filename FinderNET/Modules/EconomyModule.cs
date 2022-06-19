@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using FinderNET.Database.Repositories;
+using FinderNET.Resources;
 
 namespace FinderNET.Modules {
     public class EconomyModule : InteractionModuleBase<SocketInteractionContext> {
@@ -149,7 +150,7 @@ namespace FinderNET.Modules {
                 Title = "Set Balance",
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder() {
-                        Name = "User",
+                        Name = TicketsLocale.TicketsEmbedUnclaim_fieldName,
                         Value = user.Username
                     },
                     new EmbedFieldBuilder() {

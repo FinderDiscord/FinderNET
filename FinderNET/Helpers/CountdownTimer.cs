@@ -2,6 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using FinderNET.Database.Repositories;
 using FinderNET.Modules;
+using FinderNET.Resources;
 using System.Timers;
 namespace FinderNET.Helpers {
     public static class CountdownTimer {
@@ -35,7 +36,7 @@ namespace FinderNET.Helpers {
                                 }
                             },
                             Footer = new EmbedFooterBuilder() {
-                                Text = "FinderBot"
+                                Text = Main.EmbedFooter
                             }
                         }.Build());
                         Int64? userId = c.pingUserId;
@@ -67,7 +68,7 @@ namespace FinderNET.Helpers {
                         }
                     },
                     Footer = new EmbedFooterBuilder() {
-                        Text = "FinderBot"
+                        Text = Main.EmbedFooter
                     }
                 }.Build()));
             }

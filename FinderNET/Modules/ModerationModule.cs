@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using FinderNET.Database.Repositories;
 using FinderNET.Helpers;
 using FinderNET.Helpers.Enums;
+using FinderNET.Resources;
 
 namespace FinderNET.Modules {
     public class ModerationModule : InteractionModuleBase<SocketInteractionContext> {
@@ -26,7 +27,7 @@ namespace FinderNET.Modules {
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder>() {
                     new EmbedFieldBuilder() {
-                        Name = "User",
+                        Name = TicketsLocale.TicketsEmbedUnclaim_fieldName,
                         Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     },
@@ -37,7 +38,7 @@ namespace FinderNET.Modules {
                     }
                 },
                 Footer = new EmbedFooterBuilder() {
-                    Text = $"FinderBot"
+                    Text = Main.EmbedFooter
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -60,7 +61,7 @@ namespace FinderNET.Modules {
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder>() {
                     new EmbedFieldBuilder() {
-                        Name = "User",
+                        Name = TicketsLocale.TicketsEmbedUnclaim_fieldName,
                         Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     },
@@ -71,7 +72,7 @@ namespace FinderNET.Modules {
                     }
                 },
                 Footer = new EmbedFooterBuilder() {
-                    Text = $"FinderBot"
+                    Text = Main.EmbedFooter
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -94,7 +95,7 @@ namespace FinderNET.Modules {
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder>() {
                     new EmbedFieldBuilder() {
-                        Name = "User",
+                        Name = TicketsLocale.TicketsEmbedUnclaim_fieldName,
                         Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     },
@@ -105,7 +106,7 @@ namespace FinderNET.Modules {
                     }
                 },
                 Footer = new EmbedFooterBuilder() {
-                    Text = $"FinderBot"
+                    Text = Main.EmbedFooter
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -128,7 +129,7 @@ namespace FinderNET.Modules {
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder>() {
                     new EmbedFieldBuilder() {
-                        Name = "User",
+                        Name = TicketsLocale.TicketsEmbedUnclaim_fieldName,
                         Value = $"{user.Mention} ({user.Username})",
                         IsInline = false
                     },
@@ -139,7 +140,7 @@ namespace FinderNET.Modules {
                     }
                 },
                 Footer = new EmbedFooterBuilder() {
-                    Text = $"FinderBot"
+                    Text = Main.EmbedFooter
                 }
             }.Build());
             var message = await GetOriginalResponseAsync();
@@ -173,7 +174,7 @@ namespace FinderNET.Modules {
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder>() {
                                     new EmbedFieldBuilder() {
-                                        Name = "User",
+                                        Name = TicketsLocale.TicketsEmbedUnclaim_fieldName,
                                         Value = $"{user.Mention} ({user})",
                                         IsInline = false
                                     },
@@ -184,7 +185,7 @@ namespace FinderNET.Modules {
                                     }
                                 },
                                 Footer = new EmbedFooterBuilder() {
-                                    Text = $"FinderBot"
+                                    Text = Main.EmbedFooter
                                 }
                             }.Build());
                             try {
@@ -204,7 +205,7 @@ namespace FinderNET.Modules {
                                         },
                                     },
                                     Footer = new EmbedFooterBuilder() {
-                                        Text = $"FinderBot"
+                                        Text = Main.EmbedFooter
                                     },
                                     ThumbnailUrl = guild.IconUrl
                                 }.Build());
@@ -223,7 +224,7 @@ namespace FinderNET.Modules {
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder>() {
                                     new EmbedFieldBuilder() {
-                                        Name = "User",
+                                        Name = TicketsLocale.TicketsEmbedUnclaim_fieldName,
                                         Value = $"{user.Mention} ({user})",
                                         IsInline = false
                                     },
@@ -234,7 +235,7 @@ namespace FinderNET.Modules {
                                     }
                                 },
                                 Footer = new EmbedFooterBuilder() {
-                                    Text = $"FinderBot"
+                                    Text = Main.EmbedFooter
                                 }
                             }.Build());
                             try {
@@ -254,7 +255,7 @@ namespace FinderNET.Modules {
                                         },
                                     },
                                     Footer = new EmbedFooterBuilder() {
-                                        Text = $"FinderBot"
+                                        Text = Main.EmbedFooter
                                     },
                                     ThumbnailUrl = guild.IconUrl
                                 }.Build());
@@ -271,7 +272,7 @@ namespace FinderNET.Modules {
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder>() {
                                     new EmbedFieldBuilder() {
-                                        Name = "User",
+                                        Name = TicketsLocale.TicketsEmbedUnclaim_fieldName,
                                         Value = $"{user.Mention} ({user})",
                                         IsInline = false
                                     },
@@ -282,7 +283,7 @@ namespace FinderNET.Modules {
                                     }
                                 },
                                 Footer = new EmbedFooterBuilder() {
-                                    Text = $"FinderBot"
+                                    Text = Main.EmbedFooter
                                 }
                             }.Build());
                             try {
@@ -302,7 +303,7 @@ namespace FinderNET.Modules {
                                         },
                                     },
                                     Footer = new EmbedFooterBuilder() {
-                                        Text = $"FinderBot"
+                                        Text = Main.EmbedFooter
                                     },
                                     ThumbnailUrl = guild.IconUrl
                                 }.Build());
@@ -319,7 +320,7 @@ namespace FinderNET.Modules {
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder>() {
                                     new EmbedFieldBuilder() {
-                                        Name = "User",
+                                        Name = TicketsLocale.TicketsEmbedUnclaim_fieldName,
                                         Value = $"{user.Mention} ({user})",
                                         IsInline = false
                                     },
@@ -330,7 +331,7 @@ namespace FinderNET.Modules {
                                     }
                                 },
                                 Footer = new EmbedFooterBuilder() {
-                                    Text = $"FinderBot"
+                                    Text = Main.EmbedFooter
                                 }
                             }.Build());
                             try {
@@ -350,7 +351,7 @@ namespace FinderNET.Modules {
                                         },
                                     },
                                     Footer = new EmbedFooterBuilder() {
-                                        Text = $"FinderBot"
+                                        Text = Main.EmbedFooter
                                     },
                                     ThumbnailUrl = guild.IconUrl
                                 }.Build());

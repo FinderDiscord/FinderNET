@@ -19,4 +19,46 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\TicTacToeLocale.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>TicTacToeLocale.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Main.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Main.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\TicketsLocale.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>TicketsLocale.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\PollLocale.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>PollLocale.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Resources\TicTacToeLocale.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>TicTacToe.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\Main.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Main.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\TicketsLocale.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Tickets.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\PollLocale.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>PollLocale.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
 </Project>

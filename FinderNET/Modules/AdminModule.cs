@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using FinderNET.Resources;
 
 namespace FinderNET.Modules {
     public class AdminModule : InteractionModuleBase<SocketInteractionContext> {
@@ -17,7 +18,7 @@ namespace FinderNET.Modules {
                 Title = "Purged",
                 Color = Color.Orange,
                 Footer = new EmbedFooterBuilder() {
-                    Text = "FinderBot"
+                    Text = Main.EmbedFooter
                 }
             }.Build());
         }
@@ -50,7 +51,7 @@ namespace FinderNET.Modules {
                     }
                 },
                 Footer = new EmbedFooterBuilder() {
-                    Text = "FinderBot"
+                    Text = Main.EmbedFooter
                 }
             }.Build());
         }
@@ -79,7 +80,7 @@ namespace FinderNET.Modules {
                     }
                 },
                 Footer = new EmbedFooterBuilder() {
-                    Text = "FinderBot"
+                    Text = Main.EmbedFooter
                 }
             }.Build());
         }

@@ -2,6 +2,7 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using FinderNET.Database.Repositories;
+using FinderNET.Resources;
 
 namespace FinderNET.Modules {
     [Group("leveling", "Command For Managing Leveling")]
@@ -29,7 +30,7 @@ namespace FinderNET.Modules {
                     }
                 },
                 Footer = new EmbedFooterBuilder() {
-                    Text = "FinderBot"
+                    Text = Main.EmbedFooter
                 }
             }.Build());
         }
@@ -55,7 +56,7 @@ namespace FinderNET.Modules {
                         }
                     },
                     Footer = new EmbedFooterBuilder() {
-                        Text = "FinderBot"
+                        Text = Main.EmbedFooter
                     }
                 }.Build());
             } else {

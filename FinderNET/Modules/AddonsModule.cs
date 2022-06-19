@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using FinderNET.Database.Repositories;
+using FinderNET.Resources;
 
 namespace FinderNET.Modules {
     
@@ -22,7 +23,7 @@ namespace FinderNET.Modules {
                 Title = "Addon list",
                 Color = Color.Orange,
                 Footer = new EmbedFooterBuilder() {
-                    Text = "FinderBot"
+                    Text = Main.EmbedFooter
                 }
             };
             if (value == null || value.addons.Count() == 0) {
