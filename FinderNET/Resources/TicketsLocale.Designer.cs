@@ -242,5 +242,35 @@ namespace FinderNET.Resources {
                 return ResourceManager.GetString("TicketsEmbedCloseConfirm_fieldValue", resourceCulture);
             }
         }
+        
+        internal static string LevelingEmbedLvlUp_fieldName {
+            get {
+                return ResourceManager.GetString("LevelingEmbedLvlUp_fieldName", resourceCulture);
+            }
+        }
+        
+        internal static string LevelingEmbedLvlUp_title {
+            get {
+                return ResourceManager.GetString("LevelingEmbedLvlUp_title", resourceCulture);
+            }
+        }
+        
+        internal static string LevelingEmbedLevel_title {
+            get {
+                return ResourceManager.GetString("LevelingEmbedLevel_title", resourceCulture);
+            }
+        }
+        
+        internal static string LevelingEmbedLevel_field0Name {
+            get {
+                return ResourceManager.GetString("LevelingEmbedLevel_field0Name", resourceCulture);
+            }
+        }
+        
+        internal static string LevelingEmbedLevel_field1Name {
+            get {
+                return ResourceManager.GetString("LevelingEmbedLevel_field1Name", resourceCulture);
+            }
+        }
     }
 }

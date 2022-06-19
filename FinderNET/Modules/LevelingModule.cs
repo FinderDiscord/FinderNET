@@ -17,15 +17,15 @@ namespace FinderNET.Modules {
             var user = Context.User as SocketGuildUser;
             var levels = await context.GetLevelingAsync(user.Guild.Id, user.Id);
             await RespondAsync("", embed: new EmbedBuilder() {
-                Title = "Level",
+                Title = TicketsLocale.LevelingEmbedLevel_title,
                 Color = Color.Orange,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder() {
-                        Name = "Level",
+                        Name = TicketsLocale.LevelingEmbedLevel_field0Name,
                         Value = levels.level.ToString()
                     },
                     new EmbedFieldBuilder() {
-                        Name = "Exp",
+                        Name = TicketsLocale.LevelingEmbedLevel_field1Name,
                         Value = levels.exp.ToString()
                     }
                 },
@@ -47,11 +47,11 @@ namespace FinderNET.Modules {
             if (++levels.exp > expToGet) {
                 await context.AddLevelingAsync(guild.Id, message.Author.Id, levels.level, 0);
                 await message.Channel.SendMessageAsync("", embed: new EmbedBuilder() {
-                    Title = $"Level Up {message.Author.Username}",
+                    Title = string.Format(TicketsLocale.LevelingEmbedLvlUp_title, message.Author.Username),
                     Color = Color.Orange,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder() {
-                            Name = "You have leveled up to level",
+                            Name = TicketsLocale.LevelingEmbedLvlUp_fieldName,
                             Value = levelToGet
                         }
                     },

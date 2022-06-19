@@ -117,4 +117,19 @@
     <data name="TicketsEmbedCloseConfirm_fieldValue" xml:space="preserve">
         <value>This will close the ticket and delete the channel.</value>
     </data>
+    <data name="LevelingEmbedLvlUp_fieldName" xml:space="preserve">
+        <value>You have leveled up to level</value>
+    </data>
+    <data name="LevelingEmbedLvlUp_title" xml:space="preserve">
+        <value>Level Up {0}</value>
+    </data>
+    <data name="LevelingEmbedLevel_title" xml:space="preserve">
+        <value>Level</value>
+    </data>
+    <data name="LevelingEmbedLevel_field0Name" xml:space="preserve">
+        <value>Level</value>
+    </data>
+    <data name="LevelingEmbedLevel_field1Name" xml:space="preserve">
+        <value>Exp</value>
+    </data>
 </root>
