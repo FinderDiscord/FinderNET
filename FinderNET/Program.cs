@@ -15,10 +15,6 @@ namespace FinderNET {
     class Program {
         static void Main(string[] args) => RunAsync().GetAwaiter().GetResult();
         static async Task RunAsync() {
-            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "/bin/bash", Arguments = "service postgresql start", }; 
-            Process proc = new Process() { StartInfo = startInfo, };
-            proc.Start();
-            proc.WaitForExit();
             if (!File.Exists(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "appsettings.json")) {
                 Appsettings appsettings = new Appsettings() {
                     ConnectionStrings = new ConnectionStrings() {
