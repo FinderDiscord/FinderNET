@@ -2,4 +2,14 @@ bin/
 obj/
 .vscode/
 .vs/
+.idea/
 appsettings.json
+shelf/
+workspace.xml
+projectSettingsUpdater.xml
+contentModel.xml
+modules.xml
+.idea.FinderNET.iml
+httpRequests/
+dataSources/
+dataSources.local.xml
