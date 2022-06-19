@@ -4,6 +4,7 @@ using FinderNET.Database.Repositories;
 
 namespace FinderNET.Modules {
     public class EconomyModule : InteractionModuleBase<SocketInteractionContext> {
+        // todo: permissions
         private readonly EconomyRepository economyRepository;
         public EconomyModule(EconomyRepository _economyRepository) {
             economyRepository = _economyRepository;

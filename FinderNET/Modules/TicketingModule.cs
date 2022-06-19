@@ -7,7 +7,7 @@ using FinderNET.Database.Repositories;
 namespace FinderNET.Modules {
     public class TicketingModule {
         [Group("tickets", "Command For Managing Tickets")]
-        public class TicketsModule : InteractionModuleBase<InteractionContext> {
+        public class TicketsModule : InteractionModuleBase<SocketInteractionContext> {
             ulong _closeConfirmId;
             private readonly TicketsRepository ticketsRepository;
             public TicketsModule(TicketsRepository _ticketsRepository) {
@@ -230,59 +230,62 @@ namespace FinderNET.Modules {
                 SocketGuild guild = channel.Guild;
                 SocketGuildUser user = (SocketGuildUser)messageComponent.User;
                 Tickets ticket = await ticketsRepository.GetTicketsAsync(guild.Id, channel.Id);
-                if (ticket.introMessageId == (long)message.Id) {
-                    if (messageComponent.Message.Id ==  _closeConfirmId) {
-                        if (messageComponent.Data.CustomId == "close-yes") {
+                if (message.Id == _closeConfirmId) {
+                    switch(messageComponent.Data.CustomId) {
+                        case "close-yes":
                             await messageComponent.RespondAsync("Ticket Closed");
                             await ((SocketGuildChannel)message.Channel).DeleteAsync();
                             await ticketsRepository.RemoveTicketAsync(channel.Guild.Id, channel.Id);
                             await ticketsRepository.SaveAsync();
-                        } else if (messageComponent.Data.CustomId == "close-no") {
+                            break;
+                        case "close-no":
                             await messageComponent.RespondAsync("You have cancelled closing this ticket.");
-                        }
+                            break;
                     }
-                    await messageComponent.RespondAsync("This ticket does not exist.", ephemeral: true);
-                    return;
-                }
-                if (messageComponent.Data.CustomId == "close") {
-                    await messageComponent.RespondAsync(embed: new EmbedBuilder() {
-                        Title = "Are you sure?",
-                        Description = $"Are you sure you want to close this ticket?\n{ticket.name}",
-                        Color = Color.Red
-                    }.Build(), components: new ComponentBuilder()
-                        .WithButton("Yes", "close-yes")
-                        .WithButton("No", "close-no")
-                        .Build());
-                    _closeConfirmId = (await messageComponent.GetOriginalResponseAsync()).Id;
-                    return;
-                } 
-                if (messageComponent.Data.CustomId == "claim") {
-                    if (!user.GuildPermissions.Administrator) {
-                        await messageComponent.RespondAsync("You must be an administrator to claim a ticket.", ephemeral: true);
-                        return;
+                } else if ((long)message.Id == ticket.introMessageId) {
+                    switch(messageComponent.Data.CustomId) {
+                        case "close":
+                            await messageComponent.RespondAsync(embed: new EmbedBuilder() {
+                                Title = "Are you sure?",
+                                Description = $"Are you sure you want to close this ticket?\n{ticket.name}",
+                                Color = Color.Red
+                            }.Build(), components: new ComponentBuilder()
+                                .WithButton("Yes", "close-yes")
+                                .WithButton("No", "close-no")
+                                .Build());
+                            _closeConfirmId = (await messageComponent.GetOriginalResponseAsync()).Id;
+                            return;
+                        case "claim" when !user.GuildPermissions.Administrator:
+                            await messageComponent.RespondAsync("You must be an administrator to claim a ticket.", ephemeral: true);
+                            return;
+                        case "claim":
+                            var claimedUsers = await ticketsRepository.GetTicketsAsync(guild.Id, channel.Id);
+                            if (claimedUsers.claimedUserId.Contains((long)user.Id)) {
+                                await messageComponent.RespondAsync("You have already claimed this ticket.", ephemeral: true);
+                                return;
+                            }
+                            await channel.AddPermissionOverwriteAsync(user, new OverwritePermissions(
+                                addReactions: PermValue.Allow,
+                                attachFiles: PermValue.Allow,
+                                embedLinks: PermValue.Allow,
+                                readMessageHistory: PermValue.Allow,
+                                sendMessages: PermValue.Allow,
+                                viewChannel: PermValue.Allow,
+                                useApplicationCommands: PermValue.Allow
+                            ));
+                            await ticketsRepository.AddTicketClaimedUserIdAsync(channel.Guild.Id, channel.Id, user.Id);
+                            await ticketsRepository.SaveAsync();
+                            await message.Channel.SendMessageAsync(embed: new EmbedBuilder() {
+                                Title = "Ticket Claimed",
+                                Description = $"{user.Username} has claimed this ticket.",
+                                Color = Color.Green
+                            }.Build());
+                            await messageComponent.RespondAsync("You have claimed this ticket.", ephemeral: true);
+                            break;
+                        default:
+                            await messageComponent.RespondAsync("This ticket does not exist.", ephemeral: true);
+                            return;
                     }
-                    var claimedUsers = await ticketsRepository.GetTicketsAsync(guild.Id, channel.Id);
-                    if (claimedUsers.claimedUserId.Contains((long)user.Id)) {
-                        await messageComponent.RespondAsync("You have already claimed this ticket.", ephemeral: true);
-                        return;
-                    }
-                    await channel.AddPermissionOverwriteAsync(user, new OverwritePermissions(
-                        addReactions: PermValue.Allow,
-                        attachFiles: PermValue.Allow,
-                        embedLinks: PermValue.Allow,
-                        readMessageHistory: PermValue.Allow,
-                        sendMessages: PermValue.Allow,
-                        viewChannel: PermValue.Allow,
-                        useApplicationCommands: PermValue.Allow
-                    ));
-                    await ticketsRepository.AddTicketClaimedUserIdAsync(channel.Guild.Id, channel.Id, user.Id);
-                    await ticketsRepository.SaveAsync();
-                    await message.Channel.SendMessageAsync(embed: new EmbedBuilder() {
-                        Title = "Ticket Claimed",
-                        Description = $"{user.Username} has claimed this ticket.",
-                        Color = Color.Green
-                    }.Build());
-                    await messageComponent.RespondAsync("You have claimed this ticket.", ephemeral: true);
                 }
             }
         }

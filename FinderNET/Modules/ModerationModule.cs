@@ -1,8 +1,10 @@
 using Discord;
 using Discord.Interactions;
-using Discord.WebSocket;
 using Discord.Net;
+using Discord.WebSocket;
 using FinderNET.Database.Repositories;
+using FinderNET.Helpers;
+using FinderNET.Helpers.Enums;
 
 namespace FinderNET.Modules {
     public class ModerationModule : InteractionModuleBase<SocketInteractionContext> {
@@ -12,6 +14,8 @@ namespace FinderNET.Modules {
             settingsRepository = _settingsRepository;
             userLogsRepository = _userLogsRepository;
         }
+        
+        // todo: permissions
 
         public static List<ModerationMessage> moderationMessages = new List<ModerationMessage>();
 
@@ -373,26 +377,5 @@ namespace FinderNET.Modules {
                 }
             }
         }
-    }
-
-
-
-    public class ModerationMessage {
-        public ulong messageId { get; set; }
-        public ulong guildId { get; set; }
-        public ulong channelId { get; set; }
-        public ulong senderId { get; set; }
-        public ulong userId { get; set; }
-        public string reason { get; set; } = "No reason given.";
-        public ModerationMessageType Type { get; set; } = ModerationMessageType.Null;
-        // add date?
-    }
-
-    public enum ModerationMessageType {
-        Null,
-        Ban,
-        Kick,
-        Warn,
-        Mute
     }
 }

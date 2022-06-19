@@ -5,9 +5,10 @@ using FinderNET.Database.Repositories;
 namespace FinderNET.Modules {
     
     [Group("addons", "Command For Managing Addons")]
-    public class Addons : InteractionModuleBase<SocketInteractionContext> {
+    //todo: make this work
+    public class AddonsModule : InteractionModuleBase<SocketInteractionContext> {
         private readonly AddonsRepository addonsRepository;
-        public Addons(AddonsRepository _addonsRepository) {
+        public AddonsModule(AddonsRepository _addonsRepository) {
             addonsRepository = _addonsRepository;
         }
         public List<string> SupportedAddons = new List<string>() {

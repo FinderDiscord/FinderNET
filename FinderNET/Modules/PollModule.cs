@@ -3,9 +3,10 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using FinderNET.Database.Repositories;
 using FinderNET.Database.Models;
+using System.Net.Sockets;
 
 namespace FinderNET.Modules {
-   public class PollModule : InteractionModuleBase<InteractionContext> {
+   public class PollModule : InteractionModuleBase<SocketInteractionContext> {
         private readonly PollsRepository context;
         public PollModule(PollsRepository _context) {
             context = _context;
@@ -165,36 +166,41 @@ namespace FinderNET.Modules {
             if (!await context.PollExistsAsync(messageComponent.Message.Id)) return;
             var poll = await context.GetPollsAsync(messageComponent.Message.Id);
             for (int i = 0; i < poll.answers.Count; i++) {
-                if (messageComponent.Data.CustomId == i.ToString() && !poll.votersId.Contains((Int64)messageComponent.User.Id)) {
-                var message = messageComponent.Message;
-                var embed = message.Embeds.First();
-                var fields = embed.Fields;
-                var newFields = new List<EmbedFieldBuilder>();
-                for (int j = 0; j < fields.Count(); j++) {
-                    if (j == i) {
-                        newFields.Add(new EmbedFieldBuilder() {
-                            Name = fields[j].Name,
-                            Value = int.Parse(fields[j].Value) + 1,
-                            IsInline = fields[j].Inline,
+                if (messageComponent.Data.CustomId == i.ToString()) {
+                    if (!poll.votersId.Contains((Int64)messageComponent.User.Id)) {
+                        var message = messageComponent.Message;
+                        var embed = message.Embeds.First();
+                        var fields = embed.Fields;
+                        var newFields = new List<EmbedFieldBuilder>();
+                        for (int j = 0; j < fields.Count(); j++) {
+                            if (j == i) {
+                                newFields.Add(new EmbedFieldBuilder() {
+                                    Name = fields[j].Name,
+                                    Value = int.Parse(fields[j].Value) + 1,
+                                    IsInline = fields[j].Inline,
+                                });
+                            } else {
+                                newFields.Add(new EmbedFieldBuilder() {
+                                    Name = fields[j].Name,
+                                    Value = fields[j].Value,
+                                    IsInline = fields[j].Inline,
+                                });
+                            }
+                        }
+                        await messageComponent.Message.ModifyAsync(x => {
+                            EmbedBuilder newEmbed = new EmbedBuilder();
+                            newEmbed.WithTitle(embed.Title);
+                            newEmbed.WithDescription(embed.Description);
+                            newEmbed.WithColor(Color.Blue);
+                            newEmbed.WithFooter(new EmbedFooterBuilder().WithText("FinderBot"));
+                            newEmbed.WithFields(newFields);
+                            x.Embed = newEmbed.Build();
                         });
+                        await messageComponent.RespondAsync("You voted for " + poll.answers[i], ephemeral: true);
+                        poll.votersId.Add((Int64)messageComponent.User.Id);
                     } else {
-                        newFields.Add(new EmbedFieldBuilder() {
-                            Name = fields[j].Name,
-                            Value = fields[j].Value,
-                            IsInline = fields[j].Inline,
-                        });
+                        await messageComponent.RespondAsync("You already voted on this poll", ephemeral: true);
                     }
-                }
-                await messageComponent.Message.ModifyAsync(x => {
-                    EmbedBuilder newEmbed = new EmbedBuilder();
-                    newEmbed.WithTitle(embed.Title);
-                    newEmbed.WithDescription(embed.Description);
-                    newEmbed.WithColor(Color.Blue);
-                    newEmbed.WithFooter(new EmbedFooterBuilder().WithText("FinderBot"));
-                    newEmbed.WithFields(newFields);
-                    x.Embed = newEmbed.Build();
-                });
-                poll.votersId.Add((Int64)messageComponent.User.Id);
                 }
             }
         }

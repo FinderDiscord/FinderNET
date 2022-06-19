@@ -5,7 +5,7 @@ using FinderNET.Database.Repositories;
 
 namespace FinderNET.Modules {
     [Group("leveling", "Command For Managing Leveling")]
-    public class LevelingModule : InteractionModuleBase<InteractionContext> {
+    public class LevelingModule : InteractionModuleBase<SocketInteractionContext> {
         private readonly LevelingRepository context;
         public LevelingModule(LevelingRepository _context) {
             context = _context;
@@ -43,7 +43,6 @@ namespace FinderNET.Modules {
             var levels = await context.GetLevelingAsync(guild.Id, message.Author.Id);
             var levelToGet = levels.level + 1;
             var expToGet = base_xp * (int)Math.Pow(factor, levelToGet);
-            await LoggingService.LogAsync(new LogMessage(LogSeverity.Info, "Leveling", $"{levelToGet} {levels.exp}/{expToGet}"));
             if (++levels.exp > expToGet) {
                 await context.AddLevelingAsync(guild.Id, message.Author.Id, levels.level, 0);
                 await message.Channel.SendMessageAsync("", embed: new EmbedBuilder() {

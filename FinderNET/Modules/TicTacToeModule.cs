@@ -2,14 +2,14 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Discord.Rest;
-using FinderNET.Database;
 
 namespace FinderNET.Modules {
     // TODO:
     // delete channel after
     // check win conditions
     // check delays on line 81
-    public class TicTacToeModule : InteractionModuleBase<InteractionContext> {
+    // make so you dont needd context in class
+    public class TicTacToeModule : InteractionModuleBase<SocketInteractionContext> {
         private static List<string> validEmotes = new List<string>() { "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "✅", "❌" };
         private static List<TicTacToe> games = new List<TicTacToe>();
 
@@ -134,8 +134,8 @@ namespace FinderNET.Modules {
         }
 
         public class TicTacToe {
-            private InteractionContext ctx;
-            public SocketTextChannel? playChannel;
+            private SocketInteractionContext ctx;
+            public RestTextChannel? playChannel;
             public RestUserMessage? playMessage;
             public RestUserMessage? lobbyMessage;
             public IUser player1;
@@ -149,7 +149,7 @@ namespace FinderNET.Modules {
             public List<string> board;
             public bool lobby;
 
-            public TicTacToe(InteractionContext _ctx, IUser _player1, IUser _player2, string _p1Symbol, string _p2Symbol) {
+            public TicTacToe(SocketInteractionContext _ctx, IUser _player1, IUser _player2, string _p1Symbol, string _p2Symbol) {
                 ctx = _ctx;
                 player1 = _player1;
                 player2 = _player2;
@@ -172,7 +172,7 @@ namespace FinderNET.Modules {
             }
 
             private async void newChannel(IUser player1, IUser player2) {
-                playChannel = (SocketTextChannel)await ctx.Guild.CreateTextChannelAsync("tictactoe", (x) => {
+                playChannel = await ctx.Guild.CreateTextChannelAsync("tictactoe", (x) => {
                     x.Topic = "TicTacToe";
                     x.PermissionOverwrites = new List<Overwrite> {
                         new Overwrite(ctx.Guild.EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Deny)),

@@ -3,8 +3,8 @@ using Discord.Interactions;
 using Discord.WebSocket;
 
 namespace FinderNET.Modules {
-    public class AdminModule : InteractionModuleBase<InteractionContext> {
-        
+    public class AdminModule : InteractionModuleBase<SocketInteractionContext> {
+        //todo: fix everything
         [SlashCommand("purge", "Purge a number of messages", runMode: RunMode.Async)]
         public async Task PurgeCommand(int count) {
             var messages = await Context.Channel.GetMessagesAsync(count).FlattenAsync();

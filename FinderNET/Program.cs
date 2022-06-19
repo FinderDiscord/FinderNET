@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using FinderNET.Modules;
 using FinderNET.Database.Contexts;
 using FinderNET.Database.Repositories;
+using FinderNET.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Newtonsoft.Json;
