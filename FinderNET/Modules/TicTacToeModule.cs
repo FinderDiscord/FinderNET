@@ -85,11 +85,9 @@ namespace FinderNET.Modules {
                 if (game.playMessage == null) return;
                 if (!game.win && game.playMessage.Id == reaction.MessageId && (game.p1go && game.player1.Id == reaction.UserId || !game.p1go && game.player2.Id == reaction.UserId)) {
                     game.p1go = !game.p1go;
-                    foreach (string slot in game.board) {
-                        if (slot == reaction.Emote.Name) {
-                            game.board[game.board.IndexOf(slot)] = game.p1go ? game.p1Symbol : game.p2Symbol;
-                            break;
-                        }
+                    foreach (var slot in game.board.Where(slot => slot == reaction.Emote.Name)) {
+                        game.board[game.board.IndexOf(slot)] = game.p1go ? game.p1Symbol : game.p2Symbol;
+                        break;
                     }
                     await game.playMessage.ModifyAsync((x) => {
                         x.Embed = new EmbedBuilder() {
