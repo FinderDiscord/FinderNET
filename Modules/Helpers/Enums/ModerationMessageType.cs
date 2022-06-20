@@ -1,4 +1,4 @@
-namespace FinderNET.Helpers.Enums {
+namespace FinderNET.Modules.Helpers.Enums {
     public enum ModerationMessageType {
         Ban,
         Kick,

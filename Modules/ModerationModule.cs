@@ -3,8 +3,8 @@ using Discord.Interactions;
 using Discord.Net;
 using Discord.WebSocket;
 using FinderNET.Database.Repositories;
-using FinderNET.Helpers;
-using FinderNET.Helpers.Enums;
+using FinderNET.Modules.Helpers;
+using FinderNET.Modules.Helpers.Enums;
 using FinderNET.Resources;
 
 namespace FinderNET.Modules {

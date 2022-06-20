@@ -1,9 +1,9 @@
 using Discord.Interactions;
 using Discord.WebSocket;
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
-namespace FinderNET {
+namespace FinderNET.Handlers {
     public class CommandHandler {
         private readonly InteractionService commands;
         private readonly DiscordSocketClient client;

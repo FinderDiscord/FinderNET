@@ -1,8 +1,7 @@
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-
-namespace FinderNET {
+namespace FinderNET.Handlers {
     public class LoggingService {
         public LoggingService(DiscordSocketClient client, CommandService command) {
             client.Log += LogAsync;

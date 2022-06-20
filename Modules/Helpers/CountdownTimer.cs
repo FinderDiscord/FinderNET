@@ -1,10 +1,9 @@
 using Discord;
 using Discord.WebSocket;
 using FinderNET.Database.Repositories;
-using FinderNET.Modules;
 using FinderNET.Resources;
 using System.Timers;
-namespace FinderNET.Helpers {
+namespace FinderNET.Modules.Helpers {
     public static class CountdownTimer {
         private static System.Timers.Timer messageTimer;
         private static DiscordSocketClient client;

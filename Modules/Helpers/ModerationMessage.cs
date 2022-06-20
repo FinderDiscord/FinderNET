@@ -1,5 +1,5 @@
-using FinderNET.Helpers.Enums;
-namespace FinderNET.Helpers {
+using FinderNET.Modules.Helpers.Enums;
+namespace FinderNET.Modules.Helpers {
     public class ModerationMessage {
         public ulong messageId { get; set; }
         public ulong guildId { get; set; }
