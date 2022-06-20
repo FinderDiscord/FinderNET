@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using FinderNET.Database.Repositories;
+using FinderNET.Resources;
 
 namespace FinderNET.Modules {
     public class EconomyModule : InteractionModuleBase<SocketInteractionContext> {
@@ -11,19 +12,17 @@ namespace FinderNET.Modules {
         }
         [SlashCommand("balance", "Checks user's balance.")]
         public async Task Balance(IUser? user = null) {
-            if (user == null) {
-                user = Context.User;
-            }
+            user ??= Context.User;
             var economy = await economyRepository.GetEconomyAsync(Context.Guild.Id, user.Id);
             await RespondAsync(embed: new EmbedBuilder() {
-                Title = $"{user.Username}'s balance",
+                Title = string.Format(EconomyLocale.EconomyEmbedBal_title, user.Username),
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder() {
-                        Name = "Money",
+                        Name = EconomyLocale.EconomyEmbedBal_field0Name,
                         Value = economy.money.ToString()
                     },
                     new EmbedFieldBuilder() {
-                        Name = "Bank",
+                        Name = EconomyLocale.EconomyEmbedBal_field1Name,
                         Value = economy.bank.ToString()
                     }
                 },
@@ -35,20 +34,16 @@ namespace FinderNET.Modules {
         public async Task Deposit(int amount) {
             var economy = await economyRepository.GetEconomyAsync(Context.Guild.Id, Context.User.Id);
             if (economy.money < amount) {
-                await RespondAsync(embed: new EmbedBuilder() {
-                    Title = "Error",
-                    Description = "You don't have enough money.",
-                    Color = Color.Red
-                }.Build());
+                await RespondAsync(EconomyLocale.EconomyError_notEnoughMoney);
                 return;
             }
             await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, -amount, amount);
             await economyRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder() {
-                Title = "Deposit",
+                Title = EconomyLocale.EconomyEmbedDeposit_title,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder() {
-                        Name = "You deposited",
+                        Name = EconomyLocale.EconomyEmbedDeposit_fieldName,
                         Value = amount.ToString()
                     }
                 },
@@ -60,20 +55,16 @@ namespace FinderNET.Modules {
         public async Task Withdraw(int amount) {
             var economy = await economyRepository.GetEconomyAsync(Context.Guild.Id, Context.User.Id);
             if (economy.bank < amount) {
-                await RespondAsync(embed: new EmbedBuilder() {
-                    Title = "Error",
-                    Description = "You don't have enough money in your bank.",
-                    Color = Color.Red
-                }.Build());
+                await RespondAsync(EconomyLocale.EconomyError_notEnoughMoneyBank);
                 return;
             }
             await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, amount, -amount);
             await economyRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder() {
-                Title = "Withdraw",
+                Title = EconomyLocale.EconomyEmbedWithdraw_title,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder() {
-                        Name = "You withdrew",
+                        Name = EconomyLocale.EconomyEmbedWithdraw_fieldName,
                         Value = amount.ToString()
                     }
                 },
@@ -85,25 +76,21 @@ namespace FinderNET.Modules {
         public async Task Pay(IUser user, int amount) {
             var economy = await economyRepository.GetEconomyAsync(Context.Guild.Id, Context.User.Id);
             if (economy.money < amount) {
-                await RespondAsync(embed: new EmbedBuilder() {
-                    Title = "Error",
-                    Description = "You don't have enough money.",
-                    Color = Color.Red
-                }.Build());
+                await RespondAsync(EconomyLocale.EconomyError_notEnoughMoney);
                 return;
             }
             await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, -amount, 0);
             await economyRepository.AddEconomyAsync(Context.Guild.Id, user.Id, amount, 0);
             await economyRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder() {
-                Title = "Pay",
+                Title = EconomyLocale.EconomyEmbedPay_title,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder() {
-                        Name = "Payee",
+                        Name = EconomyLocale.EconomyEmbedPay_field0Name,
                         Value = user.Username
                     },
                     new EmbedFieldBuilder() {
-                        Name = "Amount",
+                        Name = EconomyLocale.EconomyEmbedPay_field1Name,
                         Value = amount.ToString()
                     }
                 },
@@ -115,25 +102,21 @@ namespace FinderNET.Modules {
         public async Task Transfer(IUser user, int amount) {
             var economy = await economyRepository.GetEconomyAsync(Context.Guild.Id, Context.User.Id);
             if (economy.bank < amount) {
-                await RespondAsync(embed: new EmbedBuilder() {
-                    Title = "Error",
-                    Description = "You don't have enough money in your bank.",
-                    Color = Color.Red
-                }.Build());
+                await RespondAsync(EconomyLocale.EconomyError_notEnoughMoneyBank);
                 return;
             }
             await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, 0, -amount);
             await economyRepository.AddEconomyAsync(Context.Guild.Id, user.Id, 0, amount);
             await economyRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder() {
-                Title = "Transfer",
+                Title = EconomyLocale.EconomyEmbedTransfer_title,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder() {
-                        Name = "Payee",
+                        Name = EconomyLocale.EconomyEmbedTransfer_field0Name,
                         Value = user.Username
                     },
                     new EmbedFieldBuilder() {
-                        Name = "Amount",
+                        Name = EconomyLocale.EconomyEmbedTransfer_field1Name,
                         Value = amount.ToString()
                     }
                 },
@@ -146,14 +129,14 @@ namespace FinderNET.Modules {
             await economyRepository.AddEconomyAsync(Context.Guild.Id, user.Id, amount, 0);
             await economyRepository.SaveAsync();
             await RespondAsync(embed: new EmbedBuilder() {
-                Title = "Set Balance",
+                Title = EconomyLocale.EconomyEmbedSetBal_title,
                 Fields = new List<EmbedFieldBuilder> {
                     new EmbedFieldBuilder() {
-                        Name = "User",
+                        Name = EconomyLocale.EconomyEmbedSetBal_field0Name,
                         Value = user.Username
                     },
                     new EmbedFieldBuilder() {
-                        Name = "Amount",
+                        Name = EconomyLocale.EconomyEmbedSetBal_field1Name,
                         Value = amount.ToString()
                     }
                 },

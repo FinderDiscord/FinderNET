@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using FinderNET.Database.Repositories;
+using FinderNET.Resources;
 
 namespace FinderNET.Modules {
     
@@ -12,30 +13,26 @@ namespace FinderNET.Modules {
             addonsRepository = _addonsRepository;
         }
         public List<string> SupportedAddons = new List<string>() {
-            "TicTacToe", "Blackjack"
+            "TicTacToe", "Economy", "Leveling", "Ticket"
         };
 
         [SlashCommand("list", "Lists the installed addons")]
         public async Task GetAddons() {
             var value = await addonsRepository.GetAddonsAsync(Context.Guild.Id);
             var embed = new EmbedBuilder() {
-                Title = "Addon list",
+                Title = AddonsLocale.AddonsEmbedList_title,
                 Color = Color.Orange,
                 Footer = new EmbedFooterBuilder() {
-                    Text = "FinderBot"
+                    Text = Main.EmbedFooter
                 }
             };
-            if (value == null || value.addons.Count() == 0) {
+            if (value.addons.Any()) {
                 foreach (var i in SupportedAddons) {
-                    embed.AddField(name: i, value: "Not installed", inline: false);
+                    embed.AddField(name: i, value: value.addons.Contains(i.ToLower()) ? AddonsLocale.AddonsInstalled : AddonsLocale.AddonsNotInstalled, inline: false);
                 }
             } else {
                 foreach (var i in SupportedAddons) {
-                    if (value.addons.Contains(i.ToLower())) {
-                        embed.AddField(name: i, value: "Installed", inline: false);
-                    } else {
-                        embed.AddField(name: i, value: "Not installed", inline: false);
-                    }
+                    embed.AddField(name: i, value: AddonsLocale.AddonsNotInstalled, inline: false);
                 }
             }
             await RespondAsync("", embed: embed.Build());

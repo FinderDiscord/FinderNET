@@ -2,13 +2,14 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Discord.Rest;
+using FinderNET.Resources;
 
 namespace FinderNET.Modules {
     // TODO:
     // delete channel after
     // check win conditions
     // check delays on line 81
-    // make so you dont needd context in class
+    // make so you dont need context in class
     public class TicTacToeModule : InteractionModuleBase<SocketInteractionContext> {
         private static List<string> validEmotes = new List<string>() { "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "✅", "❌" };
         private static List<TicTacToe> games = new List<TicTacToe>();
@@ -16,70 +17,61 @@ namespace FinderNET.Modules {
         [SlashCommand("tictactoe", "Play TicTacToe")]
         public async Task TicTacToeCommand(SocketGuildUser user) {
             if (user.IsBot) {
-                await RespondAsync("The user is a bot.");
+                await RespondAsync(TicTacToeLocale.TicTacToeError_userBot);
                 return;
             }
             if (user.Id == Context.User.Id) {
-                await RespondAsync("You can't play TicTacToe with yourself.");
+                await RespondAsync(TicTacToeLocale.TicTacToeError_self);
                 return;
             }
-            await RespondAsync($"{user.Mention} has been invited to play TicTacToe by {Context.User.Mention}!");
+            await RespondAsync(string.Format(TicTacToeLocale.TicTacToeInvite, user.Mention, Context.User.Mention));
             IUser p1 = new Random().Next(0, 2) == 0 ? Context.User : user;
             IUser p2 = Context.User == p1 ? user : Context.User;
-            string p1Symbol = new Random().Next(0, 2) == 0 ? "❌" : "⭕";
-            string p2Symbol = p1Symbol == "❌" ? "⭕" : "❌";
+            var p1Symbol = new Random().Next(0, 2) == 0 ? "❌" : "⭕";
+            var p2Symbol = p1Symbol == "❌" ? "⭕" : "❌";
             games.Add(new TicTacToe(Context, p1, p2, p1Symbol, p2Symbol));
         }
         public static async Task OnReactionAddedEvent(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction reaction) {
-            foreach (TicTacToe game in games) {
+            foreach (var game in games) {
                 if (reaction.User.Value.IsBot) return;
-                bool valid = false;
-                foreach (string symbol in validEmotes) {
-                    if (reaction.Emote.Name == symbol) {
-                        valid = true;
-                        break;
-                    }
-                }
+                var valid = validEmotes.Any(symbol => reaction.Emote.Name == symbol);
                 if (!valid) return;
                 if (game.playChannel == null || game.lobbyMessage == null) continue;
                 if (game.playChannel.Id != reaction.Channel.Id) continue;
                 if (game.lobby && reaction.MessageId == game.lobbyMessage.Id) {
-                    if (reaction.Emote.Name == "✅") {
-                        game.p1Ready = game.player1.Id == reaction.UserId ? true : game.p1Ready;
-                        game.p2Ready = game.player2.Id == reaction.UserId ? true : game.p2Ready;
-                        await game.playChannel.SendMessageAsync($"{reaction.User.Value.Mention} is ready!");
-                        if (game.p1Ready && game.p2Ready) {
+                    switch(reaction.Emote.Name) {
+                        case "✅":
+                            game.p1Ready = game.player1.Id == reaction.UserId || game.p1Ready;
+                            game.p2Ready = game.player2.Id == reaction.UserId || game.p2Ready;
+                            await game.playChannel.SendMessageAsync(string.Format(TicTacToeLocale.TicTacToeReady, reaction.User.Value.Mention));
+                            if (!game.p1Ready || !game.p2Ready) return;
                             game.lobby = false;
-                            await game.playChannel.SendMessageAsync($"{game.player1.Mention} and {game.player2.Mention} are ready!\nStarting game...");
-                            game.playMessage = await game.playChannel.SendMessageAsync("", false, new EmbedBuilder() {
-                                Title = "Tic Tac Toe",
+                            await game.playChannel.SendMessageAsync(string.Format(TicTacToeLocale.TicTacToeStarting, game.player1.Mention, game.player2.Mention));
+                            game.playMessage = await game.playChannel.SendMessageAsync(embed: new EmbedBuilder() {
+                                Title = TicTacToeLocale.TicTacToeEmbed_title,
                                 Color = Color.Blue,
-                                Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = "Please Wait..." } },
-                                Footer = new EmbedFooterBuilder { Text = $"FinderBot" }
+                                Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = TicTacToeLocale.TicTacToeEmbed_fieldName, Value = TicTacToeLocale.TicTacToeEmbed_fieldValue_wait } },
+                                Footer = new EmbedFooterBuilder { Text = Main.EmbedFooter }
                             }.Build());
-                            List<Emoji> emojis = new List<Emoji>();
-                            foreach (string item in game.board) {
-                                emojis.Add(new Emoji(item));
-                            };
+                            var emojis = game.board.Select(item => new Emoji(item)).ToList();
                             await game.playMessage.AddReactionsAsync(emojis);
                             await game.playMessage.ModifyAsync((x) => {
                                 x.Embed = new EmbedBuilder() {
-                                    Title = "Tic Tac Toe",
+                                    Title = TicTacToeLocale.TicTacToeEmbed_title,
                                     Color = Color.Orange,
-                                    Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
-                                    Footer = new EmbedFooterBuilder { Text = $"FinderBot" }
+                                    Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = TicTacToeLocale.TicTacToeEmbed_fieldName, Value = game.GenerateGrid()}},
+                                    Footer = new EmbedFooterBuilder { Text = Main.EmbedFooter }
                                 }.Build();
-                                x.Content = $"{game.player1.Mention} has been assigned the {game.p1Symbol} symbol.\n{game.player2.Mention} has been assigned the {game.p2Symbol} symbol.\n\n{game.player1.Mention}'s Turn!";
+                                x.Content = string.Format(TicTacToeLocale.TicTacToeMessage, game.player1.Mention, game.p1Symbol, game.player2.Mention, game.p2Symbol, game.player1.Mention);
                             });
-                        }
-                        return;
-                    } else if (reaction.Emote.Name == "❌") {
-                        await game.playChannel.SendMessageAsync($"{reaction.User.Value.Mention} has cancelled game.");
-                        // dunno if this makes the bot unresponsive
-                        Thread.Sleep(2000);
-                        await game.playChannel.DeleteAsync();
-                        games.Remove(game);
-                        return;
+                            return;
+                        case "❌":
+                            await game.playChannel.SendMessageAsync(string.Format(TicTacToeLocale.TicTacToeCancelled, reaction.User.Value.Mention));
+                            // dunno if this makes the bot unresponsive
+                            Thread.Sleep(2000);
+                            await game.playChannel.DeleteAsync();
+                            games.Remove(game);
+                            return;
                     }
                 }
                 if (game.playMessage == null) return;
@@ -91,39 +83,39 @@ namespace FinderNET.Modules {
                     }
                     await game.playMessage.ModifyAsync((x) => {
                         x.Embed = new EmbedBuilder() {
-                            Title = "Tic Tac Toe",
+                            Title = TicTacToeLocale.TicTacToeEmbed_title,
                             Color = Color.Orange,
-                            Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
-                            Footer = new EmbedFooterBuilder { Text = $"FinderBot" }
+                            Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = TicTacToeLocale.TicTacToeEmbed_fieldName, Value = game.GenerateGrid() } },
+                            Footer = new EmbedFooterBuilder { Text = Main.EmbedFooter }
                         }.Build();
-                        x.Content = $"{game.player1.Mention} has been assigned the {game.p1Symbol} symbol.\n{game.player2.Mention} has been assigned the {game.p2Symbol} symbol.\n\n{(game.p1go ? game.player1.Mention : game.player2.Mention)}'s Turn!";
+                        x.Content = string.Format(TicTacToeLocale.TicTacToeMessage, game.player1.Mention, game.p1Symbol, game.player2.Mention, game.p2Symbol, (game.p1go ? game.player1.Mention : game.player2.Mention));
                     });
                     await game.playMessage.RemoveAllReactionsForEmoteAsync(reaction.Emote);
                     IUser? winner = game.CheckWin();
                     if (winner != null && winner.Id == game.player1.Id) {
                         await game.playMessage.ModifyAsync((x) => {
                             x.Embed = new EmbedBuilder() {
-                                Title = "Tic Tac Toe",
+                                Title = TicTacToeLocale.TicTacToeEmbed_title,
                                 Color = Color.Green,
-                                Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
-                                Footer = new EmbedFooterBuilder { Text = $"FinderBot" }
+                                Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = TicTacToeLocale.TicTacToeEmbed_fieldName, Value = game.GenerateGrid() } },
+                                Footer = new EmbedFooterBuilder { Text = Main.EmbedFooter }
                             }.Build();
                         });
-                        await game.playChannel.SendMessageAsync($"{game.player1.Mention} has won the game!");
+                        await game.playChannel.SendMessageAsync(string.Format(TicTacToeLocale.TicTacToeWin, game.player1.Mention));
                         game.win = true;
                     } else if (winner != null && winner.Id == game.player2.Id) {
                         await game.playMessage.ModifyAsync((x) => {
                             x.Embed = new EmbedBuilder() {
-                                Title = "Tic Tac Toe",
+                                Title = TicTacToeLocale.TicTacToeEmbed_title,
                                 Color = Color.Green,
-                                Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = "The Playing Board", Value = game.GenerateGrid() } },
-                                Footer = new EmbedFooterBuilder { Text = $"FinderBot" }
+                                Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = TicTacToeLocale.TicTacToeEmbed_fieldName, Value = game.GenerateGrid() } },
+                                Footer = new EmbedFooterBuilder { Text = Main.EmbedFooter }
                             }.Build();
                         });
-                        await game.playChannel.SendMessageAsync($"{game.player1.Mention} has won the game!");
+                        await game.playChannel.SendMessageAsync(string.Format(TicTacToeLocale.TicTacToeWin, game.player1.Mention));
                         game.win = true;
                     } else if (game.board.All(x => x == "⭕" || x == "❌")) {
-                        await game.playChannel.SendMessageAsync("The game has ended in a draw!");
+                        await game.playChannel.SendMessageAsync(TicTacToeLocale.TicTacToeDraw);
                         game.win = true;
                     }
                 }
@@ -171,14 +163,14 @@ namespace FinderNET.Modules {
 
             private async void newChannel(IUser player1, IUser player2) {
                 playChannel = await ctx.Guild.CreateTextChannelAsync("tictactoe", (x) => {
-                    x.Topic = "TicTacToe";
+                    x.Topic = TicTacToeLocale.TicTacToeChannelTopic;
                     x.PermissionOverwrites = new List<Overwrite> {
                         new Overwrite(ctx.Guild.EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Deny)),
                         new Overwrite(player1.Id, PermissionTarget.User, new OverwritePermissions(viewChannel: PermValue.Allow)),
                         new Overwrite(player2.Id, PermissionTarget.User, new OverwritePermissions(viewChannel: PermValue.Allow))
                     };
                 });
-                lobbyMessage = await playChannel.SendMessageAsync($"Both players need to react with ✅ to start the game or ❌ to cancel.");
+                lobbyMessage = await playChannel.SendMessageAsync(TicTacToeLocale.TicTacToeConfirm);
                 await lobbyMessage.AddReactionsAsync(new Emoji[] { new Emoji("✅"), new Emoji("❌") });
             }
             public string GenerateGrid() {

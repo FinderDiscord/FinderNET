@@ -2,6 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using FinderNET.Database.Repositories;
 using FinderNET.Modules;
+using FinderNET.Resources;
 using System.Timers;
 namespace FinderNET.Helpers {
     public static class CountdownTimer {
@@ -19,36 +20,41 @@ namespace FinderNET.Helpers {
 
         public static async void OnTimerElapsed(object source, ElapsedEventArgs e) {
             foreach (var c in countdownRepository.GetAll()) {
-                SocketGuild guild = client.GetGuild((ulong)c.guildId);
-                ITextChannel channel = (ITextChannel)guild.GetChannel((ulong)c.channelId);
-                IUserMessage messages = (IUserMessage) await channel.GetMessageAsync((ulong)c.messageId);
-
+                var guild = client.GetGuild((ulong)c.guildId);
+                var channel = (ITextChannel)guild.GetChannel((ulong)c.channelId);
+                var messages = (IUserMessage) await channel.GetMessageAsync((ulong)c.messageId);
                 if (c.dateTime < DateTime.UtcNow || messages == null) {
                     if (messages != null) {
                         await messages.ModifyAsync(x => x.Embed = new EmbedBuilder() {
-                            Title = "Countdown",
+                            Title = CountdownLocale.CountdownEmbed_title,
                             Color = Color.Orange,
                             Fields = new List<EmbedFieldBuilder> {
                                 new EmbedFieldBuilder() {
-                                    Name = "Time left",
-                                    Value = "Times Up"
+                                    Name = CountdownLocale.CountdownEmbed_fieldName,
+                                    Value = CountdownLocale.CountdownEmbed_fieldValueEnd
                                 }
                             },
                             Footer = new EmbedFooterBuilder() {
-                                Text = "FinderBot"
+                                Text = Main.EmbedFooter
                             }
                         }.Build());
-                        Int64? userId = c.pingUserId;
-                        Int64? roleId = c.pingRoleId;
-                        if (userId != null) {
-                            SocketGuildUser user = guild.GetUser((ulong)userId);
-                            if (user != null) {
-                                await channel.SendMessageAsync($"{user.Mention} times up!");
+                        var userId = c.pingUserId;
+                        var roleId = c.pingRoleId;
+                        if (userId != null || roleId != null) {
+                            SocketGuildUser? user = null;
+                            SocketRole? role = null;
+                            try {
+                                user = guild.GetUser((ulong)userId);
+                            } catch (Exception) {
+                                // ignored
                             }
-                        } else if (roleId != null) {
-                            SocketRole role = guild.GetRole((ulong)roleId);
-                            if (role != null) {
-                                await channel.SendMessageAsync($"{role.Mention} times up!");
+                            try {
+                                role = guild.GetRole((ulong)roleId);
+                            } catch (Exception) {
+                                // ignored
+                            }
+                            if (user != null || role != null) {
+                                await channel.SendMessageAsync(string.Format(CountdownLocale.CountdownPing, user?.Mention ?? role?.Mention));
                             }
                         }
                     }
@@ -56,18 +62,18 @@ namespace FinderNET.Helpers {
                     await countdownRepository.SaveAsync();
                     continue;
                 }
-                TimeSpan timeLeft = c.dateTime - DateTime.Now.ToUniversalTime();
+                var timeLeft = c.dateTime - DateTime.Now.ToUniversalTime();
                 await messages.ModifyAsync((x => x.Embed = new EmbedBuilder() {
-                    Title = "Countdown",
+                    Title = CountdownLocale.CountdownEmbed_title,
                     Color = Color.Orange,
                     Fields = new List<EmbedFieldBuilder> {
                         new EmbedFieldBuilder() {
-                            Name = "Time left",
-                            Value = CountdownModule.HumanizeTime(timeLeft) + " left"
+                            Name = CountdownLocale.CountdownEmbed_fieldName,
+                            Value = string.Format(CountdownLocale.CountdownEmbed_fieldValue, CountdownModule.HumanizeTime(timeLeft))
                         }
                     },
                     Footer = new EmbedFooterBuilder() {
-                        Text = "FinderBot"
+                        Text = Main.EmbedFooter
                     }
                 }.Build()));
             }
