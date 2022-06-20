@@ -35,7 +35,7 @@ namespace FinderNET.Modules {
                     embed.AddField(name: i, value: AddonsLocale.AddonsNotInstalled, inline: false);
                 }
             }
-            await RespondAsync("", embed: embed.Build());
+            await RespondAsync(embed: embed.Build());
         }
     }
 }

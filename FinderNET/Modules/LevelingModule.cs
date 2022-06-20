@@ -40,7 +40,7 @@ namespace FinderNET.Modules {
             var expToGet = 50 * (int)Math.Pow(1.5, levels.level + 1);
             if (++levels.exp > expToGet) {
                 await context.AddLevelingAsync(((SocketGuildChannel)message.Channel).Guild.Id, message.Author.Id, levels.level, 0);
-                await message.Channel.SendMessageAsync("", embed: new EmbedBuilder() {
+                await message.Channel.SendMessageAsync(embed: new EmbedBuilder() {
                     Title = string.Format(LevelingLocale.LevelingEmbedLvlUp_title, message.Author.Username),
                     Color = Color.Orange,
                     Fields = new List<EmbedFieldBuilder> {

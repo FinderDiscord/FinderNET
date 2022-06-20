@@ -124,7 +124,7 @@ namespace FinderNET.Modules {
 
         [SlashCommand("mute", "Mutes a user.")]
         public async Task MuteCommand(SocketGuildUser user, string reason = "No reason given.") {
-            await RespondAsync("", embed: new EmbedBuilder() {
+            await RespondAsync(embed: new EmbedBuilder() {
                 Title = ModerationLocale.ModerationEmbedMute_title,
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder>() {
@@ -190,7 +190,7 @@ namespace FinderNET.Modules {
                             }
                         }.Build());
                         try {
-                            await user.SendMessageAsync("", false, new EmbedBuilder() {
+                            await user.SendMessageAsync(embed: new EmbedBuilder() {
                                 Title = ModerationLocale.ModerationEmbedBannedDM_title,
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder>() {
@@ -337,7 +337,7 @@ namespace FinderNET.Modules {
                             }
                         }.Build());
                         try {
-                            await user.SendMessageAsync("", false, new EmbedBuilder() {
+                            await user.SendMessageAsync(embed: new EmbedBuilder() {
                                 Title = ModerationLocale.ModerationEmbedMutedDM_title,
                                 Color = Color.Red,
                                 Fields = new List<EmbedFieldBuilder>() {
