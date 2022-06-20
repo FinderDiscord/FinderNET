@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 namespace FinderNET.Database.Models {
-    public class UserLogs {
+    public class UserLogsModel {
         [Key]
         public Int64 guildId { get; set; }
         [Key]

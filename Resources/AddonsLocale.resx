@@ -27,4 +27,22 @@
     <data name="AddonsInstalled" xml:space="preserve">
         <value>Installed</value>
     </data>
+    <data name="AddonsEmbedInstall_title" xml:space="preserve">
+        <value>Addon Installed</value>
+    </data>
+    <data name="AddonsEmbed_fieldAddonName" xml:space="preserve">
+        <value>Addon</value>
+    </data>
+    <data name="AddonsEmbed_fieldAddonValue" xml:space="preserve">
+        <value>`{0}`</value>
+    </data>
+    <data name="AddonsError_alreadyInstalled" xml:space="preserve">
+        <value>Addon already installed</value>
+    </data>
+    <data name="AddonsError_notInstalled" xml:space="preserve">
+        <value>Addon not installed</value>
+    </data>
+    <data name="AddonsEmbedUninstall_title" xml:space="preserve">
+        <value>Addon Uninstalled</value>
+    </data>
 </root>

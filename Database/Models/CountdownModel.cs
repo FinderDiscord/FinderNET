@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Discord;
 namespace FinderNET.Database.Models {
-    public class Countdown {
+    public class CountdownModel {
         [Key]
         public Int64 messageId { get; set; }
         [Key]

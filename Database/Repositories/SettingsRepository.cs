@@ -2,17 +2,17 @@ using FinderNET.Database.Models;
 using FinderNET.Database.Contexts;
 
 namespace FinderNET.Database.Repositories {
-    public class SettingsRepository : Repository<Settings> {
+    public class SettingsRepository : Repository<SettingsModel> {
         public SettingsRepository(FinderDatabaseContext context) : base(context) { }
 
-        public async Task<Settings> GetSettingsAsync(ulong guildId, string key) {
-            return await context.Set<Settings>().FindAsync((long)guildId, key) ?? new Settings();
+        public async Task<SettingsModel> GetSettingsAsync(ulong guildId, string key) {
+            return await context.Set<SettingsModel>().FindAsync((long)guildId, key) ?? new SettingsModel();
         }
 
         public async Task AddSettingsAsync(ulong guildId, string key, string value) {
-            var settings = await context.Set<Settings>().FindAsync((long)guildId, key);
+            var settings = await context.Set<SettingsModel>().FindAsync((long)guildId, key);
             if (settings == null) {
-                await context.Set<Settings>().AddAsync(new Settings {
+                await context.Set<SettingsModel>().AddAsync(new SettingsModel {
                     guildId = (long)guildId,
                     key = key,
                     value = value
@@ -22,17 +22,17 @@ namespace FinderNET.Database.Repositories {
             settings.guildId = (long)guildId;
             settings.key = key;
             settings.value = value;
-            context.Set<Settings>().Update(settings);
+            context.Set<SettingsModel>().Update(settings);
         }
 
         public async Task RemoveSettingsAsync(ulong guildId, string key) {
-            var settings = await context.Set<Settings>().FindAsync((long)guildId, key);
+            var settings = await context.Set<SettingsModel>().FindAsync((long)guildId, key);
             if (settings == null) return;
-            context.Set<Settings>().Remove(settings);
+            context.Set<SettingsModel>().Remove(settings);
         }
 
         public bool SettingsExists(ulong guildId, string key) {
-            return context.Set<Settings>().Find((long)guildId, key) != null;
+            return context.Set<SettingsModel>().Find((long)guildId, key) != null;
         }
     }
 }

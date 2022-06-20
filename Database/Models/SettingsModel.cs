@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 namespace FinderNET.Database.Models {
-    public class Settings {
+    public class SettingsModel {
         [Key]
         public Int64 guildId { get; set; }
         [Key]

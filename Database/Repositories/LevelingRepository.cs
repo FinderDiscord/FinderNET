@@ -2,17 +2,17 @@ using FinderNET.Database.Contexts;
 using FinderNET.Database.Models;
 
 namespace FinderNET.Database.Repositories {
-    public class LevelingRepository : Repository<Leveling> {
+    public class LevelingRepository : Repository<LevelingModel> {
         public LevelingRepository(FinderDatabaseContext context) : base(context) { }
 
-        public async Task<Leveling> GetLevelingAsync(ulong guildId, ulong userId) {
-            return await context.Set<Leveling>().FindAsync((long)guildId, (long)userId) ?? new Leveling();
+        public async Task<LevelingModel> GetLevelingAsync(ulong guildId, ulong userId) {
+            return await context.Set<LevelingModel>().FindAsync((long)guildId, (long)userId) ?? new LevelingModel();
         }
 
         public async Task AddLevelingAsync(ulong guildId, ulong userId, int level, int exp) {
-            var leveling = await context.Set<Leveling>().FindAsync((long)guildId, (long)userId);
+            var leveling = await context.Set<LevelingModel>().FindAsync((long)guildId, (long)userId);
             if (leveling == null) {
-                await context.Set<Leveling>().AddAsync(new Leveling {
+                await context.Set<LevelingModel>().AddAsync(new LevelingModel {
                     guildId = (long)guildId,
                     userId = (long)userId,
                     level = level,
@@ -24,13 +24,13 @@ namespace FinderNET.Database.Repositories {
             leveling.userId = (long)userId;
             leveling.level = level;
             leveling.exp = exp;
-            context.Set<Leveling>().Update(leveling);
+            context.Set<LevelingModel>().Update(leveling);
         }
 
         public async Task RemoveLevelingAsync(ulong guildId, ulong userId) {
-            var leveling = await context.Set<Leveling>().FindAsync((long)guildId, (long)userId);
+            var leveling = await context.Set<LevelingModel>().FindAsync((long)guildId, (long)userId);
             if (leveling == null) return;
-            context.Set<Leveling>().Remove(leveling);
+            context.Set<LevelingModel>().Remove(leveling);
         }
     }
 }

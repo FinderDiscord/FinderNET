@@ -62,5 +62,41 @@ namespace FinderNET.Resources {
                 return ResourceManager.GetString("AddonsInstalled", resourceCulture);
             }
         }
+        
+        internal static string AddonsEmbedInstall_title {
+            get {
+                return ResourceManager.GetString("AddonsEmbedInstall_title", resourceCulture);
+            }
+        }
+        
+        internal static string AddonsEmbed_fieldAddonName {
+            get {
+                return ResourceManager.GetString("AddonsEmbed_fieldAddonName", resourceCulture);
+            }
+        }
+        
+        internal static string AddonsEmbed_fieldAddonValue {
+            get {
+                return ResourceManager.GetString("AddonsEmbed_fieldAddonValue", resourceCulture);
+            }
+        }
+        
+        internal static string AddonsError_alreadyInstalled {
+            get {
+                return ResourceManager.GetString("AddonsError_alreadyInstalled", resourceCulture);
+            }
+        }
+        
+        internal static string AddonsError_notInstalled {
+            get {
+                return ResourceManager.GetString("AddonsError_notInstalled", resourceCulture);
+            }
+        }
+        
+        internal static string AddonsEmbedUninstall_title {
+            get {
+                return ResourceManager.GetString("AddonsEmbedUninstall_title", resourceCulture);
+            }
+        }
     }
 }

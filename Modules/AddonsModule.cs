@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using FinderNET.Database.Repositories;
+using FinderNET.Modules.Helpers.Enums;
 using FinderNET.Resources;
 
 namespace FinderNET.Modules {
@@ -12,9 +13,6 @@ namespace FinderNET.Modules {
         public AddonsModule(AddonsRepository _addonsRepository) {
             addonsRepository = _addonsRepository;
         }
-        public List<string> SupportedAddons = new List<string>() {
-            "TicTacToe", "Economy", "Leveling", "Ticket"
-        };
 
         [SlashCommand("list", "Lists the installed addons", runMode: RunMode.Async)]
         public async Task GetAddons() {
@@ -27,15 +25,65 @@ namespace FinderNET.Modules {
                 }
             };
             if (value.addons.Any()) {
-                foreach (var i in SupportedAddons) {
-                    embed.AddField(name: i, value: value.addons.Contains(i.ToLower()) ? AddonsLocale.AddonsInstalled : AddonsLocale.AddonsNotInstalled, inline: false);
+                foreach (var addon in value.addons) {
+                    embed.AddField(name: addon.ToString(), value: value.addons.Contains(addon) ? AddonsLocale.AddonsInstalled : AddonsLocale.AddonsNotInstalled, inline: false);
                 }
             } else {
-                foreach (var i in SupportedAddons) {
-                    embed.AddField(name: i, value: AddonsLocale.AddonsNotInstalled, inline: false);
+                foreach (var addon in value.addons) {
+                    embed.AddField(name: addon.ToString(), value: AddonsLocale.AddonsNotInstalled, inline: false);
                 }
             }
             await RespondAsync(embed: embed.Build());
+        }
+
+        [SlashCommand("install", "Installs an addon", runMode: RunMode.Async)]
+        public async Task InstallAddon(Addons addon) {
+            var value = await addonsRepository.GetAddonsAsync(Context.Guild.Id);
+            if (value.addons.Contains(addon)) {
+                await RespondAsync(AddonsLocale.AddonsError_alreadyInstalled);
+            } else {
+                await addonsRepository.AddAddonAsync(Context.Guild.Id, addon);
+                await addonsRepository.SaveAsync();
+                await RespondAsync(embed: new EmbedBuilder() {
+                    Title = AddonsLocale.AddonsEmbedInstall_title,
+                    Color = Color.Orange,
+                    Fields = new List<EmbedFieldBuilder>() {
+                        new EmbedFieldBuilder() {
+                            Name = AddonsLocale.AddonsEmbed_fieldAddonName,
+                            Value = string.Format(AddonsLocale.AddonsEmbed_fieldAddonValue, addon.ToString()),
+                        }
+                    },
+                    Footer = new EmbedFooterBuilder() {
+                        Text = Main.EmbedFooter
+                    }
+                }.Build());
+                await RespondAsync("Addon installed");
+            }
+        }
+
+        [SlashCommand("uninstall", "Uninstalls an addon", runMode: RunMode.Async)]
+        public async Task UninstallAddon(Addons addon) {
+            var value = await addonsRepository.GetAddonsAsync(Context.Guild.Id);
+            if (!value.addons.Contains(addon)) {
+                await RespondAsync(AddonsLocale.AddonsError_notInstalled);
+            } else {
+                await addonsRepository.RemoveAddonAsync(Context.Guild.Id, addon);
+                await addonsRepository.SaveAsync();
+                await RespondAsync(embed: new EmbedBuilder() {
+                    Title = AddonsLocale.AddonsEmbedUninstall_title,
+                    Color = Color.Orange,
+                    Fields = new List<EmbedFieldBuilder>() {
+                        new EmbedFieldBuilder() {
+                            Name = AddonsLocale.AddonsEmbed_fieldAddonName,
+                            Value = string.Format(AddonsLocale.AddonsEmbed_fieldAddonValue, addon.ToString()),
+                        }
+                    },
+                    Footer = new EmbedFooterBuilder() {
+                        Text = Main.EmbedFooter
+                    }
+                }.Build());
+                await RespondAsync("Addon uninstalled");
+            }
         }
     }
 }

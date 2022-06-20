@@ -260,7 +260,7 @@ namespace FinderNET.Modules {
                 SocketGuildChannel channel = (SocketGuildChannel)message.Channel;
                 SocketGuild guild = channel.Guild;
                 SocketGuildUser user = (SocketGuildUser)messageComponent.User;
-                Tickets ticket = await ticketsRepository.GetTicketsAsync(guild.Id, channel.Id);
+                TicketsModel ticket = await ticketsRepository.GetTicketsAsync(guild.Id, channel.Id);
                 if (message.Id == _closeConfirmId) {
                     switch(messageComponent.Data.CustomId) {
                         case "close-yes":

@@ -5,33 +5,33 @@ namespace FinderNET.Database.Contexts {
         public FinderDatabaseContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder) {
-            builder.Entity<UserLogs>().HasKey(table => new {
+            builder.Entity<UserLogsModel>().HasKey(table => new {
                 table.guildId, table.userId
             });
-            builder.Entity<Countdown>().HasKey(table => new {
+            builder.Entity<CountdownModel>().HasKey(table => new {
                 table.messageId, table.channelId, table.guildId
             });
-            builder.Entity<Leveling>().HasKey(table => new {
+            builder.Entity<LevelingModel>().HasKey(table => new {
                 table.guildId, table.userId
             });
-            builder.Entity<Economy>().HasKey(table => new {
+            builder.Entity<EconomyModel>().HasKey(table => new {
                 table.guildId, table.userId
             });
-            builder.Entity<Settings>().HasKey(table => new {
+            builder.Entity<SettingsModel>().HasKey(table => new {
                 table.guildId, table.key
             });
-            builder.Entity<Tickets>().HasKey(table => new {
+            builder.Entity<TicketsModel>().HasKey(table => new {
                 table.guildId, table.supportChannelId
             });
         }
         
-        public DbSet<Addons> addons { get; set; }
-        public DbSet<UserLogs> userLogs { get; set; }
-        public DbSet<Settings> settings { get; set; }
-        public DbSet<Polls> polls { get; set; }
-        public DbSet<Countdown> countdowns { get; set; }
-        public DbSet<Tickets> tickets { get; set; }
-        public DbSet<Leveling> leveling { get; set; }
-        public DbSet<Economy> economy { get; set; }
+        public DbSet<AddonsModel> addons { get; set; }
+        public DbSet<UserLogsModel> userLogs { get; set; }
+        public DbSet<SettingsModel> settings { get; set; }
+        public DbSet<PollsModel> polls { get; set; }
+        public DbSet<CountdownModel> countdowns { get; set; }
+        public DbSet<TicketsModel> tickets { get; set; }
+        public DbSet<LevelingModel> leveling { get; set; }
+        public DbSet<EconomyModel> economy { get; set; }
     }
 }

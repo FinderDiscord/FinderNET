@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 namespace FinderNET.Database.Models {
-    public class Economy {
+    public class EconomyModel {
         [Key]
         public Int64 guildId { get; set; }
         [Key]

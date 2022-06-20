@@ -1,8 +1,9 @@
+using FinderNET.Modules.Helpers.Enums;
 using System.ComponentModel.DataAnnotations;
 namespace FinderNET.Database.Models {
-    public class Addons {
+    public class AddonsModel {
         [Key]
         public Int64 guildId { get; set; }
-        public List<string> addons { get; set; } = new List<string>();
+        public List<Addons> addons { get; set; } = new List<Addons>();
     }
 }

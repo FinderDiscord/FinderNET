@@ -2,17 +2,17 @@ using FinderNET.Database.Contexts;
 using FinderNET.Database.Models;
 
 namespace FinderNET.Database.Repositories {
-    public class EconomyRepository : Repository<Economy> {
+    public class EconomyRepository : Repository<EconomyModel> {
         public EconomyRepository(FinderDatabaseContext context) : base(context) { }
         
-        public async Task<Economy> GetEconomyAsync(ulong guildId, ulong userId) {
-            return await context.Set<Economy>().FindAsync((long)guildId, (long)userId) ?? new Economy();
+        public async Task<EconomyModel> GetEconomyAsync(ulong guildId, ulong userId) {
+            return await context.Set<EconomyModel>().FindAsync((long)guildId, (long)userId) ?? new EconomyModel();
         }
 
         public async Task AddEconomyAsync(ulong guildId, ulong userId, int money, int bank) {
-            var economy = await context.Set<Economy>().FindAsync((long)guildId, (long)userId);
+            var economy = await context.Set<EconomyModel>().FindAsync((long)guildId, (long)userId);
             if (economy == null) {
-                await context.Set<Economy>().AddAsync(new Economy {
+                await context.Set<EconomyModel>().AddAsync(new EconomyModel {
                     guildId = (long)guildId,
                     userId = (long)userId,
                     money = money,
@@ -24,13 +24,13 @@ namespace FinderNET.Database.Repositories {
             economy.userId = (long)userId;
             economy.money = economy.money + money;
             economy.bank = economy.bank + bank;
-            context.Set<Economy>().Update(economy);
+            context.Set<EconomyModel>().Update(economy);
         }
 
         public async Task SubtractEconomyAsync(ulong guildId, ulong userId, int money, int bank) {
-            var economy = await context.Set<Economy>().FindAsync((long)guildId, (long)userId);
+            var economy = await context.Set<EconomyModel>().FindAsync((long)guildId, (long)userId);
             if (economy == null) {
-                await context.Set<Economy>().AddAsync(new Economy {
+                await context.Set<EconomyModel>().AddAsync(new EconomyModel {
                     guildId = (long)guildId,
                     userId = (long)userId,
                     money = money,
@@ -43,13 +43,13 @@ namespace FinderNET.Database.Repositories {
                 economy.money = economy.money - money;
                 economy.bank = economy.bank - bank;
             }
-            context.Set<Economy>().Update(economy);
+            context.Set<EconomyModel>().Update(economy);
         }
 
         public async Task RemoveEconomyAsync(ulong guildId, ulong userId) {
-            var economy = await context.Set<Economy>().FindAsync((long)guildId, (long)userId);
+            var economy = await context.Set<EconomyModel>().FindAsync((long)guildId, (long)userId);
             if (economy == null) return;
-            context.Set<Economy>().Remove(economy);
+            context.Set<EconomyModel>().Remove(economy);
         }
     }
 }
