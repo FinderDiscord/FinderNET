@@ -14,21 +14,21 @@ namespace FinderNET.Resources {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class LevelingLocale {
+    internal class AdminLocale {
         
         private static System.Resources.ResourceManager resourceMan;
         
         private static System.Globalization.CultureInfo resourceCulture;
         
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal LevelingLocale() {
+        internal AdminLocale() {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         internal static System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.Equals(null, resourceMan)) {
-                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("FinderNET.Resources.LevelingLocale", typeof(LevelingLocale).Assembly);
+                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("FinderNET.Resources.AdminLocale", typeof(AdminLocale).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -45,33 +45,57 @@ namespace FinderNET.Resources {
             }
         }
         
-        internal static string LevelingEmbedLevel_title {
+        internal static string AdminError_purge {
             get {
-                return ResourceManager.GetString("LevelingEmbedLevel_title", resourceCulture);
+                return ResourceManager.GetString("AdminError_purge", resourceCulture);
             }
         }
         
-        internal static string LevelingEmbedLevel_field0Name {
+        internal static string AdminError_slowmodeNegative {
             get {
-                return ResourceManager.GetString("LevelingEmbedLevel_field0Name", resourceCulture);
+                return ResourceManager.GetString("AdminError_slowmodeNegative", resourceCulture);
             }
         }
         
-        internal static string LevelingEmbedLevel_field1Name {
+        internal static string AdminEmbedSlowmode_title {
             get {
-                return ResourceManager.GetString("LevelingEmbedLevel_field1Name", resourceCulture);
+                return ResourceManager.GetString("AdminEmbedSlowmode_title", resourceCulture);
             }
         }
         
-        internal static string LevelingEmbedLvlUp_title {
+        internal static string AdminEmbedSlowmode_field0Name {
             get {
-                return ResourceManager.GetString("LevelingEmbedLvlUp_title", resourceCulture);
+                return ResourceManager.GetString("AdminEmbedSlowmode_field0Name", resourceCulture);
             }
         }
         
-        internal static string LevelingEmbedLvlUp_fieldName {
+        internal static string AdminEmbedSlowmode_field1Name {
             get {
-                return ResourceManager.GetString("LevelingEmbedLvlUp_fieldName", resourceCulture);
+                return ResourceManager.GetString("AdminEmbedSlowmode_field1Name", resourceCulture);
+            }
+        }
+        
+        internal static string AdminEmbedSlowmode_field2Name {
+            get {
+                return ResourceManager.GetString("AdminEmbedSlowmode_field2Name", resourceCulture);
+            }
+        }
+        
+        internal static string AdminEmbedLockdown_title {
+            get {
+                return ResourceManager.GetString("AdminEmbedLockdown_title", resourceCulture);
+            }
+        }
+        
+        internal static string AdminEmbedLockdown_field0Name {
+            get {
+                return ResourceManager.GetString("AdminEmbedLockdown_field0Name", resourceCulture);
+            }
+        }
+        
+        internal static string AdminEmbedLockdown_field1Name {
+            get {
+                return ResourceManager.GetString("AdminEmbedLockdown_field1Name", resourceCulture);
             }
         }
     }

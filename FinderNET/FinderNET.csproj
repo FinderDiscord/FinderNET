@@ -41,6 +41,26 @@
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>LevelingLocale.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\AddonsLocale.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AddonsLocale.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\AdminLocale.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AdminLocale.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\CountdownLocale.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>CountdownLocale.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\EconomyLocale.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>EconomyLocale.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\ModerationLocale.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ModerationLocale.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -68,6 +88,31 @@
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>LevelingLocale.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\AddonsLocale.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Addons.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\AdminLocale.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AdminLocale.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\CountdownLocale.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>CountdownLocale.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\EconomyLocale.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>EconomyLocale.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\ModerationLocale.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ModerationLocale.resx</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 </Project>

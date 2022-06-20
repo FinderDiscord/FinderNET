@@ -18,19 +18,13 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="LevelingEmbedLevel_title" xml:space="preserve">
-        <value>Level</value>
+    <data name="AddonsEmbedList_title" xml:space="preserve">
+        <value>Addon list</value>
     </data>
-    <data name="LevelingEmbedLevel_field0Name" xml:space="preserve">
-        <value>Level</value>
+    <data name="AddonsNotInstalled" xml:space="preserve">
+        <value>Not installed</value>
     </data>
-    <data name="LevelingEmbedLevel_field1Name" xml:space="preserve">
-        <value>Exp</value>
-    </data>
-    <data name="LevelingEmbedLvlUp_title" xml:space="preserve">
-        <value>Level Up {0}</value>
-    </data>
-    <data name="LevelingEmbedLvlUp_fieldName" xml:space="preserve">
-        <value>You have leveled up to level</value>
+    <data name="AddonsInstalled" xml:space="preserve">
+        <value>Installed</value>
     </data>
 </root>

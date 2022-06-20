@@ -14,21 +14,21 @@ namespace FinderNET.Resources {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class LevelingLocale {
+    internal class AddonsLocale {
         
         private static System.Resources.ResourceManager resourceMan;
         
         private static System.Globalization.CultureInfo resourceCulture;
         
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal LevelingLocale() {
+        internal AddonsLocale() {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         internal static System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.Equals(null, resourceMan)) {
-                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("FinderNET.Resources.LevelingLocale", typeof(LevelingLocale).Assembly);
+                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("FinderNET.Resources.AddonsLocale", typeof(AddonsLocale).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -45,33 +45,21 @@ namespace FinderNET.Resources {
             }
         }
         
-        internal static string LevelingEmbedLevel_title {
+        internal static string AddonsEmbedList_title {
             get {
-                return ResourceManager.GetString("LevelingEmbedLevel_title", resourceCulture);
+                return ResourceManager.GetString("AddonsEmbedList_title", resourceCulture);
             }
         }
         
-        internal static string LevelingEmbedLevel_field0Name {
+        internal static string AddonsNotInstalled {
             get {
-                return ResourceManager.GetString("LevelingEmbedLevel_field0Name", resourceCulture);
+                return ResourceManager.GetString("AddonsNotInstalled", resourceCulture);
             }
         }
         
-        internal static string LevelingEmbedLevel_field1Name {
+        internal static string AddonsInstalled {
             get {
-                return ResourceManager.GetString("LevelingEmbedLevel_field1Name", resourceCulture);
-            }
-        }
-        
-        internal static string LevelingEmbedLvlUp_title {
-            get {
-                return ResourceManager.GetString("LevelingEmbedLvlUp_title", resourceCulture);
-            }
-        }
-        
-        internal static string LevelingEmbedLvlUp_fieldName {
-            get {
-                return ResourceManager.GetString("LevelingEmbedLvlUp_fieldName", resourceCulture);
+                return ResourceManager.GetString("AddonsInstalled", resourceCulture);
             }
         }
     }

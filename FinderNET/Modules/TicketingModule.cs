@@ -56,7 +56,7 @@ namespace FinderNET.Modules {
                 await ticketsRepository.AddTicketAsync(Context.Guild.Id, supportChannel.Id, message.Id, new List<long?>() { (long)Context.User.Id }, name, new List<long>());
                 await ticketsRepository.SaveAsync();
                 await RespondAsync(embed: new EmbedBuilder() {
-                    Title = TicTacToeLocale.TicketsEmbedCreated_title,
+                    Title = TicketsLocale.TicketsEmbedCreated_title,
                     Fields = new List<EmbedFieldBuilder>() {
                         new EmbedFieldBuilder() {
                             Name = string.Format(TicketsLocale.TicketsEmbedCreated_fieldValue),

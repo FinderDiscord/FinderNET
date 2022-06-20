@@ -128,11 +128,5 @@ namespace FinderNET.Resources {
                 return ResourceManager.GetString("TicTacToeChannelTopic", resourceCulture);
             }
         }
-        
-        internal static string TicketsEmbedCreated_title {
-            get {
-                return ResourceManager.GetString("TicketsEmbedCreated_title", resourceCulture);
-            }
-        }
     }
 }

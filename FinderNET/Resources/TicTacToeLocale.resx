@@ -64,7 +64,4 @@ Starting game...</value>
     <data name="TicTacToeChannelTopic" xml:space="preserve">
         <value>TicTacToe</value>
     </data>
-    <data name="TicketsEmbedCreated_title" xml:space="preserve">
-        <value>Ticket Created</value>
-    </data>
 </root>

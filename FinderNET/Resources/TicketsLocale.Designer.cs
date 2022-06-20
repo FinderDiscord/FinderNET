@@ -153,12 +153,6 @@ namespace FinderNET.Resources {
             }
         }
         
-        internal static string TicketsEmbedUnclaim_fieldName {
-            get {
-                return ResourceManager.GetString("TicketsEmbedUnclaim_fieldName", resourceCulture);
-            }
-        }
-        
         internal static string TicketsUnclaimed {
             get {
                 return ResourceManager.GetString("TicketsUnclaimed", resourceCulture);
@@ -243,33 +237,15 @@ namespace FinderNET.Resources {
             }
         }
         
-        internal static string LevelingEmbedLvlUp_fieldName {
+        internal static string TicketsEmbedCreated_title {
             get {
-                return ResourceManager.GetString("LevelingEmbedLvlUp_fieldName", resourceCulture);
+                return ResourceManager.GetString("TicketsEmbedCreated_title", resourceCulture);
             }
         }
         
-        internal static string LevelingEmbedLvlUp_title {
+        internal static string TicketsEmbedUnclaim_fieldName {
             get {
-                return ResourceManager.GetString("LevelingEmbedLvlUp_title", resourceCulture);
-            }
-        }
-        
-        internal static string LevelingEmbedLevel_title {
-            get {
-                return ResourceManager.GetString("LevelingEmbedLevel_title", resourceCulture);
-            }
-        }
-        
-        internal static string LevelingEmbedLevel_field0Name {
-            get {
-                return ResourceManager.GetString("LevelingEmbedLevel_field0Name", resourceCulture);
-            }
-        }
-        
-        internal static string LevelingEmbedLevel_field1Name {
-            get {
-                return ResourceManager.GetString("LevelingEmbedLevel_field1Name", resourceCulture);
+                return ResourceManager.GetString("TicketsEmbedUnclaim_fieldName", resourceCulture);
             }
         }
     }
