@@ -14,7 +14,7 @@ namespace FinderNET.Modules {
             public TicketsModule(TicketsRepository _ticketsRepository) {
                 ticketsRepository = _ticketsRepository;
             }
-            [SlashCommand("create", "Creates a ticket")]
+            [SlashCommand("create", "Creates a ticket", runMode: RunMode.Async)]
             public async Task CreateTicket(string? name = null) {
                 if (name == null) {
                     await RespondAsync(TicketsLocale.TicketsError_noName);
@@ -67,7 +67,7 @@ namespace FinderNET.Modules {
                 }.Build());
             }
 
-            [SlashCommand("close", "Closes a ticket")]
+            [SlashCommand("close", "Closes a ticket", runMode: RunMode.Async)]
             public async Task CloseTicket() {
                 var ticket = await ticketsRepository.GetTicketsAsync(Context.Guild.Id, Context.Channel.Id);
                 if (ticket.introMessageId == null
@@ -85,7 +85,7 @@ namespace FinderNET.Modules {
                 await ticketsRepository.SaveAsync();
             }
 
-            [SlashCommand("claim", "Claims a ticket")]
+            [SlashCommand("claim", "Claims a ticket", runMode: RunMode.Async)]
             public async Task ClaimTicket() {
                 if (!((SocketGuildUser)Context.User).GuildPermissions.Administrator) {
                     await RespondAsync(TicketsLocale.TicketsError_noPermission, ephemeral: true);
@@ -126,7 +126,7 @@ namespace FinderNET.Modules {
 
             }
 
-            [SlashCommand("unclaim", "Unclaims a ticket")]
+            [SlashCommand("unclaim", "Unclaims a ticket", runMode: RunMode.Async)]
             public async Task UnclaimTicket() {
                 var ticket = await ticketsRepository.GetTicketsAsync(Context.Guild.Id, Context.Channel.Id);
                 if (ticket.introMessageId == null ||
@@ -154,7 +154,7 @@ namespace FinderNET.Modules {
                 await RespondAsync(TicketsLocale.TicketsUnclaimed, ephemeral: true);
             }
 
-            [SlashCommand("adduser", "Adds a user to a ticket")]
+            [SlashCommand("adduser", "Adds a user to a ticket", runMode: RunMode.Async)]
             public async Task AddUserToTicket(IUser user) {
                 var ticket = await ticketsRepository.GetTicketsAsync(Context.Guild.Id, Context.Channel.Id);
                 if (ticket.introMessageId == null
@@ -194,7 +194,7 @@ namespace FinderNET.Modules {
                 await RespondAsync(TicketsLocale.TicketsUserAdded, ephemeral: true);
             }
 
-            [SlashCommand("removeuser", "Removes a user from a ticket")]
+            [SlashCommand("removeuser", "Removes a user from a ticket", runMode: RunMode.Async)]
             public async Task RemoveUserFromTicket(IUser user) {
                 var ticket = await ticketsRepository.GetTicketsAsync(Context.Guild.Id, Context.Channel.Id);
                 if (ticket.introMessageId == null
@@ -227,7 +227,7 @@ namespace FinderNET.Modules {
                 await RespondAsync(TicketsLocale.TicketsUserRemoved, ephemeral: true);
             }
 
-            [SlashCommand("leave", "Leaves a ticket")]
+            [SlashCommand("leave", "Leaves a ticket", runMode: RunMode.Async)]
             public async Task LeaveTicket() {
                 var ticket = await ticketsRepository.GetTicketsAsync(Context.Guild.Id, Context.Channel.Id);
                 if (ticket.introMessageId == null

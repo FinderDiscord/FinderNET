@@ -14,7 +14,7 @@ namespace FinderNET.Modules {
         private static List<string> validEmotes = new List<string>() { "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "✅", "❌" };
         private static List<TicTacToe> games = new List<TicTacToe>();
 
-        [SlashCommand("tictactoe", "Play TicTacToe")]
+        [SlashCommand("tictactoe", "Play TicTacToe", runMode: RunMode.Async)]
         public async Task TicTacToeCommand(SocketGuildUser user) {
             if (user.IsBot) {
                 await RespondAsync(TicTacToeLocale.TicTacToeError_userBot);

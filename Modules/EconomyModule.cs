@@ -10,7 +10,7 @@ namespace FinderNET.Modules {
         public EconomyModule(EconomyRepository _economyRepository) {
             economyRepository = _economyRepository;
         }
-        [SlashCommand("balance", "Checks user's balance.")]
+        [SlashCommand("balance", "Checks user's balance.", runMode: RunMode.Async)]
         public async Task Balance(IUser? user = null) {
             user ??= Context.User;
             var economy = await economyRepository.GetEconomyAsync(Context.Guild.Id, user.Id);
@@ -30,7 +30,7 @@ namespace FinderNET.Modules {
             }.Build());
         }
 
-        [SlashCommand("deposit", "Deposits money into your bank.")]
+        [SlashCommand("deposit", "Deposits money into your bank.", runMode: RunMode.Async)]
         public async Task Deposit(int amount) {
             var economy = await economyRepository.GetEconomyAsync(Context.Guild.Id, Context.User.Id);
             if (economy.money < amount) {
@@ -51,7 +51,7 @@ namespace FinderNET.Modules {
             }.Build());
         }
 
-        [SlashCommand("withdraw", "Withdraws money from your bank.")]
+        [SlashCommand("withdraw", "Withdraws money from your bank.", runMode: RunMode.Async)]
         public async Task Withdraw(int amount) {
             var economy = await economyRepository.GetEconomyAsync(Context.Guild.Id, Context.User.Id);
             if (economy.bank < amount) {
@@ -72,7 +72,7 @@ namespace FinderNET.Modules {
             }.Build());
         }
 
-        [SlashCommand("pay", "Pays money to another user.")]
+        [SlashCommand("pay", "Pays money to another user.", runMode: RunMode.Async)]
         public async Task Pay(IUser user, int amount) {
             var economy = await economyRepository.GetEconomyAsync(Context.Guild.Id, Context.User.Id);
             if (economy.money < amount) {
@@ -98,7 +98,7 @@ namespace FinderNET.Modules {
             }.Build());
         }
 
-        [SlashCommand("transfer", "Transfers money to another user from your bank.")]
+        [SlashCommand("transfer", "Transfers money to another user from your bank.", runMode: RunMode.Async)]
         public async Task Transfer(IUser user, int amount) {
             var economy = await economyRepository.GetEconomyAsync(Context.Guild.Id, Context.User.Id);
             if (economy.bank < amount) {
@@ -124,7 +124,7 @@ namespace FinderNET.Modules {
             }.Build());
         }
 
-        [SlashCommand("setbalance", "Sets the balance of a user.")]
+        [SlashCommand("setbalance", "Sets the balance of a user.", runMode: RunMode.Async)]
         public async Task SetBalance(IUser user, int amount) {
             await economyRepository.AddEconomyAsync(Context.Guild.Id, user.Id, amount, 0);
             await economyRepository.SaveAsync();

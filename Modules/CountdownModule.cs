@@ -11,7 +11,7 @@ namespace FinderNET.Modules {
         public CountdownModule(CountdownRepository _countdownRepository) {
             countdownRepository = _countdownRepository;
         }
-        [SlashCommand("countdown", "Countdown to a specific date or time")]
+        [SlashCommand("countdown", "Countdown to a specific date or time", runMode: RunMode.Async)]
         public async Task CountdownCommand(string datetime, IMentionable? ping = null) {
             DateTime date;
             try {

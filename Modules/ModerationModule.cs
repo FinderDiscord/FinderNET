@@ -20,7 +20,7 @@ namespace FinderNET.Modules {
 
         List<ModerationMessage> moderationMessages = new List<ModerationMessage>();
 
-        [SlashCommand("ban", "Bans a user from the server.")]
+        [SlashCommand("ban", "Bans a user from the server.", runMode: RunMode.Async)]
         public async Task BanCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder() {
                 Title = ModerationLocale.ModerationEmbedBan_title,
@@ -54,7 +54,7 @@ namespace FinderNET.Modules {
             });
         }
 
-        [SlashCommand("kick", "Kicks a user from the server.")]
+        [SlashCommand("kick", "Kicks a user from the server.", runMode: RunMode.Async)]
         public async Task KickCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder() {
                 Title = ModerationLocale.ModerationEmbedKick_title,
@@ -88,7 +88,7 @@ namespace FinderNET.Modules {
             });
         }
 
-        [SlashCommand("warn", "Warns a user.")]
+        [SlashCommand("warn", "Warns a user.", runMode: RunMode.Async)]
         public async Task WarnCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder() {
                 Title = ModerationLocale.ModerationEmbedWarn_title,
@@ -122,7 +122,7 @@ namespace FinderNET.Modules {
             });
         }
 
-        [SlashCommand("mute", "Mutes a user.")]
+        [SlashCommand("mute", "Mutes a user.", runMode: RunMode.Async)]
         public async Task MuteCommand(SocketGuildUser user, string reason = "No reason given.") {
             await RespondAsync(embed: new EmbedBuilder() {
                 Title = ModerationLocale.ModerationEmbedMute_title,

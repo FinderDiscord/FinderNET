@@ -12,7 +12,7 @@ namespace FinderNET.Modules {
             context = _context;
         }
 
-        [SlashCommand("level", "Get your current level")]
+        [SlashCommand("level", "Get your current level", runMode: RunMode.Async)]
         public async Task LevelCommand() {
             var levels = await context.GetLevelingAsync(((SocketGuildUser)Context.User).Guild.Id, Context.User.Id);
             await RespondAsync(embed: new EmbedBuilder() {

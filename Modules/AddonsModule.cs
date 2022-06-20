@@ -16,7 +16,7 @@ namespace FinderNET.Modules {
             "TicTacToe", "Economy", "Leveling", "Ticket"
         };
 
-        [SlashCommand("list", "Lists the installed addons")]
+        [SlashCommand("list", "Lists the installed addons", runMode: RunMode.Async)]
         public async Task GetAddons() {
             var value = await addonsRepository.GetAddonsAsync(Context.Guild.Id);
             var embed = new EmbedBuilder() {
