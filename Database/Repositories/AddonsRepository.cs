@@ -32,7 +32,6 @@ namespace FinderNET.Database.Repositories {
                 addons.addons.Remove(addon);
             }
             context.Set<AddonsModel>().Update(addons);
-
         }
 
         public async Task<bool> AddonExistsAsync(ulong guildId, Addons addon) {

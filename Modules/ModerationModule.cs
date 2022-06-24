@@ -360,7 +360,7 @@ namespace FinderNET.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
-                        if (!settingsRepository.SettingsExists(guild.Id, "muteRoleId")) {
+                        if (!(await settingsRepository.SettingsExists(guild.Id, "muteRoleId"))) {
                             var muteRole1 = await guild.CreateRoleAsync("Muted", new GuildPermissions(connect: true, readMessageHistory: true), Color.DarkGrey, false, true);
                             await settingsRepository.AddSettingsAsync(guild.Id, "muteRoleId", muteRole1.Id.ToString());
                             await settingsRepository.SaveAsync();
@@ -368,7 +368,7 @@ namespace FinderNET.Modules {
                                 await channel.AddPermissionOverwriteAsync(muteRole1, OverwritePermissions.DenyAll(channel).Modify(viewChannel: PermValue.Allow, readMessageHistory: PermValue.Allow));
                             }
                         }
-                        var muteRole = guild.GetRole(Convert.ToUInt64(await settingsRepository.GetSettingsAsync(guild.Id, "muteRoleId")));
+                        var muteRole = guild.GetRole(Convert.ToUInt64(await settingsRepository.GetSettingAsync(guild.Id, "muteRoleId")));
                         await user.AddRoleAsync(muteRole);
                         await message.RemoveAllReactionsAsync();
                         moderationMessages.Remove(moderationMessage);

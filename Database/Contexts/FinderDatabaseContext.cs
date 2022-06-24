@@ -17,9 +17,6 @@ namespace FinderNET.Database.Contexts {
             builder.Entity<EconomyModel>().HasKey(table => new {
                 table.guildId, table.userId
             });
-            builder.Entity<SettingsModel>().HasKey(table => new {
-                table.guildId, table.key
-            });
             builder.Entity<TicketsModel>().HasKey(table => new {
                 table.guildId, table.supportChannelId
             });
