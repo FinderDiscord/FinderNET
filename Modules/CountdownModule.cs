@@ -6,7 +6,7 @@ using FinderNET.Resources;
 using Pathoschild.NaturalTimeParser.Parser;
 using System.Text;
 namespace FinderNET.Modules {
-    public class CountdownModule : InteractionModuleBase<SocketInteractionContext> {
+    public class CountdownModule : InteractionModuleBase<ShardedInteractionContext> {
         private readonly CountdownRepository countdownRepository;
         public CountdownModule(CountdownRepository _countdownRepository) {
             countdownRepository = _countdownRepository;

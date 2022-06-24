@@ -7,7 +7,7 @@ using FinderNET.Resources;
 using System.Net.Sockets;
 
 namespace FinderNET.Modules {
-   public class PollModule : InteractionModuleBase<SocketInteractionContext> {
+   public class PollModule : InteractionModuleBase<ShardedInteractionContext> {
         private readonly PollsRepository context;
         public PollModule(PollsRepository _context) {
             context = _context;

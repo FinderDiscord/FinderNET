@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using FinderNET.Database.Models;
+using FinderNET.Database.Repositories;
 namespace FinderNET.Database.Contexts {
     public class FinderDatabaseContext : DbContext {
         public FinderDatabaseContext(DbContextOptions options) : base(options) { }
@@ -23,6 +24,9 @@ namespace FinderNET.Database.Contexts {
             builder.Entity<TicketsModel>().HasKey(table => new {
                 table.guildId, table.supportChannelId
             });
+            builder.Entity<ItemsModel>().HasKey(table => new {
+                table.guildId, table.userId
+            });
         }
         
         public DbSet<AddonsModel> addons { get; set; }
@@ -33,5 +37,6 @@ namespace FinderNET.Database.Contexts {
         public DbSet<TicketsModel> tickets { get; set; }
         public DbSet<LevelingModel> leveling { get; set; }
         public DbSet<EconomyModel> economy { get; set; }
+        public DbSet<ItemsModel> items { get; set; }
     }
 }

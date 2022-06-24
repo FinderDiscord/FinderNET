@@ -10,8 +10,20 @@ namespace FinderNET.Modules {
     // check win conditions
     // check delays on line 81
     // make so you dont need context in class
-    public class TicTacToeModule : InteractionModuleBase<SocketInteractionContext> {
-        private static List<string> validEmotes = new List<string>() { "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "✅", "❌" };
+    public class TicTacToeModule : InteractionModuleBase<ShardedInteractionContext> {
+        private static List<string> validEmotes = new List<string>() {
+            "1️⃣",
+            "2️⃣",
+            "3️⃣",
+            "4️⃣",
+            "5️⃣",
+            "6️⃣",
+            "7️⃣",
+            "8️⃣",
+            "9️⃣",
+            "✅",
+            "❌"
+        };
         private static List<TicTacToe> games = new List<TicTacToe>();
 
         [SlashCommand("tictactoe", "Play TicTacToe", runMode: RunMode.Async)]
@@ -50,8 +62,15 @@ namespace FinderNET.Modules {
                             game.playMessage = await game.playChannel.SendMessageAsync(embed: new EmbedBuilder() {
                                 Title = TicTacToeLocale.TicTacToeEmbed_title,
                                 Color = Color.Blue,
-                                Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = TicTacToeLocale.TicTacToeEmbed_fieldName, Value = TicTacToeLocale.TicTacToeEmbed_fieldValue_wait } },
-                                Footer = new EmbedFooterBuilder { Text = Main.EmbedFooter }
+                                Fields = new List<EmbedFieldBuilder> {
+                                    new EmbedFieldBuilder {
+                                        Name = TicTacToeLocale.TicTacToeEmbed_fieldName,
+                                        Value = TicTacToeLocale.TicTacToeEmbed_fieldValue_wait
+                                    }
+                                },
+                                Footer = new EmbedFooterBuilder {
+                                    Text = Main.EmbedFooter
+                                }
                             }.Build());
                             var emojis = game.board.Select(item => new Emoji(item)).ToList();
                             await game.playMessage.AddReactionsAsync(emojis);
@@ -59,8 +78,15 @@ namespace FinderNET.Modules {
                                 x.Embed = new EmbedBuilder() {
                                     Title = TicTacToeLocale.TicTacToeEmbed_title,
                                     Color = Color.Orange,
-                                    Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = TicTacToeLocale.TicTacToeEmbed_fieldName, Value = game.GenerateGrid()}},
-                                    Footer = new EmbedFooterBuilder { Text = Main.EmbedFooter }
+                                    Fields = new List<EmbedFieldBuilder> {
+                                        new EmbedFieldBuilder {
+                                            Name = TicTacToeLocale.TicTacToeEmbed_fieldName,
+                                            Value = game.GenerateGrid()
+                                        }
+                                    },
+                                    Footer = new EmbedFooterBuilder {
+                                        Text = Main.EmbedFooter
+                                    }
                                 }.Build();
                                 x.Content = string.Format(TicTacToeLocale.TicTacToeMessage, game.player1.Mention, game.p1Symbol, game.player2.Mention, game.p2Symbol, game.player1.Mention);
                             });
@@ -85,13 +111,20 @@ namespace FinderNET.Modules {
                         x.Embed = new EmbedBuilder() {
                             Title = TicTacToeLocale.TicTacToeEmbed_title,
                             Color = Color.Orange,
-                            Fields = new List<EmbedFieldBuilder> { new EmbedFieldBuilder { Name = TicTacToeLocale.TicTacToeEmbed_fieldName, Value = game.GenerateGrid() } },
-                            Footer = new EmbedFooterBuilder { Text = Main.EmbedFooter }
+                            Fields = new List<EmbedFieldBuilder> {
+                                new EmbedFieldBuilder {
+                                    Name = TicTacToeLocale.TicTacToeEmbed_fieldName,
+                                    Value = game.GenerateGrid()
+                                }
+                            },
+                            Footer = new EmbedFooterBuilder {
+                                Text = Main.EmbedFooter
+                            }
                         }.Build();
                         x.Content = string.Format(TicTacToeLocale.TicTacToeMessage, game.player1.Mention, game.p1Symbol, game.player2.Mention, game.p2Symbol, (game.p1go ? game.player1.Mention : game.player2.Mention));
                     });
                     await game.playMessage.RemoveAllReactionsForEmoteAsync(reaction.Emote);
-                    IUser? winner = game.CheckWin();
+                    var winner = game.CheckWin();
                     if (winner != null && winner.Id == game.player1.Id) {
                         await game.playMessage.ModifyAsync((x) => {
                             x.Embed = new EmbedBuilder() {
@@ -114,7 +147,7 @@ namespace FinderNET.Modules {
                         });
                         await game.playChannel.SendMessageAsync(string.Format(TicTacToeLocale.TicTacToeWin, game.player1.Mention));
                         game.win = true;
-                    } else if (game.board.All(x => x == "⭕" || x == "❌")) {
+                    } else if (game.board.All(x => x is "⭕" or "❌")) {
                         await game.playChannel.SendMessageAsync(TicTacToeLocale.TicTacToeDraw);
                         game.win = true;
                     }
@@ -124,7 +157,7 @@ namespace FinderNET.Modules {
         }
 
         public class TicTacToe {
-            private SocketInteractionContext ctx;
+            private ShardedInteractionContext ctx;
             public RestTextChannel? playChannel;
             public RestUserMessage? playMessage;
             public RestUserMessage? lobbyMessage;
@@ -139,7 +172,7 @@ namespace FinderNET.Modules {
             public List<string> board;
             public bool lobby;
 
-            public TicTacToe(SocketInteractionContext _ctx, IUser _player1, IUser _player2, string _p1Symbol, string _p2Symbol) {
+            public TicTacToe(ShardedInteractionContext _ctx, IUser _player1, IUser _player2, string _p1Symbol, string _p2Symbol) {
                 ctx = _ctx;
                 player1 = _player1;
                 player2 = _player2;

@@ -11,7 +11,7 @@ namespace FinderNET.Database.Repositories {
         }
 
         public async Task AddAddonAsync(ulong guildId, Addons addon) {
-            var addons = await context.Set<AddonsModel>().FindAsync(guildId);
+            var addons = await context.Set<AddonsModel>().FindAsync((long)guildId);
             if (addons == null) {
                 await context.Set<AddonsModel>().AddAsync(new AddonsModel {
                     guildId = (long)guildId,
@@ -26,13 +26,12 @@ namespace FinderNET.Database.Repositories {
         }
 
         public async Task RemoveAddonAsync(ulong guildId, Addons addon) {
-            var addons = await context.Set<AddonsModel>().FindAsync(guildId);
+            var addons = await context.Set<AddonsModel>().FindAsync((long)guildId);
             if (addons == null) return;      
             if (addons.addons.Contains(addon)) {
                 addons.addons.Remove(addon);
             }
             context.Set<AddonsModel>().Update(addons);
-
         }
 
         public async Task<bool> AddonExistsAsync(ulong guildId, Addons addon) {

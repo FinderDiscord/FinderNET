@@ -1,15 +1,17 @@
 using Discord.Interactions;
 using Discord.WebSocket;
+using FinderNET.Database.Repositories;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace FinderNET.Handlers {
     public class CommandHandler {
         private readonly InteractionService commands;
-        private readonly DiscordSocketClient client;
+        private readonly DiscordShardedClient client;
         private readonly IConfiguration config;
         private readonly IServiceProvider services;
-        public CommandHandler(InteractionService _commands, DiscordSocketClient _client, IConfiguration _config, IServiceProvider _services) {
+        public CommandHandler(InteractionService _commands, DiscordShardedClient _client, IConfiguration _config, IServiceProvider _services) {
             commands = _commands;
             client = _client;
             config = _config;
@@ -20,7 +22,7 @@ namespace FinderNET.Handlers {
             await commands.AddModulesAsync(Assembly.GetExecutingAssembly(), services);
             client.InteractionCreated += InteractionCreated;
             client.ButtonExecuted += ButtonExecuted;
-            client.Ready += Ready;
+            client.ShardReady += ShardReady;
             commands.SlashCommandExecuted += commandsSlashCommandExecuted;
             commands.AutocompleteHandlerExecuted += commandsAutocompleteHandlerExecuted;
         }
@@ -34,18 +36,16 @@ namespace FinderNET.Handlers {
         }
 
         private async Task ButtonExecuted(SocketMessageComponent arg) {
-            var ctx = new SocketInteractionContext<SocketMessageComponent>(client, arg);
-            await commands.ExecuteCommandAsync(ctx, services);
+            await commands.ExecuteCommandAsync(new ShardedInteractionContext(client, arg), services);
         }
 
-        private async Task Ready() {
+        private async Task ShardReady(DiscordSocketClient arg) {
             await RegisterCommands();
-            client.Ready -= Ready;
+            client.ShardReady -= ShardReady;
         }
 
         private async Task InteractionCreated(SocketInteraction arg) {
-            SocketInteractionContext ctx = new SocketInteractionContext(client, arg);
-            IResult result = await commands.ExecuteCommandAsync(ctx, services);
+            await commands.ExecuteCommandAsync(new ShardedInteractionContext(client, arg), services);
         }
 
         private async Task RegisterCommands() {
