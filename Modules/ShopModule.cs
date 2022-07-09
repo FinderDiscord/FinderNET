@@ -49,6 +49,48 @@ namespace FinderNET.Modules {
             }.Build());
         }
         
+        [SlashCommand("sell", "Sell an item to the shop.")]
+        public async Task SellCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string item) {
+            Guid itemId = Guid.Parse(item);
+            if (itemsroot == null) {
+                await ReplyAsync("Could not load items.");
+                return;
+            }
+            var itemToSell = itemsroot.Items.Find(x => x.Id == itemId);
+            if (!itemToSell.sellable) {
+                await RespondAsync("This item is not sellable.");
+                return;
+            }
+            if (!await itemsRepository.ItemExistsAsync(Context.Guild.Id, Context.User.Id, itemId)) {
+                await RespondAsync("You do not have this item.");
+                return;
+            }
+            await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, itemToSell.sellPrice, 0);
+            await itemsRepository.RemoveItemAsync(Context.Guild.Id, Context.User.Id, itemId);
+            await economyRepository.SaveAsync();
+            await itemsRepository.SaveAsync();
+            await RespondAsync(embed: new EmbedBuilder() {
+                Title = "You have sold an item!",
+                Fields = new List<EmbedFieldBuilder>() {
+                    new EmbedFieldBuilder() {
+                        Name = itemToSell.name,
+                        Value = "For " + itemToSell.sellPrice,
+                    }
+                },
+                Color = Color.Green
+            }.Build());
+        }
+    }
+
+    public class InventoryModule : InteractionModuleBase<ShardedInteractionContext> {
+        private readonly ItemInvRepository itemsRepository;
+        private readonly EconomyRepository economyRepository;
+        public InventoryModule(ItemInvRepository _itemsRepository, EconomyRepository _economyRepository) {
+            itemsRepository = _itemsRepository;
+            economyRepository = _economyRepository;
+        }
+        public static ItemsRoot? itemsroot = JsonConvert.DeserializeObject<ItemsRoot>(File.ReadAllText(@"items.json"));
+
         [SlashCommand("inventory", "View your inventory.")]
         public async Task InventoryCommand() {
             var items = await itemsRepository.GetItemsAsync((long)Context.Guild.Id, (long)Context.User.Id);
