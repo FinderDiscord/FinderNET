@@ -117,4 +117,8 @@
 	    <DependentUpon>ModerationLocale.resx</DependentUpon>
 	  </Compile>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Migrations" />
+	</ItemGroup>
 </Project>

@@ -24,8 +24,8 @@ namespace FinderNET.Database.Contexts {
             builder.Entity<TicketsModel>().HasKey(table => new {
                 table.guildId, table.supportChannelId
             });
-            builder.Entity<ItemsModel>().HasKey(table => new {
-                table.guildId, table.userId
+            builder.Entity<ItemInvModel>().HasKey(table => new {
+                table.guildId, table.userId,
             });
         }
         
@@ -37,6 +37,6 @@ namespace FinderNET.Database.Contexts {
         public DbSet<TicketsModel> tickets { get; set; }
         public DbSet<LevelingModel> leveling { get; set; }
         public DbSet<EconomyModel> economy { get; set; }
-        public DbSet<ItemsModel> items { get; set; }
+        public DbSet<ItemInvModel > itemInventory { get; set; }
     }
 }

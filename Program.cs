@@ -30,7 +30,7 @@ namespace FinderNET {
             await handler.Initialize();
             client.Log += LoggingService.LogAsync;
             commands.Log += LoggingService.LogAsync;
-            CountdownTimer.StartTimer(client, countdownRepository);
+            // CountdownTimer.StartTimer(client, countdownRepository);
             client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
             client.ReactionAdded += new ModerationModule(services.GetRequiredService<SettingsRepository>(), services.GetRequiredService<UserLogsRepository>()).OnReactionAddedEvent;
             client.ButtonExecuted += new PollModule(services.GetRequiredService<PollsRepository>()).OnButtonExecutedEvent;
@@ -57,7 +57,7 @@ namespace FinderNET {
             .AddSingleton<SettingsRepository>()
             .AddSingleton<TicketsRepository>()
             .AddSingleton<UserLogsRepository>()
-            .AddSingleton<ItemsRepository>()
+            .AddSingleton<ItemInvRepository>()
             .BuildServiceProvider();
         }
     }
