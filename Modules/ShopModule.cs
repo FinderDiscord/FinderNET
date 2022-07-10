@@ -40,7 +40,7 @@ namespace FinderNET.Modules {
                 Fields = new List<EmbedFieldBuilder>() {
                     new EmbedFieldBuilder() {
                         Name = itemToBuy.name,
-                        Value = "For" + itemToBuy.buyPrice * amount,
+                        Value = "For " + itemToBuy.buyPrice * amount,
                     }
                 },
                 Color = Color.Green
