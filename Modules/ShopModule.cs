@@ -1,8 +1,5 @@
 using Discord;
 using Discord.Interactions;
-using Discord.Net;
-using Discord.WebSocket;
-using FinderNET.Database.Models;
 using FinderNET.Database.Repositories;
 using FinderNET.Modules.Helpers;
 using Newtonsoft.Json;
@@ -18,7 +15,7 @@ namespace FinderNET.Modules {
         }
         public static ItemsRoot? itemsroot = JsonConvert.DeserializeObject<ItemsRoot>(File.ReadAllText(@"items.json"));
         [SlashCommand("buy", "Buy an item from the shop.")]
-        public async Task BuyCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string item) {
+        public async Task BuyCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string item, int amount = 1) {
             Guid itemId = Guid.Parse(item);
             if (itemsroot == null) {
                 await ReplyAsync("Could not load items.");
@@ -29,20 +26,21 @@ namespace FinderNET.Modules {
                 await RespondAsync("This item is not buyable.");
                 return;
             }
-            if ((await economyRepository.GetEconomyAsync(Context.Guild.Id, Context.User.Id)).money < itemToBuy.buyPrice) {
+            if ((await economyRepository.GetEconomyAsync(Context.Guild.Id, Context.User.Id)).money < (itemToBuy.buyPrice * amount)) {
                 await RespondAsync("You do not have enough money to buy this item.");
                 return;
             }
-            await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, -itemToBuy.buyPrice, 0);
-            await itemsRepository.AddItemAsync(Context.Guild.Id, Context.User.Id, itemId);
+            await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, -(itemToBuy.buyPrice * amount), 0);
+            await itemsRepository.AddItemAsync(Context.Guild.Id, Context.User.Id, itemId, amount);
             await economyRepository.SaveAsync();
             await itemsRepository.SaveAsync();
+            string amountstr = amount == 0 ? amount.ToString() : "an";
             await RespondAsync(embed: new EmbedBuilder() {
-                Title = "You have purchased an item!",
+                Title = $"You have purchased {amountstr} item!",
                 Fields = new List<EmbedFieldBuilder>() {
                     new EmbedFieldBuilder() {
-                        Name = "Item",
-                        Value = itemToBuy.name,
+                        Name = itemToBuy.name,
+                        Value = "For" + itemToBuy.buyPrice * amount,
                     }
                 },
                 Color = Color.Green
@@ -50,7 +48,7 @@ namespace FinderNET.Modules {
         }
         
         [SlashCommand("sell", "Sell an item to the shop.")]
-        public async Task SellCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string item) {
+        public async Task SellCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string item, int amount = 1) {
             Guid itemId = Guid.Parse(item);
             if (itemsroot == null) {
                 await ReplyAsync("Could not load items.");
@@ -65,19 +63,60 @@ namespace FinderNET.Modules {
                 await RespondAsync("You do not have this item.");
                 return;
             }
-            await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, itemToSell.sellPrice, 0);
-            await itemsRepository.RemoveItemAsync(Context.Guild.Id, Context.User.Id, itemId);
+            await economyRepository.AddEconomyAsync(Context.Guild.Id, Context.User.Id, (itemToSell.sellPrice * amount), 0);
+            await itemsRepository.RemoveItemAsync(Context.Guild.Id, Context.User.Id, itemId, amount);
             await economyRepository.SaveAsync();
             await itemsRepository.SaveAsync();
+            string amountstr = amount == 0 ? amount.ToString() : "an";
             await RespondAsync(embed: new EmbedBuilder() {
-                Title = "You have sold an item!",
+                Title = $"You have sold {amountstr} item!",
                 Fields = new List<EmbedFieldBuilder>() {
                     new EmbedFieldBuilder() {
                         Name = itemToSell.name,
-                        Value = "For " + itemToSell.sellPrice,
+                        Value = "For " + itemToSell.sellPrice * amount,
                     }
                 },
                 Color = Color.Green
+            }.Build());
+        }
+
+        [SlashCommand("info", "Displays item info in the shop")]
+        public async Task InfoCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string itemStr) {
+            Guid itemId = Guid.Parse(itemStr);
+            if (itemsroot == null) {
+                await ReplyAsync("Could not load items.");
+                return;
+            }
+            var item = itemsroot.Items.Find(x => x.Id == itemId);
+            await RespondAsync(embed: new EmbedBuilder() {
+                Title = $"{item.name} infomation",
+                Fields = new List<EmbedFieldBuilder>() {
+                    new EmbedFieldBuilder() {
+                        Name = "Description",
+                        Value = item.description,
+                        IsInline = false
+                    },
+                    new EmbedFieldBuilder() {
+                        Name = "Rarity",
+                        Value = item.rarity.ToString(),
+                        IsInline = false
+                    },
+                    new EmbedFieldBuilder() {
+                        Name = "Buy Price",
+                        Value = item.buyable ? item.buyPrice : "Unbuyable",
+                        IsInline = true
+                    },
+                    new EmbedFieldBuilder() {
+                        Name = "Sell Price",
+                        Value = item.sellable ? item.sellPrice : "Unsellable",
+                        IsInline = true
+                    },
+                    new EmbedFieldBuilder() {
+                        Name = "Tradeable",
+                        Value = item.tradeable ? "Yes" : "No",
+                        IsInline = true
+                    },
+                }
             }.Build());
         }
     }
