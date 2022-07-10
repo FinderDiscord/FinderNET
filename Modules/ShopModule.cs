@@ -7,8 +7,8 @@ using Newtonsoft.Json;
 namespace FinderNET.Modules {
     [Group("shop", "The shop commands to buy items.")]
     public class ShopModule : InteractionModuleBase<ShardedInteractionContext> {
-        private readonly ItemInvRepository itemsRepository;
-        private readonly EconomyRepository economyRepository;
+        public static ItemInvRepository itemsRepository;
+        public static EconomyRepository economyRepository;
         public ShopModule(ItemInvRepository _itemsRepository, EconomyRepository _economyRepository) {
             itemsRepository = _itemsRepository;
             economyRepository = _economyRepository;
@@ -48,7 +48,7 @@ namespace FinderNET.Modules {
         }
         
         [SlashCommand("sell", "Sell an item to the shop.")]
-        public async Task SellCommand([Autocomplete(typeof(ShopAutocompleteHandler))] string item, int amount = 1) {
+        public async Task SellCommand([Autocomplete(typeof(InvAutocompleteHandler))] string item, int amount = 1) {
             Guid itemId = Guid.Parse(item);
             if (itemsroot == null) {
                 await ReplyAsync("Could not load items.");
@@ -122,11 +122,9 @@ namespace FinderNET.Modules {
     }
 
     public class InventoryModule : InteractionModuleBase<ShardedInteractionContext> {
-        private readonly ItemInvRepository itemsRepository;
-        private readonly EconomyRepository economyRepository;
-        public InventoryModule(ItemInvRepository _itemsRepository, EconomyRepository _economyRepository) {
+        public static ItemInvRepository itemsRepository;
+        public InventoryModule(ItemInvRepository _itemsRepository) {
             itemsRepository = _itemsRepository;
-            economyRepository = _economyRepository;
         }
         public static ItemsRoot? itemsroot = JsonConvert.DeserializeObject<ItemsRoot>(File.ReadAllText(@"items.json"));
 
@@ -152,13 +150,34 @@ namespace FinderNET.Modules {
         }
     }
     public class ShopAutocompleteHandler : AutocompleteHandler {
-        public override Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services) {
+        public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services) {
             IEnumerable<AutocompleteResult> results = new List<AutocompleteResult>();
             if (ShopModule.itemsroot == null) {
-                return Task.FromResult(AutocompletionResult.FromError(InteractionCommandError.Unsuccessful, "Could not load items."));
+                return AutocompletionResult.FromError(InteractionCommandError.Unsuccessful, "Could not load items.");
             }
             results = ShopModule.itemsroot.Items.Aggregate(results, (current, i) => current.Append(new AutocompleteResult(i.name, i.Id.ToString())));
-            return Task.FromResult(AutocompletionResult.FromSuccess(results.Take(25)));
+            return AutocompletionResult.FromSuccess(results.Take(25));
+        }
+    }
+    
+    public class InvAutocompleteHandler : AutocompleteHandler {
+        public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services) {
+            IEnumerable<AutocompleteResult> results = new List<AutocompleteResult>();
+            var items = await ShopModule.itemsRepository.GetItemsAsync((long)context.Guild.Id, (long)context.User.Id);
+            if (items == null || items.itemIds.Count == 0) {
+                return AutocompletionResult.FromError(InteractionCommandError.Unsuccessful, "You do not have any items.");
+            }
+            if (ShopModule.itemsroot == null) {
+                return AutocompletionResult.FromError(InteractionCommandError.Unsuccessful, "Could not load items.");
+            }
+            foreach (var itemId in items.itemIds) {
+                var item = ShopModule.itemsroot.Items.Find(x => x.Id == itemId);
+                if (item == null) continue;
+                // if item is already in the list, skip it
+                if (results.Any(x => x.Value.Equals(item.Id.ToString()))) continue;
+                results = results.Append(new AutocompleteResult(item.name, item.Id.ToString()));
+            }
+            return AutocompletionResult.FromSuccess(results.Take(25));
         }
     }
     

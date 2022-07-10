@@ -28,7 +28,7 @@ namespace FinderNET.Database.Repositories {
         public async Task RemoveItemAsync(ulong guildId, ulong userId, Guid itemId, int amount) {
             var items = await context.Set<ItemInvModel>().FindAsync((long)guildId, (long)userId);
             if (items == null) return;
-            if (items.itemIds.Contains(itemId)) {
+            if (!items.itemIds.Contains(itemId)) {
                 throw new Exception("Item not found in inventory");
             }
             if (items.itemIds.Count(x => x == itemId) < amount) {
