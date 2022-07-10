@@ -4,7 +4,7 @@ using FinderNET.Database.Repositories;
 using FinderNET.Resources;
 
 namespace FinderNET.Modules {
-    public class EconomyModule : InteractionModuleBase<SocketInteractionContext> {
+    public class EconomyModule : InteractionModuleBase<ShardedInteractionContext> {
         // todo: permissions
         private readonly EconomyRepository economyRepository;
         public EconomyModule(EconomyRepository _economyRepository) {

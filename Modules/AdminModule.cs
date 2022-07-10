@@ -4,7 +4,7 @@ using Discord.WebSocket;
 using FinderNET.Resources;
 
 namespace FinderNET.Modules {
-    public class AdminModule : InteractionModuleBase<SocketInteractionContext> {
+    public class AdminModule : InteractionModuleBase<ShardedInteractionContext> {
         //todo: fix everything
         [SlashCommand("purge", "Purge a number of messages", runMode: RunMode.Async)]
         public async Task PurgeCommand(int count) {

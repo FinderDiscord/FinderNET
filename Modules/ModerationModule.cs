@@ -8,7 +8,7 @@ using FinderNET.Modules.Helpers.Enums;
 using FinderNET.Resources;
 
 namespace FinderNET.Modules {
-    public class ModerationModule : InteractionModuleBase<SocketInteractionContext> {
+    public class ModerationModule : InteractionModuleBase<ShardedInteractionContext> {
         private readonly SettingsRepository settingsRepository;
         private readonly UserLogsRepository userLogsRepository;
         public ModerationModule(SettingsRepository _settingsRepository, UserLogsRepository _userLogsRepository) {

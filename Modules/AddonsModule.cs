@@ -8,7 +8,7 @@ namespace FinderNET.Modules {
     
     [Group("addons", "Command For Managing Addons")]
     //todo: make this work
-    public class AddonsModule : InteractionModuleBase<SocketInteractionContext> {
+    public class AddonsModule : InteractionModuleBase<ShardedInteractionContext> {
         private readonly AddonsRepository addonsRepository;
         public AddonsModule(AddonsRepository _addonsRepository) {
             addonsRepository = _addonsRepository;

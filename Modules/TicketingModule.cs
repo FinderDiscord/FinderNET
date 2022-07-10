@@ -8,7 +8,7 @@ using FinderNET.Resources;
 namespace FinderNET.Modules {
     public class TicketingModule {
         [Group("tickets", "Command For Managing Tickets")]
-        public class TicketsModule : InteractionModuleBase<SocketInteractionContext> {
+        public class TicketsModule : InteractionModuleBase<ShardedInteractionContext> {
             ulong _closeConfirmId;
             private readonly TicketsRepository ticketsRepository;
             public TicketsModule(TicketsRepository _ticketsRepository) {

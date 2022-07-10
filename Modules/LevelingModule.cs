@@ -6,7 +6,7 @@ using FinderNET.Resources;
 
 namespace FinderNET.Modules {
     [Group("leveling", "Command For Managing Leveling")]
-    public class LevelingModule : InteractionModuleBase<SocketInteractionContext> {
+    public class LevelingModule : InteractionModuleBase<ShardedInteractionContext> {
         private readonly LevelingRepository context;
         public LevelingModule(LevelingRepository _context) {
             context = _context;

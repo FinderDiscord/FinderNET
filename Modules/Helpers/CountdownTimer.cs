@@ -6,9 +6,9 @@ using System.Timers;
 namespace FinderNET.Modules.Helpers {
     public static class CountdownTimer {
         private static System.Timers.Timer messageTimer;
-        private static DiscordSocketClient client;
+        private static DiscordShardedClient client;
         private static CountdownRepository countdownRepository;
-        public static void StartTimer(DiscordSocketClient _client, CountdownRepository _countdownRepository) {
+        public static void StartTimer(DiscordShardedClient _client, CountdownRepository _countdownRepository) {
             client = _client;
             countdownRepository = _countdownRepository;
             messageTimer = new System.Timers.Timer(3000);

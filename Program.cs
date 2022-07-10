@@ -22,7 +22,7 @@ namespace FinderNET {
                 serializer.Serialize(file, appsettings);
             }
             await using ServiceProvider services = ConfigureServices();
-            DiscordSocketClient client = services.GetRequiredService<DiscordSocketClient>();
+            DiscordShardedClient client = services.GetRequiredService<DiscordShardedClient>();
             InteractionService commands = services.GetRequiredService<InteractionService>();
             IConfiguration config = services.GetRequiredService<IConfiguration>();
             CommandHandler handler = services.GetRequiredService<CommandHandler>();
@@ -30,7 +30,7 @@ namespace FinderNET {
             await handler.Initialize();
             client.Log += LoggingService.LogAsync;
             commands.Log += LoggingService.LogAsync;
-            CountdownTimer.StartTimer(client, countdownRepository);
+            // CountdownTimer.StartTimer(client, countdownRepository);
             client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
             client.ReactionAdded += new ModerationModule(services.GetRequiredService<SettingsRepository>(), services.GetRequiredService<UserLogsRepository>()).OnReactionAddedEvent;
             client.ButtonExecuted += new PollModule(services.GetRequiredService<PollsRepository>()).OnButtonExecutedEvent;
@@ -45,7 +45,7 @@ namespace FinderNET {
             IConfiguration configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", false, true).Build();
             return new ServiceCollection()
             .AddSingleton(configuration)
-            .AddSingleton<DiscordSocketClient>()
+            .AddSingleton<DiscordShardedClient>()
             .AddSingleton<InteractionService>()
             .AddSingleton<CommandHandler>()
             .AddDbContextFactory<FinderDatabaseContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default")!))
@@ -57,6 +57,7 @@ namespace FinderNET {
             .AddSingleton<SettingsRepository>()
             .AddSingleton<TicketsRepository>()
             .AddSingleton<UserLogsRepository>()
+            .AddSingleton<ItemInvRepository>()
             .BuildServiceProvider();
         }
     }
