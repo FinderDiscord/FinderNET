@@ -648,7 +648,7 @@ namespace FinderNET.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
-                        //TODO: you dont get unbanned wtf
+                        await guild.RemoveBanAsync(user.Id);
                         await message.RemoveAllReactionsAsync();
                         moderationMessages.Remove(moderationMessage);
                         return;
