@@ -12,40 +12,26 @@ namespace FinderNET.Database.Repositories {
         public async Task AddSettingsAsync(ulong guildId, string key, string value) {
             var settings = await context.Set<SettingsModel>().FindAsync((long)guildId);
             if (settings == null) {
-                var dict = new Dictionary<string, string>() { { key, value } };
                 await context.Set<SettingsModel>().AddAsync(new SettingsModel {
                     guildId = (long)guildId,
-                    settings = new List<IDictionary<string, string>>() {
-                        dict
-                    }
+                    setting = key,
+                    value = value
                 });
                 return;
             }
-            if (settings.settings.Any(d => d.ContainsKey(key))) {
-                settings.settings.First(d => d.ContainsKey(key)).Add(key, value);
-            } else {
-                settings.settings.Add(new Dictionary<string, string>() { { key, value } });
-            }
-            context.Set<SettingsModel>().Update(settings);
-        }
-
-        public async Task RemoveAddonAsync(ulong guildId, string value) {
-            var settings = await context.Set<SettingsModel>().FindAsync(guildId);
-            if (settings == null) return;      
-            if (settings.settings.Any(d => d.ContainsKey(value))) {
-                settings.settings.First(d => d.ContainsKey(value)).Remove(value);
-            }
+            settings.setting = key;
+            settings.value = value;
             context.Set<SettingsModel>().Update(settings);
         }
 
         public async Task<bool> SettingsExists(ulong guildId, string key) {
             var settings = await context.Set<SettingsModel>().FindAsync((long)guildId);
-            return settings != null && settings.settings.Any(d => d.ContainsKey(key));
+            return settings != null && settings.setting.Contains(key);
         }
         
         public async Task<string?> GetSettingAsync(ulong guildId, string key) {
             var settings = await context.Set<SettingsModel>().FindAsync((long)guildId);
-            return settings == null ? null : settings.settings.Any(d => d.ContainsKey(key)) ? settings.settings.First(d => d.ContainsKey(key)).First(k => k.Key == key).Value : null;
+            return settings?.setting.Contains(key) ?? false ? settings.value : null;
         }
     }
 }
