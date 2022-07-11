@@ -7,6 +7,7 @@ using FinderNET.Modules;
 using FinderNET.Database.Contexts;
 using FinderNET.Database.Repositories;
 using FinderNET.Handlers;
+using FinderNET.Migrations;
 using FinderNET.Modules.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -26,11 +27,11 @@ namespace FinderNET {
             InteractionService commands = services.GetRequiredService<InteractionService>();
             IConfiguration config = services.GetRequiredService<IConfiguration>();
             CommandHandler handler = services.GetRequiredService<CommandHandler>();
-            CountdownRepository countdownRepository = services.GetRequiredService<CountdownRepository>();
             await handler.Initialize();
             client.Log += LoggingService.LogAsync;
             commands.Log += LoggingService.LogAsync;
-            // CountdownTimer.StartTimer(client, countdownRepository);
+            CountdownTimer.StartTimer(client, services.GetRequiredService<CountdownRepository>());
+            UnBanMuteTimer.StartTimer(client, services.GetRequiredService<UserLogsRepository>(), services.GetRequiredService<SettingsRepository>());
             client.ReactionAdded += TicTacToeModule.OnReactionAddedEvent;
             client.ReactionAdded += new ModerationModule(services.GetRequiredService<SettingsRepository>(), services.GetRequiredService<UserLogsRepository>()).OnReactionAddedEvent;
             client.ButtonExecuted += new PollModule(services.GetRequiredService<PollsRepository>()).OnButtonExecutedEvent;
@@ -48,7 +49,7 @@ namespace FinderNET {
             .AddSingleton<DiscordShardedClient>()
             .AddSingleton<InteractionService>()
             .AddSingleton<CommandHandler>()
-            .AddDbContextFactory<FinderDatabaseContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default")!))
+            .AddDbContextFactory<FinderDatabaseContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default")!), ServiceLifetime.Transient)
             .AddSingleton<AddonsRepository>()
             .AddSingleton<CountdownRepository>()
             .AddSingleton<EconomyRepository>()

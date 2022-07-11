@@ -188,5 +188,53 @@ namespace FinderNET.Resources {
                 return ResourceManager.GetString("ModerationEmbedUnban_title", resourceCulture);
             }
         }
+        
+        internal static string ModerationEmbed_fieldTimeName {
+            get {
+                return ResourceManager.GetString("ModerationEmbed_fieldTimeName", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbed_fieldTimeValue {
+            get {
+                return ResourceManager.GetString("ModerationEmbed_fieldTimeValue", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbedTempbanned_title {
+            get {
+                return ResourceManager.GetString("ModerationEmbedTempbanned_title", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbedTempmuted_title {
+            get {
+                return ResourceManager.GetString("ModerationEmbedTempmuted_title", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbed_fieldDurationName {
+            get {
+                return ResourceManager.GetString("ModerationEmbed_fieldDurationName", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbedTempbannedDM_title {
+            get {
+                return ResourceManager.GetString("ModerationEmbedTempbannedDM_title", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbedTempmutedDM_title {
+            get {
+                return ResourceManager.GetString("ModerationEmbedTempmutedDM_title", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbed_fieldDurationValue {
+            get {
+                return ResourceManager.GetString("ModerationEmbed_fieldDurationValue", resourceCulture);
+            }
+        }
     }
 }

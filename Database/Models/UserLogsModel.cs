@@ -9,5 +9,7 @@ namespace FinderNET.Database.Models {
         public int kicks { get; set; }
         public int warns { get; set; }
         public int mutes { get; set; }
+        public DateTime? tempBan { get; set; }
+        public DateTime? tempMute { get; set; }
     }
 }

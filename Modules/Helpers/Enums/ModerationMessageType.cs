@@ -6,5 +6,7 @@ namespace FinderNET.Modules.Helpers.Enums {
         Mute,
         Unmute,
         Unban,
+        Tempban,
+        Tempmute,
     }
 }

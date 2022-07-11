@@ -7,6 +7,7 @@ namespace FinderNET.Modules.Helpers {
         public ulong senderId { get; set; }
         public ulong userId { get; set; }
         public string reason { get; set; } = "No reason given.";
+        public DateTime? time { get; set; } = null;
         public ModerationMessageType Type { get; set; }
         // add date?
     }

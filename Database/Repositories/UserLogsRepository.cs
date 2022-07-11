@@ -31,6 +31,60 @@ namespace FinderNET.Database.Repositories {
             userLogs.mutes = mutes;
             context.Set<UserLogsModel>().Update(userLogs);
         }
+        
+        public async Task AddTempbanTime(ulong guildId, ulong userId, DateTime time) {
+            var userLogs = await context.Set<UserLogsModel>().FindAsync((long)guildId, (long)userId);
+            if (userLogs == null) {
+                await context.Set<UserLogsModel>().AddAsync(new UserLogsModel {
+                    guildId = (long)guildId,
+                    userId = (long)userId,
+                    tempBan = time
+                });
+                return;
+            }
+            userLogs.guildId = (long)guildId;
+            userLogs.userId = (long)userId;
+            userLogs.tempBan = time;
+            context.Set<UserLogsModel>().Update(userLogs);
+        }
+        
+        public async Task RemoveTempbanTime(ulong guildId, ulong userId) {
+            var userLogs = await context.Set<UserLogsModel>().FindAsync((long)guildId, (long)userId);
+            if (userLogs == null) {
+                return;
+            }
+            userLogs.guildId = (long)guildId;
+            userLogs.userId = (long)userId;
+            userLogs.tempBan = null;
+            context.Set<UserLogsModel>().Update(userLogs);
+        }
+        
+        public async Task AddTempmuteTime(ulong guildId, ulong userId, DateTime time) {
+            var userLogs = await context.Set<UserLogsModel>().FindAsync((long)guildId, (long)userId);
+            if (userLogs == null) {
+                await context.Set<UserLogsModel>().AddAsync(new UserLogsModel {
+                    guildId = (long)guildId,
+                    userId = (long)userId,
+                    tempMute = time
+                });
+                return;
+            }
+            userLogs.guildId = (long)guildId;
+            userLogs.userId = (long)userId;
+            userLogs.tempMute = time;
+            context.Set<UserLogsModel>().Update(userLogs);
+        }
+        
+        public async Task RemoveTempmuteTime(ulong guildId, ulong userId) {
+            var userLogs = await context.Set<UserLogsModel>().FindAsync((long)guildId, (long)userId);
+            if (userLogs == null) {
+                return;
+            }
+            userLogs.guildId = (long)guildId;
+            userLogs.userId = (long)userId;
+            userLogs.tempMute = null;
+            context.Set<UserLogsModel>().Update(userLogs);
+        }
 
         public async Task RemoveUserLogsAsync(ulong guildId, ulong userId) {
             var userLogs = await context.Set<UserLogsModel>().FindAsync((long)guildId, (long)userId);
@@ -40,6 +94,18 @@ namespace FinderNET.Database.Repositories {
 
         public async Task<bool> UserLogsExistsAsync(ulong guildId, ulong userId) {
             return await context.Set<UserLogsModel>().FindAsync((long)guildId, (long)userId) != null;
+        }
+        
+        public async Task<bool> IsUnbanned(ulong guildId, ulong userId) {
+            var userLogs = await context.Set<UserLogsModel>().FindAsync((long)guildId, (long)userId);
+            if (userLogs == null) return false;
+            return userLogs.tempBan > DateTime.UtcNow;
+        }
+        
+        public async Task<bool> IsUnmuted(ulong guildId, ulong userId) {
+            var userLogs = await context.Set<UserLogsModel>().FindAsync((long)guildId, (long)userId);
+            if (userLogs == null) return false;
+            return userLogs.tempMute > DateTime.UtcNow;
         }
     }
 }
