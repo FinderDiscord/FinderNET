@@ -23,7 +23,7 @@ namespace FinderNET.Modules.Helpers {
         public static async void OnTimerElapsed(object source, ElapsedEventArgs e) {
             foreach (var c in userLogsRepository.GetAll()) {
                 var guild = client.GetGuild((ulong)c.guildId);
-                if (c.tempBan < DateTime.UtcNow) {
+                if (c.tempBan != null && c.tempBan < DateTime.UtcNow) {
                     await guild.RemoveBanAsync((ulong)c.userId);
                     SocketGuildUser user;
                     try {
@@ -49,7 +49,7 @@ namespace FinderNET.Modules.Helpers {
                     await userLogsRepository.RemoveTempbanTime((ulong)c.guildId, (ulong)c.userId);
                     await userLogsRepository.SaveAsync();
                     continue;
-                } else if (c.tempMute < DateTime.UtcNow) {
+                } else if (c.tempMute != null && c.tempMute < DateTime.UtcNow) {
                     SocketGuildUser user;
                     try {
                         user = guild.GetUser((ulong)c.userId);

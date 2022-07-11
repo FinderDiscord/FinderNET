@@ -215,7 +215,7 @@ namespace FinderNET.Modules {
         
         [SlashCommand("tempban", "Bans a user for a certain amount of time.", runMode: RunMode.Async)]
         public async Task TempBanCommand(SocketGuildUser user, string time, string reason = "No reason given.") {
-            DateTime timeSpan = DateTime.UtcNow + TimeSpan.Parse(time);
+            DateTime timeSpan = DateTime.Now.Offset(time);
             await RespondAsync(embed: new EmbedBuilder() {
                 Title = ModerationLocale.ModerationEmbedBan_title,
                 Color = Color.Red,
@@ -256,7 +256,7 @@ namespace FinderNET.Modules {
         
         [SlashCommand("tempmute", "Mutes a user for a certain amount of time.", runMode: RunMode.Async)]
         public async Task TempMuteCommand(SocketGuildUser user, string time, string reason = "No reason given.") {
-            DateTime timeSpan = DateTime.UtcNow + TimeSpan.Parse(time);
+            DateTime timeSpan = DateTime.Now.Offset(time);
             await RespondAsync(embed: new EmbedBuilder() {
                 Title = ModerationLocale.ModerationEmbedMute_title,
                 Color = Color.Red,
