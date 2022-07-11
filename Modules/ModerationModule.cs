@@ -349,7 +349,6 @@ namespace FinderNET.Modules {
                 switch(moderationMessage.Type) {
                     case ModerationMessageType.Ban:
                         await guild.AddBanAsync(user, reason: moderationMessage.reason);
-                        await message.RemoveAllReactionsAsync();
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
                             Title = ModerationLocale.ModerationEmbedBanned_title,
                             Color = Color.Red,
@@ -393,13 +392,13 @@ namespace FinderNET.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
+                        await message.RemoveAllReactionsAsync();
                         moderationMessages.Remove(moderationMessage);
                         await userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.bans + 1, userLogs.kicks, userLogs.warns, userLogs.mutes);
                         await userLogsRepository.SaveAsync();
                         return;
                     case ModerationMessageType.Kick:
                         await user.KickAsync(moderationMessage.reason);
-                        await message.RemoveAllReactionsAsync();
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
                             Title = ModerationLocale.ModerationEmbedKicked_title,
                             Color = Color.Red,
@@ -443,6 +442,7 @@ namespace FinderNET.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
+                        await message.RemoveAllReactionsAsync();
                         moderationMessages.Remove(moderationMessage);
                         await userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.bans, userLogs.kicks + 1, userLogs.warns, userLogs.mutes);
                         await userLogsRepository.SaveAsync();
@@ -491,6 +491,7 @@ namespace FinderNET.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
+                        await message.RemoveAllReactionsAsync();
                         moderationMessages.Remove(moderationMessage);
                         await userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.bans, userLogs.kicks, userLogs.warns + 1, userLogs.mutes);
                         await userLogsRepository.SaveAsync();
@@ -647,6 +648,7 @@ namespace FinderNET.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
+                        //TODO: you dont get unbanned wtf
                         await message.RemoveAllReactionsAsync();
                         moderationMessages.Remove(moderationMessage);
                         return;
@@ -705,10 +707,11 @@ namespace FinderNET.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
-                        await userLogsRepository.AddTempbanTime(Context.Guild.Id, user.Id, moderationMessage.time!.Value);
-                        await userLogsRepository.SaveAsync();
                         await message.RemoveAllReactionsAsync();
                         moderationMessages.Remove(moderationMessage);
+                        await userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.bans + 1, userLogs.kicks, userLogs.warns, userLogs.mutes);
+                        await userLogsRepository.AddTempbanTime(guild.Id, user.Id, moderationMessage.time!.Value.ToUniversalTime());
+                        await userLogsRepository.SaveAsync();
                         return;
                     case ModerationMessageType.Tempmute:
                         await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
@@ -765,10 +768,21 @@ namespace FinderNET.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
-                        await userLogsRepository.AddTempmuteTime(Context.Guild.Id, user.Id, moderationMessage.time!.Value);
-                        await userLogsRepository.SaveAsync();
+                        if (!(await settingsRepository.SettingsExists(guild.Id, "muteRoleId"))) {
+                            var muteRole1 = await guild.CreateRoleAsync("Muted", new GuildPermissions(connect: true, readMessageHistory: true), Color.DarkGrey, false, true);
+                            await settingsRepository.AddSettingsAsync(guild.Id, "muteRoleId", muteRole1.Id.ToString());
+                            await settingsRepository.SaveAsync();
+                            foreach (var otherchannel in guild.Channels) {
+                                await channel.AddPermissionOverwriteAsync(muteRole1, OverwritePermissions.DenyAll(channel).Modify(viewChannel: PermValue.Allow, readMessageHistory: PermValue.Allow));
+                            }
+                        }
+                        var muteRole3 = guild.GetRole(Convert.ToUInt64(await settingsRepository.GetSettingAsync(guild.Id, "muteRoleId")));
+                        await user.AddRoleAsync(muteRole3);
                         await message.RemoveAllReactionsAsync();
                         moderationMessages.Remove(moderationMessage);
+                        await userLogsRepository.AddUserLogsAsync(guild.Id, user.Id, userLogs.bans, userLogs.kicks, userLogs.warns, userLogs.mutes + 1);
+                        await userLogsRepository.AddTempmuteTime(guild.Id, user.Id, moderationMessage.time!.Value.ToUniversalTime());
+                        await userLogsRepository.SaveAsync();
                         return;
                 }
             }

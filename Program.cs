@@ -49,7 +49,7 @@ namespace FinderNET {
             .AddSingleton<DiscordShardedClient>()
             .AddSingleton<InteractionService>()
             .AddSingleton<CommandHandler>()
-            .AddDbContextFactory<FinderDatabaseContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default")!))
+            .AddDbContextFactory<FinderDatabaseContext>(options => options.UseNpgsql(configuration.GetConnectionString("Default")!), ServiceLifetime.Transient)
             .AddSingleton<AddonsRepository>()
             .AddSingleton<CountdownRepository>()
             .AddSingleton<EconomyRepository>()

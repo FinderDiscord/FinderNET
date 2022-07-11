@@ -1,5 +1,4 @@
 using Discord;
-using Discord.Net;
 using Discord.WebSocket;
 using FinderNET.Database.Repositories;
 using FinderNET.Resources;
@@ -21,7 +20,7 @@ namespace FinderNET.Modules.Helpers {
         }
 
         public static async void OnTimerElapsed(object source, ElapsedEventArgs e) {
-            foreach (var c in userLogsRepository.GetAll()) {
+            foreach (var c in (await userLogsRepository.GetAllAsync())) {
                 var guild = client.GetGuild((ulong)c.guildId);
                 if (c.tempBan != null && c.tempBan < DateTime.UtcNow) {
                     await guild.RemoveBanAsync((ulong)c.userId);

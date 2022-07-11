@@ -1,4 +1,5 @@
 using FinderNET.Database.Contexts;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace FinderNET.Database {
@@ -8,28 +9,24 @@ namespace FinderNET.Database {
             context = _context;
         }
         
-        public T Get(ulong id) {
-            return context.Set<T>().Find(id);
+        public async Task<T?> Get(ulong id) {
+            return await context.Set<T>().FindAsync(id);
         }
 
-        public T Get(ulong id, ulong id2) {
-            return context.Set<T>().Find(id, id2);
+        public async Task<T?> GetASync(ulong id, ulong id2) {
+            return await context.Set<T>().FindAsync(id, id2);
         }
 
-        public T Get(ulong id, ulong id2, ulong id3) {
-            return context.Set<T>().Find(id, id2, id3);
+        public async Task<T?> GetAsync(ulong id, ulong id2, ulong id3) {
+            return await context.Set<T>().FindAsync(id, id2, id3);
         }
 
-        public IEnumerable<T> GetAll() {
-            return context.Set<T>().ToList();
+        public async Task<IEnumerable<T>> GetAllAsync() {
+            return await context.Set<T>().ToListAsync();
         }
 
-        public IEnumerable<T> Where(Expression<Func<T, bool>> predicate) {
-            return context.Set<T>().Where(predicate);
-        }
-
-        public void Add(T entity) {
-            context.Set<T>().Add(entity);
+        public async Task<IEnumerable<T>> WhereAsync(Expression<Func<T, bool>> predicate) {
+            return await context.Set<T>().Where(predicate).ToListAsync();
         }
 
         public async Task AddAsync(T entity) {

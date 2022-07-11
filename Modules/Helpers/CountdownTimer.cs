@@ -18,7 +18,7 @@ namespace FinderNET.Modules.Helpers {
         }
 
         public static async void OnTimerElapsed(object source, ElapsedEventArgs e) {
-            foreach (var c in countdownRepository.GetAll()) {
+            foreach (var c in (await countdownRepository.GetAllAsync())) {
                 var guild = client.GetGuild((ulong)c.guildId);
                 var channel = (ITextChannel)guild.GetChannel((ulong)c.channelId);
                 var messages = (IUserMessage) await channel.GetMessageAsync((ulong)c.messageId);
