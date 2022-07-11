@@ -152,5 +152,41 @@ namespace FinderNET.Resources {
                 return ResourceManager.GetString("ModerationEmbedMutedDM_title", resourceCulture);
             }
         }
+        
+        internal static string ModerationEmbedUnmute_title {
+            get {
+                return ResourceManager.GetString("ModerationEmbedUnmute_title", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbedUnmutedDM_title {
+            get {
+                return ResourceManager.GetString("ModerationEmbedUnmutedDM_title", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbedUnmuted_title {
+            get {
+                return ResourceManager.GetString("ModerationEmbedUnmuted_title", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbedUnbanned_title {
+            get {
+                return ResourceManager.GetString("ModerationEmbedUnbanned_title", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbedUnbannedDM_title {
+            get {
+                return ResourceManager.GetString("ModerationEmbedUnbannedDM_title", resourceCulture);
+            }
+        }
+        
+        internal static string ModerationEmbedUnban_title {
+            get {
+                return ResourceManager.GetString("ModerationEmbedUnban_title", resourceCulture);
+            }
+        }
     }
 }

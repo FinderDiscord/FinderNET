@@ -3,6 +3,8 @@ namespace FinderNET.Modules.Helpers.Enums {
         Ban,
         Kick,
         Warn,
-        Mute
+        Mute,
+        Unmute,
+        Unban,
     }
 }

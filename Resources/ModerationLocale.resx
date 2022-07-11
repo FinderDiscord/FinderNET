@@ -72,4 +72,22 @@
     <data name="ModerationEmbedMutedDM_title" xml:space="preserve">
         <value>You have been muted</value>
     </data>
+    <data name="ModerationEmbedUnmute_title" xml:space="preserve">
+        <value>Are you sure you want to unmute this user?</value>
+    </data>
+    <data name="ModerationEmbedUnmutedDM_title" xml:space="preserve">
+        <value>You have been Unmuted</value>
+    </data>
+    <data name="ModerationEmbedUnmuted_title" xml:space="preserve">
+        <value>User Unmuted</value>
+    </data>
+    <data name="ModerationEmbedUnbanned_title" xml:space="preserve">
+        <value>User Unbanned</value>
+    </data>
+    <data name="ModerationEmbedUnbannedDM_title" xml:space="preserve">
+        <value>You have been unbanned</value>
+    </data>
+    <data name="ModerationEmbedUnban_title" xml:space="preserve">
+        <value>Are you sure you want to unban this user?</value>
+    </data>
 </root>
