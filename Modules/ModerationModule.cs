@@ -6,7 +6,7 @@ using FinderNET.Database.Repositories;
 using FinderNET.Modules.Helpers;
 using FinderNET.Modules.Helpers.Enums;
 using FinderNET.Resources;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Pathoschild.NaturalTimeParser.Parser;
 
 namespace FinderNET.Modules {
     public class ModerationModule : InteractionModuleBase<ShardedInteractionContext> {
@@ -210,6 +210,88 @@ namespace FinderNET.Modules {
                 senderId = Context.User.Id,
                 userId = user.Id,
                 Type = ModerationMessageType.Unban
+            });
+        }
+        
+        [SlashCommand("tempban", "Bans a user for a certain amount of time.", runMode: RunMode.Async)]
+        public async Task TempBanCommand(SocketGuildUser user, string time, string reason = "No reason given.") {
+            DateTime timeSpan = DateTime.UtcNow + TimeSpan.Parse(time);
+            await RespondAsync(embed: new EmbedBuilder() {
+                Title = ModerationLocale.ModerationEmbedBan_title,
+                Color = Color.Red,
+                Fields = new List<EmbedFieldBuilder>() {
+                    new EmbedFieldBuilder() {
+                        Name = ModerationLocale.ModerationEmbed_fieldUserName,
+                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                        IsInline = false
+                    },
+                    new EmbedFieldBuilder() {
+                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
+                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, reason),
+                        IsInline = false
+                    },
+                    new EmbedFieldBuilder() {
+                        Name = ModerationLocale.ModerationEmbed_fieldTimeName,
+                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldTimeValue, time),
+                        IsInline = false
+                    }
+                },
+                Footer = new EmbedFooterBuilder() {
+                    Text = Main.EmbedFooter
+                }
+            }.Build());
+            var message = await GetOriginalResponseAsync();
+            await message.AddReactionAsync(new Emoji("✅"));
+            moderationMessages.Add(new ModerationMessage() {
+                messageId = message.Id,
+                channelId = message.Channel.Id,
+                guildId = Context.Guild.Id,
+                senderId = Context.User.Id,
+                userId = user.Id,
+                reason = reason,
+                Type = ModerationMessageType.Tempban,
+                time = timeSpan
+            });
+        }
+        
+        [SlashCommand("tempmute", "Mutes a user for a certain amount of time.", runMode: RunMode.Async)]
+        public async Task TempMuteCommand(SocketGuildUser user, string time, string reason = "No reason given.") {
+            DateTime timeSpan = DateTime.UtcNow + TimeSpan.Parse(time);
+            await RespondAsync(embed: new EmbedBuilder() {
+                Title = ModerationLocale.ModerationEmbedMute_title,
+                Color = Color.Red,
+                Fields = new List<EmbedFieldBuilder>() {
+                    new EmbedFieldBuilder() {
+                        Name = ModerationLocale.ModerationEmbed_fieldUserName,
+                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                        IsInline = false
+                    },
+                    new EmbedFieldBuilder() {
+                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
+                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, reason),
+                        IsInline = false
+                    },
+                    new EmbedFieldBuilder() {
+                        Name = ModerationLocale.ModerationEmbed_fieldTimeName,
+                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldTimeValue, time),
+                        IsInline = false
+                    }
+                },
+                Footer = new EmbedFooterBuilder() {
+                    Text = Main.EmbedFooter
+                }
+            }.Build());
+            var message = await GetOriginalResponseAsync();
+            await message.AddReactionAsync(new Emoji("✅"));
+            moderationMessages.Add(new ModerationMessage() {
+                messageId = message.Id,
+                channelId = message.Channel.Id,
+                guildId = Context.Guild.Id,
+                senderId = Context.User.Id,
+                userId = user.Id,
+                reason = reason,
+                Type = ModerationMessageType.Tempmute,
+                time = timeSpan
             });
         }
 
@@ -565,6 +647,126 @@ namespace FinderNET.Modules {
                         } catch (HttpException) {
                             // User has DMs disabled
                         }
+                        await message.RemoveAllReactionsAsync();
+                        moderationMessages.Remove(moderationMessage);
+                        return;
+                    case ModerationMessageType.Tempban:
+                        await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
+                            Title = ModerationLocale.ModerationEmbedTempbanned_title,
+                            Color = Color.Red,
+                            Fields = new List<EmbedFieldBuilder>() {
+                                new EmbedFieldBuilder() {
+                                    Name = ModerationLocale.ModerationEmbed_fieldUserName,
+                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                                    IsInline = false
+                                },
+                                new EmbedFieldBuilder() {
+                                    Name = ModerationLocale.ModerationEmbed_fieldReasonName,
+                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                    IsInline = false
+                                },
+                                new EmbedFieldBuilder() {
+                                    Name = ModerationLocale.ModerationEmbed_fieldDurationName,
+                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldDurationValue, moderationMessage.time!.Value),
+                                    IsInline = false
+                                }
+                            },
+                            Footer = new EmbedFooterBuilder() {
+                                Text = Main.EmbedFooter
+                            }
+                        }.Build());
+                        try {
+                            await user.SendMessageAsync(embed: new EmbedBuilder() {
+                                Title = ModerationLocale.ModerationEmbedTempbannedDM_title,
+                                Color = Color.Red,
+                                Fields = new List<EmbedFieldBuilder>() {
+                                    new EmbedFieldBuilder() {
+                                        Name = ModerationLocale.ModerationEmbed_fieldServerName,
+                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                                        IsInline = false
+                                    },
+                                    new EmbedFieldBuilder() {
+                                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
+                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue,
+                                        moderationMessage.reason),
+                                        IsInline = false
+                                    },
+                                    new EmbedFieldBuilder() {
+                                        Name = ModerationLocale.ModerationEmbed_fieldDurationName,
+                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldDurationValue, moderationMessage.time!.Value),
+                                        IsInline = false
+                                    }
+                                },
+                                Footer = new EmbedFooterBuilder() {
+                                    Text = Main.EmbedFooter
+                                },
+                                ThumbnailUrl = guild.IconUrl
+                            }.Build());
+                        } catch (HttpException) {
+                            // User has DMs disabled
+                        }
+                        await userLogsRepository.AddTempbanTime(Context.Guild.Id, user.Id, moderationMessage.time!.Value);
+                        await userLogsRepository.SaveAsync();
+                        await message.RemoveAllReactionsAsync();
+                        moderationMessages.Remove(moderationMessage);
+                        return;
+                    case ModerationMessageType.Tempmute:
+                        await channel.ModifyMessageAsync(message.Id, m => m.Embed = new EmbedBuilder() {
+                            Title = ModerationLocale.ModerationEmbedTempmuted_title,
+                            Color = Color.Red,
+                            Fields = new List<EmbedFieldBuilder>() {
+                                new EmbedFieldBuilder() {
+                                    Name = ModerationLocale.ModerationEmbed_fieldUserName,
+                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldUserValue, user.Mention, user.Username),
+                                    IsInline = false
+                                },
+                                new EmbedFieldBuilder() {
+                                    Name = ModerationLocale.ModerationEmbed_fieldReasonName,
+                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue, moderationMessage.reason),
+                                    IsInline = false
+                                },
+                                new EmbedFieldBuilder() {
+                                    Name = ModerationLocale.ModerationEmbed_fieldDurationName,
+                                    Value = string.Format(ModerationLocale.ModerationEmbed_fieldDurationValue, moderationMessage.time!.Value),
+                                    IsInline = false
+                                }
+                            },
+                            Footer = new EmbedFooterBuilder() {
+                                Text = Main.EmbedFooter
+                            }
+                        }.Build());
+                        try {
+                            await user.SendMessageAsync(embed: new EmbedBuilder() {
+                                Title = ModerationLocale.ModerationEmbedTempmutedDM_title,
+                                Color = Color.Red,
+                                Fields = new List<EmbedFieldBuilder>() {
+                                    new EmbedFieldBuilder() {
+                                        Name = ModerationLocale.ModerationEmbed_fieldServerName,
+                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldServerValue, guild.Name),
+                                        IsInline = false
+                                    },
+                                    new EmbedFieldBuilder() {
+                                        Name = ModerationLocale.ModerationEmbed_fieldReasonName,
+                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldReasonValue,
+                                        moderationMessage.reason),
+                                        IsInline = false
+                                    },
+                                    new EmbedFieldBuilder() {
+                                        Name = ModerationLocale.ModerationEmbed_fieldDurationName,
+                                        Value = string.Format(ModerationLocale.ModerationEmbed_fieldDurationValue, moderationMessage.time!.Value),
+                                        IsInline = false
+                                    }
+                                },
+                                Footer = new EmbedFooterBuilder() {
+                                    Text = Main.EmbedFooter
+                                },
+                                ThumbnailUrl = guild.IconUrl
+                            }.Build());
+                        } catch (HttpException) {
+                            // User has DMs disabled
+                        }
+                        await userLogsRepository.AddTempmuteTime(Context.Guild.Id, user.Id, moderationMessage.time!.Value);
+                        await userLogsRepository.SaveAsync();
                         await message.RemoveAllReactionsAsync();
                         moderationMessages.Remove(moderationMessage);
                         return;

@@ -90,4 +90,28 @@
     <data name="ModerationEmbedUnban_title" xml:space="preserve">
         <value>Are you sure you want to unban this user?</value>
     </data>
+    <data name="ModerationEmbed_fieldTimeName" xml:space="preserve">
+        <value>For time</value>
+    </data>
+    <data name="ModerationEmbed_fieldTimeValue" xml:space="preserve">
+        <value>{0}</value>
+    </data>
+    <data name="ModerationEmbedTempbanned_title" xml:space="preserve">
+        <value>Are you sure you want to temp ban this user?</value>
+    </data>
+    <data name="ModerationEmbedTempmuted_title" xml:space="preserve">
+        <value>Are you sure you want to temp mute this user?</value>
+    </data>
+    <data name="ModerationEmbed_fieldDurationName" xml:space="preserve">
+        <value>Until</value>
+    </data>
+    <data name="ModerationEmbedTempbannedDM_title" xml:space="preserve">
+        <value>You have been Temporarily Banned</value>
+    </data>
+    <data name="ModerationEmbedTempmutedDM_title" xml:space="preserve">
+        <value>You have been Temporarily Muted</value>
+    </data>
+    <data name="ModerationEmbed_fieldDurationValue" xml:space="preserve">
+        <value>{0}</value>
+    </data>
 </root>
